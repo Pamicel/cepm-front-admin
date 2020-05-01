@@ -81,7 +81,7 @@ export default {
     left: $size-grid-padding;
     .logoRepublique,
     .logoCEPM {
-      height: 50px;
+      height: 3rem;
     }
     .logoRepublique {
       margin-right: $size-grid-padding;

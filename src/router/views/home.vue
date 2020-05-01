@@ -118,7 +118,7 @@ export default {
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 180px;
+    min-height: 12rem;
     padding: $size-grid-padding;
     text-align: center;
   }
@@ -126,7 +126,7 @@ export default {
 
 .cta {
   display: flex;
-  height: 580px;
+  height: 40rem;
   $text-width: 40%;
   .ctaText {
     display: flex;
