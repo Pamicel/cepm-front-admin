@@ -9,7 +9,7 @@ export default {
       persistentNavRoutes: [
         {
           name: 'home',
-          title: 'Home',
+          title: 'Accueil',
         },
       ],
       loggedInNavRoutes: [
@@ -38,6 +38,20 @@ export default {
 
 <template>
   <ul :class="$style.container">
+    <div :class="$style.logos">
+      <img
+        src="@assets/images/logo-republique-francaise.png"
+        :class="$style.logoRepublique"
+        aria-label="Publique-ré Çaise-fran"
+      />
+      <BaseLink name="home">
+        <img
+          src="@assets/images/logo-cepm.png"
+          :class="$style.logoCEPM"
+          aria-label="Accueil"
+        />
+      </BaseLink>
+    </div>
     <NavBarRoutes :routes="persistentNavRoutes" />
     <NavBarRoutes v-if="loggedIn" :routes="loggedInNavRoutes" />
     <NavBarRoutes v-else :routes="loggedOutNavRoutes" />
@@ -48,14 +62,30 @@ export default {
 @import '@design';
 
 .container {
-  padding: 0;
-  margin: 0 0 $size-grid-padding;
+  @extend %typography-medium;
+
+  height: $size-footer-height;
+  padding: $size-grid-padding;
+  margin: 0;
   text-align: center;
   list-style-type: none;
 
   > li {
     display: inline-block;
     margin-right: $size-grid-padding;
+  }
+
+  .logos {
+    position: absolute;
+    top: $size-grid-padding;
+    left: $size-grid-padding;
+    .logoRepublique,
+    .logoCEPM {
+      height: 50px;
+    }
+    .logoRepublique {
+      margin-right: $size-grid-padding;
+    }
   }
 }
 </style>

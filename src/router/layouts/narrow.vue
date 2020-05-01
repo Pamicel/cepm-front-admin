@@ -1,19 +1,15 @@
 <script>
 import NavBar from '@components/nav-bar.vue'
-import Footer from '@components/footer.vue'
 
 export default {
-  components: { NavBar, Footer },
+  components: { NavBar },
 }
 </script>
 
 <template>
   <div :class="$style.container">
     <NavBar />
-    <div :class="$style.content">
-      <slot />
-    </div>
-    <Footer />
+    <slot />
   </div>
 </template>
 
@@ -22,7 +18,7 @@ export default {
 
 .container {
   min-width: $size-content-width-min;
-  max-width: 100%;
+  max-width: $size-content-width-max;
   margin: 0 auto;
 }
 </style>
