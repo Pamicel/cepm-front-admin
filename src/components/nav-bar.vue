@@ -7,25 +7,25 @@ export default {
   data() {
     return {
       persistentNavRoutes: [
-        {
-          name: 'home',
-          title: 'Accueil',
-        },
+        // {
+        //   name: 'home',
+        //   title: 'Accueil',
+        // },
       ],
       loggedInNavRoutes: [
         {
           name: 'profile',
-          title: () => 'Logged in as ' + this.currentUser.name,
+          title: () => 'Connecté en tant que ' + this.currentUser.name,
         },
         {
           name: 'logout',
-          title: 'Log out',
+          title: 'Se déconnecter',
         },
       ],
       loggedOutNavRoutes: [
         {
           name: 'login',
-          title: 'Log in',
+          title: 'Mon compte',
         },
       ],
     }
@@ -67,7 +67,7 @@ export default {
   height: $size-footer-height;
   padding: $size-grid-padding;
   margin: 0;
-  text-align: center;
+  text-align: right;
   list-style-type: none;
 
   > li {

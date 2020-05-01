@@ -13,7 +13,7 @@ export default {
     <div :class="$style.content">
       <slot />
     </div>
-    <Footer />
+    <Footer :class="$style.footer" />
   </div>
 </template>
 
@@ -21,8 +21,17 @@ export default {
 @import '@design';
 
 .container {
+  display: flex;
+  flex-direction: column;
   min-width: $size-content-width-min;
   max-width: 100%;
+  min-height: 100%;
   margin: 0 auto;
+  .content {
+    flex: 1 0 auto;
+  }
+  .footer {
+    flex-shrink: 0;
+  }
 }
 </style>

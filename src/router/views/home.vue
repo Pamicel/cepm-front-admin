@@ -57,7 +57,7 @@ export default {
           Remplissez votre
           <em>Formulaire individuel de recensement mortem</em> dès maintenant
         </p>
-        <BaseButton>
+        <BaseButton :class="$style.ctaButton" @click="$router.push('/login')">
           Remplir >
         </BaseButton>
       </div>
@@ -157,6 +157,11 @@ export default {
     background-image: url('~@assets/images/hands.jpg');
     background-position: center;
     background-size: cover;
+  }
+
+  .ctaButton {
+    padding: ($size-grid-padding / 2) $size-grid-padding;
+    font-size: 1.2em;
   }
 }
 </style>
