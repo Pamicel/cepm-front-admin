@@ -1,9 +1,9 @@
 <script>
 import { authComputed } from '@state/helpers'
-import NavBarRoutes from './nav-bar-routes.vue'
+// import NavBarRoutes from './nav-bar-routes.vue'
 
 export default {
-  components: { NavBarRoutes },
+  // components: { NavBarRoutes },
   data() {
     return {
       persistentNavRoutes: [
@@ -52,9 +52,9 @@ export default {
         />
       </BaseLink>
     </div>
-    <NavBarRoutes :routes="persistentNavRoutes" />
-    <NavBarRoutes v-if="loggedIn" :routes="loggedInNavRoutes" />
-    <NavBarRoutes v-else :routes="loggedOutNavRoutes" />
+    <!-- <NavBarRoutes :routes="persistentNavRoutes" /> -->
+    <!-- <NavBarRoutes v-if="loggedIn" :routes="loggedInNavRoutes" />
+    <NavBarRoutes v-else :routes="loggedOutNavRoutes" /> -->
   </ul>
 </template>
 
