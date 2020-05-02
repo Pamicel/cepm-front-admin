@@ -14,7 +14,7 @@ export default {
 </script>
 
 <template>
-  <Layout narrow>
+  <Layout narrow padded>
     <div :class="$style.container">
       <h2 :class="$style.pageTitle">Vos démarches</h2>
       <FormCard

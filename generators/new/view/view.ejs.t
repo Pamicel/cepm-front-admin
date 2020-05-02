@@ -19,7 +19,9 @@ export default {
 
 <template>
   <Layout>
-    <%= titleName %>
+    <div :class="$style.container">
+      <%= titleName %>
+    </div>
   </Layout>
 </template>
 <%

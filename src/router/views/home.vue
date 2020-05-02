@@ -40,14 +40,16 @@ export default {
           De quel CEPM dépendez-vous ?
         </h4>
       </div>
-      <div>
-        <h3 :class="$style.linksTitle">
-          À propos
-        </h3>
-        <h4 :class="$style.linksSubtitle">
-          Découvrez l’histoire du CEPM
-        </h4>
-      </div>
+      <BaseLink name="histoire">
+        <div>
+          <h3 :class="$style.linksTitle">
+            À propos
+          </h3>
+          <h4 :class="$style.linksSubtitle">
+            Découvrez l’histoire du CEPM
+          </h4>
+        </div>
+      </BaseLink>
     </div>
     <!-- section 3 -->
     <div :class="$style.cta">
@@ -59,7 +61,10 @@ export default {
           Remplissez votre
           <em>Formulaire individuel de recensement mortem</em> dès maintenant
         </p>
-        <BaseButton :class="$style.ctaButton" @click="$router.push('/login')">
+        <BaseButton
+          :class="$style.ctaButton"
+          @click="$router.push('demarches')"
+        >
           Remplir >
         </BaseButton>
       </div>
@@ -162,8 +167,7 @@ export default {
   }
 
   .ctaButton {
-    padding: ($size-grid-padding / 2) $size-grid-padding;
-    font-size: 1.2em;
+    @extend %cta-button;
   }
 }
 </style>

@@ -1,4 +1,5 @@
 {
+  // From the boilerplate
   "BaseButton": {
     "scope": "vue-html",
     "prefix": "BaseButton",
@@ -27,77 +28,17 @@
     ],
     "description": "<BaseLink>"
   },
-  "New vue component": {
-    "scope": "vue",
-    "prefix": "vue-component",
-    "body": [
-      "<script>",
-      "export default {",
-      "\t${1}",
-      "}",
-      "</script>",
-      "",
-      "<template>",
-      "\t<div :class=\"$$style.container\">",
-      "\t\t${2}",
-      "\t</div>",
-      "</template>",
-      "",
-      "<style lang=\"scss\" module>",
-      "@import '@design';",
-      "",
-      ".container {",
-      "",
-      "}",
-      "</style>"
-    ],
-    "description": "New Vue component"
+  // Custom
+  ":class=\"$style.\"": {
+    "scope": "vue-html",
+    "prefix": ":class",
+    "body": [":class=\"$$style.${1}\""],
+    "description": ":class=\"$style.\""
   },
-  "New vue view": {
-    "scope": "vue",
-    "prefix": "vue-view",
-    "body": [
-      "<script>",
-      "import Layout from '@layouts/main.vue'",
-      "",
-      "export default {",
-      "\tpage: {",
-      "\t\ttitle: '${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}',",
-      "\t\tmeta: [{ name: '${TM_FILENAME_BASE}', content: '$1' }],",
-      "\t},",
-      "\tcomponents: { Layout }",
-      "}",
-      "</script>",
-      "",
-      "<template>",
-      "\t<Layout>",
-      "\t\t<div :class=\"$$style.container\">",
-      "\t\t\t${2}",
-      "\t\t</div>",
-      "\t</Layout>",
-      "</template>",
-      "",
-      "<style lang=\"scss\" module>",
-      "@import '@design';",
-      "",
-      ".container {",
-      "",
-      "}",
-      "</style>"
-    ],
-    "description": "New Vue component"
-  },
-  "New view unit test": {
-    "scope": "javascript",
-    "prefix": "unit-view",
-    "body": [
-      "import View${TM_FILENAME_BASE/(.*)\\..+$/${1:/capitalize}/} from './${TM_FILENAME_BASE/(.*)\\..+$/${1:/capitalize}/}.vue'",
-      "",
-      "describe('@views/${TM_FILENAME_BASE/(.*)\\..+$/${1:/capitalize}/}', () => {",
-      "\tit('is a valid view', () => {",
-      "\t\texpect(View${TM_FILENAME_BASE/(.*)\\..+$/${1:/capitalize}/}).toBeAViewComponent()",
-      "\t})",
-      "})"
-    ]
+  ":id=\"$style.\"": {
+    "scope": "vue-html",
+    "prefix": ":id",
+    "body": [":id=\"$$style.${1}\""],
+    "description": ":id=\"$style.\""
   }
 }

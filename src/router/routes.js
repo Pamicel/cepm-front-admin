@@ -12,6 +12,11 @@ export default [
     component: () => lazyLoadView(import('@views/demarches.vue')),
   },
   {
+    path: '/histoire',
+    name: 'histoire',
+    component: () => lazyLoadView(import('@views/histoire.vue')),
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => lazyLoadView(import('@views/login.vue')),
