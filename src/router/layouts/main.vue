@@ -9,6 +9,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    padded: {
+      type: Boolean,
+      default: false,
+    },
   },
 }
 </script>
@@ -16,7 +20,13 @@ export default {
 <template>
   <div :class="$style.container">
     <NavBar :id="$style.navBar" />
-    <div :class="[$style.content, narrow ? $style.narrow : '']">
+    <div
+      :class="[
+        $style.content,
+        narrow ? $style.narrow : '',
+        padded ? $style.padded : '',
+      ]"
+    >
       <slot />
     </div>
     <Footer :id="$style.footer" />
@@ -36,6 +46,9 @@ export default {
   background-color: $color-content-bg;
   .content {
     flex: 1 0 auto;
+    &.padded {
+      padding-bottom: $size-grid-padding;
+    }
     &.narrow {
       min-width: $size-content-width-min;
       max-width: $size-content-width-max;
