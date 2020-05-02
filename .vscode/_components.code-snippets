@@ -53,9 +53,9 @@
     ],
     "description": "New Vue component"
   },
-  "New unit test": {
+  "New view unit test": {
     "scope": "javascript",
-    "prefix": "unit-init",
+    "prefix": "unit-view",
     "body": [
       "import View${TM_FILENAME_BASE/(.*)\\..+$/${1:/capitalize}/} from './${TM_FILENAME_BASE/(.*)\\..+$/${1:/capitalize}/}.vue'",
       "",
