@@ -43,6 +43,12 @@ export default {
   box-sizing: border-box;
 }
 
+html,
+body,
+#app {
+  height: 100%;
+}
+
 body {
   background: $color-body-bg;
 }

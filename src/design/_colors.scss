@@ -1,16 +1,21 @@
+// GLOBAL COLORS
+$color-a: #abcbff;
+$color-b: #ec5e87;
+$color-c: #213e8c;
+
 // CONTENT
-$color-body-bg: #f9f7f5;
-$color-text: #444;
-$color-heading-text: #35495e;
+$color-body-bg: $color-b;
+$color-text: white;
+$color-heading-text: white;
 
 // LINKS
-$color-link-text: #39a275;
+$color-link-text: white;
 $color-link-text-active: $color-text;
 
 // INPUTS
 $color-input-border: lighten($color-heading-text, 50%);
 
 // BUTTONS
-$color-button-bg: $color-link-text;
+$color-button-bg: $color-b;
 $color-button-disabled-bg: darken(desaturate($color-button-bg, 20%), 10%);
-$color-button-text: white;
+$color-button-text: $color-link-text;
