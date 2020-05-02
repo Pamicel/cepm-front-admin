@@ -31,17 +31,17 @@
     "scope": "vue",
     "prefix": "vue-init",
     "body": [
-      "<template>",
-      "\t<div :class=\"$$style.container\">",
-      "\t\t${1}",
-      "\t</div>",
-      "</template>",
-      "",
       "<script>",
       "\texport default {",
       "",
       "\t}",
       "</script>",
+      "",
+      "<template>",
+      "\t<div :class=\"$$style.container\">",
+      "\t\t${1}",
+      "\t</div>",
+      "</template>",
       "",
       "<style lang=\"scss\" module>",
       "@import '@design';",
@@ -52,5 +52,18 @@
       "</style>"
     ],
     "description": "New Vue component"
+  },
+  "New unit test": {
+    "scope": "javascript",
+    "prefix": "unit-init",
+    "body": [
+      "import View${TM_FILENAME_BASE/(.*)\\..+$/${1:/capitalize}/} from './${TM_FILENAME_BASE/(.*)\\..+$/${1:/capitalize}/}.vue'",
+      "",
+      "describe('@views/${TM_FILENAME_BASE/(.*)\\..+$/${1:/capitalize}/}', () => {",
+      "\tit('is a valid view', () => {",
+      "\t\texpect(View${TM_FILENAME_BASE/(.*)\\..+$/${1:/capitalize}/}).toBeAViewComponent()",
+      "\t})",
+      "})"
+    ]
   }
 }
