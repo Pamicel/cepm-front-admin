@@ -22,14 +22,16 @@ export default {
     </div>
     <!-- section 2 -->
     <div :class="$style.links">
-      <div>
-        <h3 :class="$style.linksTitle">
-          Vos démarches
-        </h3>
-        <h4 :class="$style.linksSubtitle">
-          Mourir en toute sérénité
-        </h4>
-      </div>
+      <BaseLink name="demarches">
+        <div>
+          <h3 :class="$style.linksTitle">
+            Vos démarches
+          </h3>
+          <h4 :class="$style.linksSubtitle">
+            Mourir en toute sérénité
+          </h4>
+        </div>
+      </BaseLink>
       <div>
         <h3 :class="$style.linksTitle">
           Votre CEPM
