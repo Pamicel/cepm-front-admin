@@ -17,6 +17,11 @@ export default [
     component: () => lazyLoadView(import('@views/histoire.vue')),
   },
   {
+    path: '/votre-cepm',
+    name: 'votre-cepm',
+    component: () => lazyLoadView(import('@views/votre-cepm.vue')),
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => lazyLoadView(import('@views/login.vue')),

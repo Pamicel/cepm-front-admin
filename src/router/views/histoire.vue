@@ -1,5 +1,6 @@
 <script>
 import Layout from '@layouts/main.vue'
+import FooterFirmCta from '@components/footer-firm-cta.vue'
 
 export default {
   page: {
@@ -11,7 +12,7 @@ export default {
       },
     ],
   },
-  components: { Layout },
+  components: { Layout, FooterFirmCta },
 }
 </script>
 
@@ -22,6 +23,12 @@ export default {
         <h2>Le CEPM, une histoire sociale et humaine</h2>
       </div>
       <div :class="$style.content">
+        <video
+          controls
+          src="@assets/videos/histoire-cepm.mp4"
+          :class="$style.contentVideo"
+          type="video/mp4"
+        ></video>
         <p>
           Le premier <em>Centre Évaluatif Post-Mortem</em> voit le jour en 1914
           à la suite d’un décret officiel et confidentiel de Raymond Poincaré,
@@ -88,17 +95,7 @@ export default {
           alt="Graphe au sujet du taux de dépendance. Difficile à déchiffrer. (Source Eurostat 2011)"
         />
       </div>
-      <div :class="$style.footer">
-        <h3>
-          Remplissez votre FIRM dès maintenant
-        </h3>
-        <BaseButton
-          :class="$style.footerButton"
-          @click="$router.push('demarches')"
-        >
-          Remplir >
-        </BaseButton>
-      </div>
+      <FooterFirmCta slot="footer-extension" />
     </div>
   </Layout>
 </template>
@@ -123,20 +120,11 @@ export default {
       background-color: $color-b;
     }
 
-    .contentImg {
+    .contentImg,
+    .contentVideo {
       display: block;
       max-width: 80%;
       margin: 3rem auto;
-    }
-  }
-  .footer {
-    padding: $size-grid-padding;
-    padding-bottom: 3em;
-    text-align: center;
-    background-color: $color-c;
-
-    .footerButton {
-      @extend %cta-button;
     }
   }
 }

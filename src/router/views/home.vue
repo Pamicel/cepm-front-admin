@@ -32,14 +32,16 @@ export default {
           </h4>
         </div>
       </BaseLink>
-      <div>
-        <h3 :class="$style.linksTitle">
-          Votre CEPM
-        </h3>
-        <h4 :class="$style.linksSubtitle">
-          De quel CEPM dépendez-vous ?
-        </h4>
-      </div>
+      <BaseLink name="votre-cepm">
+        <div>
+          <h3 :class="$style.linksTitle">
+            Votre CEPM
+          </h3>
+          <h4 :class="$style.linksSubtitle">
+            De quel CEPM dépendez-vous ?
+          </h4>
+        </div>
+      </BaseLink>
       <BaseLink name="histoire">
         <div>
           <h3 :class="$style.linksTitle">
