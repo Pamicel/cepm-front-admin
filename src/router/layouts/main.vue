@@ -29,6 +29,7 @@ export default {
     >
       <slot />
     </div>
+    <slot name="footer-extension" />
     <Footer :id="$style.footer" />
   </div>
 </template>
