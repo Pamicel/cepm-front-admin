@@ -48,6 +48,15 @@ export default [
     props: (route) => ({ user: store.state.auth.currentUser || {} }),
   },
   {
+    path: '/traversees',
+    name: 'traversees',
+    component: () => lazyLoadView(import('@views/mes-traversees.vue')),
+    meta: {
+      authRequired: true,
+    },
+    props: (route) => ({ user: store.state.auth.currentUser || {} }),
+  },
+  {
     path: '/profile/:username',
     name: 'username-profile',
     component: () => lazyLoadView(import('@views/profile.vue')),

@@ -116,6 +116,6 @@ describe('@state/modules/auth', () => {
 const validUserExample = {
   id: 1,
   username: 'admin',
-  name: 'Vue Master',
+  name: 'Monsieur Untel',
   token: 'valid-token-for-admin',
 }

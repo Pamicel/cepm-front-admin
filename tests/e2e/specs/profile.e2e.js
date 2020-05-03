@@ -6,7 +6,7 @@ describe('Profile Page', () => {
 
   it('nav link exists when logged in', () => {
     cy.logIn()
-    cy.contains('a', 'Logged in as Vue Master').should(
+    cy.contains('a', 'Logged in as Monsieur Untel').should(
       'have.attr',
       'href',
       '/profile'
@@ -16,7 +16,7 @@ describe('Profile Page', () => {
   it('shows the current user profile when logged in', () => {
     cy.logIn()
     cy.visit('/profile')
-    cy.contains('h1', 'Vue Master')
+    cy.contains('h1', 'Monsieur Untel')
   })
 
   it('shows non-current users at username routes when logged in', () => {

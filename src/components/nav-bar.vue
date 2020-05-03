@@ -1,21 +1,37 @@
 <script>
 import { authComputed } from '@state/helpers'
-// import NavBarRoutes from './nav-bar-routes.vue'
+import NavBarRoutes from './nav-bar-routes.vue'
 
 export default {
-  // components: { NavBarRoutes },
+  components: { NavBarRoutes },
   data() {
     return {
       persistentNavRoutes: [
-        // {
-        //   name: 'home',
-        //   title: 'Accueil',
-        // },
+        {
+          name: 'home',
+          title: 'Accueil',
+        },
+        {
+          name: 'demarches',
+          title: 'Démarches',
+        },
+        {
+          name: 'votre-cepm',
+          title: 'Votre CEPM',
+        },
+        {
+          name: 'histoire',
+          title: 'À propos',
+        },
       ],
       loggedInNavRoutes: [
         {
+          name: 'traversees',
+          title: 'Réservations',
+        },
+        {
           name: 'profile',
-          title: () => 'Connecté en tant que ' + this.currentUser.name,
+          title: 'Mon compte',
         },
         {
           name: 'logout',
@@ -25,7 +41,7 @@ export default {
       loggedOutNavRoutes: [
         {
           name: 'login',
-          title: 'Mon compte',
+          title: 'Se connecter',
         },
       ],
     }
@@ -39,12 +55,12 @@ export default {
 <template>
   <ul :class="$style.container">
     <div :class="$style.logos">
-      <img
-        src="@assets/images/logo-republique-francaise.png"
-        :class="$style.logoRepublique"
-        aria-label="Publique-ré Çaise-fran"
-      />
       <BaseLink name="home">
+        <img
+          src="@assets/images/logo-republique-francaise.png"
+          :class="$style.logoRepublique"
+          aria-label="Publique-ré Çaise-fran"
+        />
         <img
           src="@assets/images/logo-cepm.png"
           :class="$style.logoCEPM"
@@ -52,9 +68,9 @@ export default {
         />
       </BaseLink>
     </div>
-    <!-- <NavBarRoutes :routes="persistentNavRoutes" /> -->
-    <!-- <NavBarRoutes v-if="loggedIn" :routes="loggedInNavRoutes" />
-    <NavBarRoutes v-else :routes="loggedOutNavRoutes" /> -->
+    <NavBarRoutes :routes="persistentNavRoutes" />
+    <NavBarRoutes v-if="loggedIn" :routes="loggedInNavRoutes" />
+    <NavBarRoutes v-else :routes="loggedOutNavRoutes" />
   </ul>
 </template>
 
