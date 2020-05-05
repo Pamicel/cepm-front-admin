@@ -12,6 +12,6 @@ describe('@views/profile', () => {
       },
     })
 
-    expect(element.textContent).toMatch(/My Name\s+Profile/)
+    expect(element.textContent).toMatch(/My Name\s+/)
   })
 })

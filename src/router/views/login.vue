@@ -55,15 +55,18 @@ export default {
 </script>
 
 <template>
-  <Layout>
+  <Layout narrow>
     <form :class="$style.form" @submit.prevent="tryToLogIn">
+      <h1>Se connecter</h1>
       <BaseInputText
         v-model="username"
+        :class="$style.input"
         name="username"
         :placeholder="placeholders.username"
       />
       <BaseInputText
         v-model="password"
+        :class="$style.input"
         name="password"
         type="password"
         :placeholder="placeholders.password"
@@ -86,5 +89,8 @@ export default {
 
 .form {
   text-align: center;
+  .input {
+    color: black;
+  }
 }
 </style>

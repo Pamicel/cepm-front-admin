@@ -24,11 +24,9 @@ export default {
 </script>
 
 <template>
-  <Layout>
+  <Layout narrow>
     <h1>
-      <BaseIcon name="user" />
       {{ user.name }}
-      Profile
     </h1>
     <pre>{{ user }}</pre>
   </Layout>

@@ -42,6 +42,7 @@
     "nprogress": "0.2.0",
     "vue": "2.6.11",
     "vue-meta": "2.3.3",
+    "vue-moment": "^4.1.0",
     "vue-router": "3.1.6",
     "vuex": "3.1.2"
   },
