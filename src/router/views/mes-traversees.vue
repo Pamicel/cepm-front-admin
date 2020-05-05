@@ -1,5 +1,6 @@
 <script>
 import Layout from '@layouts/main.vue'
+const NUMBER_OF_TRAVERSEES_PER_DAY = 33
 
 export default {
   page: {
@@ -10,7 +11,7 @@ export default {
   computed: {
     traversees() {
       const today = new Date()
-      const dates = []
+      const traversees = []
       const numberOfDates = 30
 
       const addDays = (date, days) => {
@@ -18,26 +19,40 @@ export default {
         result.setDate(result.getDate() + days)
         return result
       }
-      for (let i = 0; i < numberOfDates; i++) {
-        const date = addDays(today, i)
-        date.setMinutes(0)
-        date.setHours(19)
-        dates.push(new Date(date))
-        date.setHours(20)
-        dates.push(new Date(date))
+      const createTraversee = (numberThatDay, date) => {
+        return {
+          numberThatDay,
+          date,
+        }
       }
 
-      return dates
+      for (let i = 0; i < numberOfDates; i++) {
+        const date = addDays(today, i)
+        date.setHours(15)
+        date.setMinutes(0)
+        traversees.push(createTraversee(1, new Date(date)))
+        date.setHours(17)
+        date.setMinutes(30)
+        traversees.push(createTraversee(25, new Date(date)))
+        date.setHours(20)
+        date.setMinutes(0)
+        traversees.push(createTraversee(33, new Date(date)))
+      }
+
+      return traversees
     },
   },
   methods: {
-    getTraverseeNumber(date) {
-      const marne = new Date(1914, 8, 13)
-      const numberOfTraverseesSince = Math.round(
-        (date - marne) / (30 * 60 * 1000) // one every 30 minutes
+    getTraverseeNumber(traversee) {
+      const { date, numberThatDay } = traversee
+      const marne = new Date(1914, 8, 13, 12, 0)
+      const numberOfDaysSince = Math.round(
+        (date - marne) / (24 * 60 * 60 * 1000)
       )
+      const numberOfTraverseesSince =
+        numberOfDaysSince * NUMBER_OF_TRAVERSEES_PER_DAY
 
-      return numberOfTraverseesSince.toString(16).toUpperCase()
+      return numberOfTraverseesSince + numberThatDay
     },
   },
 }
@@ -49,31 +64,33 @@ export default {
       <h1>
         Mes Traversées
       </h1>
-      <h3>Vous n'avez reservé aucune traversée pour le moment</h3>
+      <h3>Vous n'avez réservé aucune traversée pour le moment</h3>
       <h1>
         Prochaines Traversées
       </h1>
       <div
-        v-for="date in traversees"
-        :key="date.getTime()"
+        v-for="traversee in traversees"
+        :key="traversee.date.getTime()"
         :class="$style.traversee"
       >
         <div :class="$style.traverseeInfos">
           <span :class="$style.traverseeInfosNum">{{
-            getTraverseeNumber(date)
+            getTraverseeNumber(traversee)
           }}</span>
           <br />
           <span :class="$style.traverseeInfosDate">
-            {{ date | moment('ddd Do MMM') }}
+            {{ traversee.date | moment('ddd Do MMM') }}
           </span>
           |
           <span :class="$style.traverseeInfosHour">
-            {{ date | moment('HH') }}h
+            {{ traversee.date | moment('HH') }}h{{
+              traversee.date | moment('mm')
+            }}
           </span>
         </div>
         <div :class="$style.traverseeButton">
           <BaseButton disabled>
-            Traversée pleine <BaseIcon name="ban" />
+            Traversée pleine
           </BaseButton>
         </div>
       </div>
