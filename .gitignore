@@ -16,6 +16,9 @@ jsconfig.json
 .env.local
 .env.*.local
 
+# WIP commit message
+.commit
+
 # Log Files
 *.log
 npm-debug.log*
@@ -29,3 +32,19 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+
+# tmp
+src/assets/images/backgrounds/20200124-183923-792745.png
+src/assets/images/backgrounds/20200124-183931-849641.png
+src/assets/images/backgrounds/20200124-183947-632571.png
+src/assets/images/backgrounds/20200124-184512-332114.png
+src/assets/images/backgrounds/20200124-184520-398948.png
+src/assets/images/backgrounds/20200124-184616-268560.png
+src/assets/images/backgrounds/20200124-184621-902370.png
+src/assets/images/backgrounds/20200124-184722-495878.png
+src/assets/images/backgrounds/20200124-184731-808392.png
+src/assets/images/backgrounds/20200124-184829-95222.png
+src/assets/images/backgrounds/20200124-184856-735871.png
+src/assets/images/backgrounds/20200124-184907-779715.png
+src/assets/images/backgrounds/20200125-021405-303350.png
+src/assets/images/backgrounds/20200125-022235-303520.png

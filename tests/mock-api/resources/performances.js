@@ -3,13 +3,13 @@ module.exports = {
     {
       id: 1,
       duration: 90,
-      date: new Date('2020-05-20T20:30Z'),
+      date: new Date('2020-05-20T20:30'),
       audience: 50,
     },
     {
       id: 2,
       duration: 90,
-      date: new Date('2020-05-20T18:00Z'),
+      date: new Date('2020-05-20T18:00'),
       audience: 50,
     },
   ],

@@ -2,6 +2,7 @@ import axios from 'axios'
 import Vue from 'vue'
 
 const initialState = {
+  loading: false,
   current: null,
   list: [],
 }
@@ -46,12 +47,14 @@ export const actions = {
       return Promise.resolve(matchedPerf)
     }
 
+    commit('SET_LOADING', true)
     // 3. Fetch the performance from the API and cache it in case
     //    we need it again in the future.
     return axios.get(`/api/performances/${perfId}`).then((response) => {
       const perf = response.data
       commit('SAVE_PERFORMANCE', perf)
       commit('SET_CURRENT', perf.id)
+      commit('SET_LOADING', false)
       return perf
     })
   },

@@ -1,6 +1,7 @@
 <script>
+import { mapActions } from 'vuex'
 import Layout from '@layouts/local.vue'
-const NUMBER_OF_TRAVERSEES_PER_DAY = 33
+const NUMBER_OF_PERFORMANCES_PER_DAY = 33
 
 export default {
   page: {
@@ -9,9 +10,9 @@ export default {
   },
   components: { Layout },
   computed: {
-    traversees() {
+    performances() {
       const today = new Date()
-      const traversees = []
+      const performances = []
       const numberOfDates = 30
 
       const addDays = (date, days) => {
@@ -30,29 +31,30 @@ export default {
         const date = addDays(today, i)
         date.setHours(15)
         date.setMinutes(0)
-        traversees.push(createTraversee(1, new Date(date)))
+        performances.push(createTraversee(1, new Date(date)))
         date.setHours(17)
         date.setMinutes(30)
-        traversees.push(createTraversee(25, new Date(date)))
+        performances.push(createTraversee(25, new Date(date)))
         date.setHours(20)
         date.setMinutes(0)
-        traversees.push(createTraversee(33, new Date(date)))
+        performances.push(createTraversee(33, new Date(date)))
       }
 
-      return traversees
+      return performances
     },
   },
   methods: {
+    ...mapActions({ getPerformances: 'performances/fetchPerformances' }),
     getTraverseeNumber(traversee) {
       const { date, numberThatDay } = traversee
       const marne = new Date(1914, 8, 13, 12, 0)
       const numberOfDaysSince = Math.round(
         (date - marne) / (24 * 60 * 60 * 1000)
       )
-      const numberOfTraverseesSince =
-        numberOfDaysSince * NUMBER_OF_TRAVERSEES_PER_DAY
+      const numberOfPerformancesSince =
+        numberOfDaysSince * NUMBER_OF_PERFORMANCES_PER_DAY
 
-      return numberOfTraverseesSince + numberThatDay
+      return numberOfPerformancesSince + numberThatDay
     },
   },
 }
@@ -69,7 +71,7 @@ export default {
         Prochaines Traversées
       </h1>
       <div
-        v-for="traversee in traversees"
+        v-for="traversee in performances"
         :key="traversee.date.getTime()"
         :class="$style.traversee"
       >

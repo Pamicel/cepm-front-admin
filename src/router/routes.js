@@ -40,7 +40,7 @@ export default [
   {
     path: '/traversees',
     name: 'traversees',
-    component: () => lazyLoadView(import('@views/mes-traversees.vue')),
+    component: () => lazyLoadView(import('@views/crossings.vue')),
     meta: {
       authRequired: true,
     },
