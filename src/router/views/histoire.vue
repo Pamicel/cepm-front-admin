@@ -1,5 +1,5 @@
 <script>
-import Layout from '@layouts/main.vue'
+import Layout from '@layouts/local.vue'
 import FooterFirmCta from '@components/footer-firm-cta.vue'
 
 export default {

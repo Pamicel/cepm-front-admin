@@ -1,5 +1,5 @@
 <script>
-import Layout from '@layouts/main.vue'
+import Layout from '@layouts/local.vue'
 const NUMBER_OF_TRAVERSEES_PER_DAY = 33
 
 export default {

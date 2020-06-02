@@ -1,6 +1,6 @@
 <script>
 import axios from 'axios'
-import Layout from '@layouts/main.vue'
+import Layout from '@layouts/local.vue'
 import LoadingView from './_loading.vue'
 
 export default {

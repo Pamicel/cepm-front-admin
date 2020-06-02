@@ -7,19 +7,9 @@ export default [
     component: () => lazyLoadView(import('@views/home.vue')),
   },
   {
-    path: '/demarches',
-    name: 'demarches',
-    component: () => lazyLoadView(import('@views/demarches.vue')),
-  },
-  {
     path: '/histoire',
     name: 'histoire',
     component: () => lazyLoadView(import('@views/histoire.vue')),
-  },
-  {
-    path: '/votre-cepm',
-    name: 'votre-cepm',
-    component: () => lazyLoadView(import('@views/votre-cepm.vue')),
   },
   {
     path: '/login',

@@ -1,6 +1,6 @@
 <script>
 import appConfig from '@src/app.config'
-import Layout from '@layouts/main.vue'
+import Layout from '@layouts/local.vue'
 
 export default {
   page: {
@@ -12,65 +12,28 @@ export default {
 </script>
 
 <template>
-  <Layout>
+  <Layout :class="$style.container">
     <!-- section 1 -->
-    <div :class="$style.cover">
-      <span :class="$style.coverText">
-        <h1>Bienvenue sur le site du CEPM</h1>
-        <h2>Le service public d’accompagnement post-mortem</h2>
-      </span>
-    </div>
-    <!-- section 2 -->
-    <div :class="$style.links">
-      <BaseLink name="demarches">
-        <div>
-          <h3 :class="$style.linksTitle">
-            Vos démarches
-          </h3>
-          <h4 :class="$style.linksSubtitle">
-            Mourir en toute sérénité
-          </h4>
-        </div>
-      </BaseLink>
-      <BaseLink name="votre-cepm">
-        <div>
-          <h3 :class="$style.linksTitle">
-            Votre CEPM
-          </h3>
-          <h4 :class="$style.linksSubtitle">
-            De quel CEPM dépendez-vous ?
-          </h4>
-        </div>
-      </BaseLink>
-      <BaseLink name="histoire">
-        <div>
-          <h3 :class="$style.linksTitle">
-            À propos
-          </h3>
-          <h4 :class="$style.linksSubtitle">
-            Découvrez l’histoire du CEPM
-          </h4>
-        </div>
-      </BaseLink>
-    </div>
-    <!-- section 3 -->
-    <div :class="$style.cta">
-      <div :class="$style.ctaText">
-        <h2>
-          N'attendez pas vos derniers instants
-        </h2>
-        <p>
-          Remplissez votre
-          <em>Formulaire individuel de recensement mortem</em> dès maintenant
-        </p>
-        <BaseButton
-          :class="$style.ctaButton"
-          @click="$router.push('demarches')"
+    <div :class="$style.hello">
+      <img
+        :class="$style.helloLogo"
+        src="@assets/images/logo-calmes.png"
+        alt="logo de l'application"
+      />
+      <span :class="$style.helloText">
+        <h3>Bienvenue sur</h3>
+        <h1>Calme</h1>
+        <h4
+          >La <span :class="$style.helloTextAccent">c</span>onsole de l'<span
+            :class="$style.helloTextAccent"
+            >al</span
+          >gorithme <span :class="$style.helloTextAccent">me</span>rveilleux</h4
         >
-          Remplir >
-        </BaseButton>
-      </div>
-      <div :class="$style.ctaImage"> </div>
+        <br />
+      </span>
+      <b-button rounded type="is-large" @click="$router.push('login')">
+        Entrer
+      </b-button>
     </div>
   </Layout>
 </template>
@@ -78,98 +41,43 @@ export default {
 <style lang="scss" module>
 @import '@design';
 
-.cover {
+.hello {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 50vh;
+  height: 100%;
+  min-height: 100%;
+  padding-top: 5rem;
+  margin: 4rem 0;
   text-align: center;
-  background-image: url('~@assets/images/beach.jpg');
-  background-position: center 20%;
-  background-size: cover;
-  .coverText {
-    text-shadow: rgba(0, 0, 0, 0.4) 0 4px 5px;
-    h1 {
-      margin-bottom: 0;
-      font-size: 4em;
-      line-height: 1.1em;
-    }
-    h2 {
-      margin-top: 1rem;
-    }
-  }
-}
 
-.links {
-  display: flex;
-  justify-content: space-evenly;
-  color: white;
-  > :nth-child(1) {
-    background-color: $color-b;
+  .helloLogo {
+    // position: absolute;
+    // bottom: 100%;
+    height: 10vh;
+    // transform: translateY(40%);
   }
-  > :nth-child(2) {
-    background-color: $color-a;
-  }
-  > :nth-child(3) {
-    background-color: $color-c;
-  }
-  .linksTitle {
-    margin: 0;
-  }
-  .linksSubtitle {
-    margin: 0;
-  }
-  > * {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 12rem;
-    padding: $size-grid-padding;
-    text-align: center;
-  }
-}
-
-.cta {
-  display: flex;
-  height: 40rem;
-  $text-width: 40%;
-  .ctaText {
+  .helloText {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: $text-width;
-    padding: $size-grid-padding;
-    text-align: center;
-    background-color: $color-c;
+    margin: 1rem 0;
+    // background-color: $color-c;
+    border-radius: 2rem;
 
+    $size: 25rem;
+    .helloTextAccent {
+      border-bottom: 1px solid black;
+    }
     > * {
-      max-width: 20rem;
-    }
-    h2 {
       margin: 0;
-      font-size: 2.5em;
-      line-height: 1.5em;
     }
-    p {
-      font-size: 1.5em;
-      line-height: 1.5em;
+    h1 {
+      // margin-bottom: 0.5rem;
     }
-  }
-  .ctaImage {
-    width: 100% - $text-width;
-    overflow: hidden;
-    background-image: url('~@assets/images/hands.jpg');
-    background-position: center;
-    background-size: cover;
-  }
-
-  .ctaButton {
-    @extend %cta-button;
   }
 }
 </style>

@@ -1,5 +1,6 @@
 <script>
 import appConfig from '@src/app.config'
+import Layout from '@layouts/main.vue'
 
 export default {
   page: {
@@ -9,21 +10,32 @@ export default {
       return title ? `${title} | ${appConfig.title}` : appConfig.title
     },
   },
+  components: { Layout },
 }
 </script>
 
 <template>
-  <div id="app">
+  <Layout id="app">
     <!--
     Even when routes use the same component, treat them
     as distinct and create the component again.
     -->
     <RouterView :key="$route.fullPath" />
-  </div>
+  </Layout>
 </template>
 
 <!-- This should generally be the only global CSS in the app. -->
 <style lang="scss">
+// Overwrite Buefy style
+// 1. Import Bulma's core
+@import '~bulma/sass/utilities/_all';
+// 2. Set colors
+@import 'design/_colors';
+$primary: $color-c;
+// 3. Import Bulma and Buefy styles
+@import '~bulma';
+@import '~buefy/src/scss/buefy';
+
 // Allow element/type selectors, because this is global CSS.
 // stylelint-disable selector-max-type, selector-class-pattern
 
@@ -49,11 +61,13 @@ body,
   height: 100%;
 }
 
-body {
-  background: $color-body-bg;
-}
 #app {
   @extend %typography-small;
+
+  overflow: hidden;
+  background-image: url('~@assets/images/background.png');
+  background-position: fixed;
+  background-size: cover;
 }
 
 // ===

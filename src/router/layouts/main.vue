@@ -20,17 +20,28 @@ export default {
 <template>
   <div :class="$style.container">
     <NavBar :id="$style.navBar" />
-    <div
-      :class="[
-        $style.content,
-        narrow ? $style.narrow : '',
-        padded ? $style.padded : '',
-      ]"
-    >
-      <slot />
+    <div :class="$style.logo">
+      <BaseLink name="home">
+        <img
+          src="@assets/images/logo-calmes.png"
+          :class="$style.logoCalmes"
+          aria-label="Accueil"
+        />
+      </BaseLink>
     </div>
-    <slot name="footer-extension" />
-    <Footer :id="$style.footer" />
+    <div :class="$style.contentAndFooter">
+      <div
+        :class="[
+          $style.content,
+          narrow ? $style.narrow : '',
+          padded ? $style.padded : '',
+        ]"
+      >
+        <slot />
+      </div>
+      <slot name="footer-extension" />
+      <Footer :id="$style.footer" />
+    </div>
   </div>
 </template>
 
@@ -38,30 +49,54 @@ export default {
 @import '@design';
 
 .container {
+  .logo {
+    position: absolute;
+    top: $size-grid-padding;
+    left: $size-grid-padding;
+    .logoCalmes {
+      height: 3rem;
+    }
+    .logoRepublique {
+      margin-right: $size-grid-padding;
+    }
+  }
+
   display: flex;
   flex-direction: column;
   min-width: $size-content-width-min;
   max-width: 100%;
-  min-height: 100%;
+  max-height: 100%;
   margin: 0 auto;
-  background-color: $color-content-bg;
-  .content {
+
+  #navBar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+  }
+
+  .contentAndFooter {
+    display: flex;
     flex: 1 0 auto;
-    &.padded {
-      padding-bottom: $size-grid-padding;
+    flex-direction: column;
+    max-height: 100%;
+    padding-top: $size-header-height * 2;
+    overflow: auto;
+    .content {
+      flex: 1 0 auto;
+      &.padded {
+        padding-bottom: $size-grid-padding;
+      }
+      &.narrow {
+        min-width: $size-content-width-min;
+        max-width: $size-content-width-max;
+        margin: auto;
+      }
     }
-    &.narrow {
-      min-width: $size-content-width-min;
-      max-width: $size-content-width-max;
-      margin: auto;
+    #footer {
+      flex-shrink: 0;
+      background-color: $color-body-bg;
     }
-  }
-  #footer {
-    flex-shrink: 0;
-  }
-  #navBar,
-  #footer {
-    background-color: $color-body-bg;
   }
 }
 </style>

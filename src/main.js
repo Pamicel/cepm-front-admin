@@ -3,6 +3,9 @@ import VueMoment from 'vue-moment'
 import moment from 'moment/moment'
 import router from '@router'
 import store from '@state/store'
+import Buefy from 'buefy'
+// import 'buefy/dist/buefy.css'
+
 import App from './app.vue'
 // Globally register all `_base`-prefixed components
 import '@components/_globals'
@@ -70,7 +73,9 @@ moment.locale('fr', {
     dow: 1, // Monday is the first day of the week.
   },
 })
+
 Vue.use(VueMoment, { moment })
+Vue.use(Buefy)
 
 // Don't warn about using the dev version of Vue in development.
 Vue.config.productionTip = process.env.NODE_ENV === 'production'

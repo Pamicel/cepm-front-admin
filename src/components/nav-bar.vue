@@ -12,14 +12,6 @@ export default {
           title: 'Accueil',
         },
         {
-          name: 'demarches',
-          title: 'Démarches',
-        },
-        {
-          name: 'votre-cepm',
-          title: 'Votre CEPM',
-        },
-        {
           name: 'histoire',
           title: 'À propos',
         },
@@ -54,20 +46,6 @@ export default {
 
 <template>
   <ul :class="$style.container">
-    <div :class="$style.logos">
-      <BaseLink name="home">
-        <img
-          src="@assets/images/logo-republique-francaise.png"
-          :class="$style.logoRepublique"
-          aria-label="Publique-ré Çaise-fran"
-        />
-        <img
-          src="@assets/images/logo-cepm.png"
-          :class="$style.logoCEPM"
-          aria-label="Accueil"
-        />
-      </BaseLink>
-    </div>
     <NavBarRoutes :routes="persistentNavRoutes" />
     <NavBarRoutes v-if="loggedIn" :routes="loggedInNavRoutes" />
     <NavBarRoutes v-else :routes="loggedOutNavRoutes" />
@@ -89,19 +67,6 @@ export default {
   > li {
     display: inline-block;
     margin-right: $size-grid-padding;
-  }
-
-  .logos {
-    position: absolute;
-    top: $size-grid-padding;
-    left: $size-grid-padding;
-    .logoRepublique,
-    .logoCEPM {
-      height: 3rem;
-    }
-    .logoRepublique {
-      margin-right: $size-grid-padding;
-    }
   }
 }
 </style>

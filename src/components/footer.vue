@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.container">
-    <img src="@assets/images/logo-cepm.png" alt="logo du cepm" />
+    <img src="@assets/images/logo-359-degres.jpg" alt="logo de l'application" />
   </div>
 </template>
 
