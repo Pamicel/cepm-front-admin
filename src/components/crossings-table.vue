@@ -17,7 +17,12 @@ export default {
       return this.performances.length === 0
     },
   },
-  methods: { formatHour },
+  methods: {
+    formatHour,
+    clickRow(row) {
+      this.$router.push({ name: 'traversee', params: { id: row.id } })
+    },
+  },
 }
 </script>
 
@@ -28,6 +33,7 @@ export default {
     striped
     hoverable
     mobile-cards
+    @click="clickRow"
   >
     <template slot-scope="props">
       <b-table-column field="id" label="ID" width="40" numeric>

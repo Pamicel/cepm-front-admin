@@ -12,11 +12,12 @@ module.exports = (app) => {
       })
     }
 
-    const matchedPerformance = Performances.findBy('id', request.params.id)
+    const id = parseInt(request.params.id)
+    const matchedPerformance = Performances.findBy('id', id)
 
     if (!matchedPerformance) {
       return response.status(400).json({
-        message: 'No user with this name was found.',
+        message: 'No performance with this id was found.',
       })
     }
 
