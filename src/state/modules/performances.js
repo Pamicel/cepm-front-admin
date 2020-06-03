@@ -22,6 +22,9 @@ export const mutations = {
   SET_CURRENT(state, perfId) {
     Vue.set(state, 'current', perfId)
   },
+  UNSET_CURRENT(state) {
+    Vue.set(state, 'current', initialState.current)
+  },
   SAVE_LIST(state, list) {
     Vue.set(state, 'list', list)
   },
@@ -42,7 +45,10 @@ export const mutations = {
 }
 
 export const actions = {
-  fetchPerf({ commit }, { perfId }) {
+  fetchPerf({ commit, state }, { perfId }) {
+    if (state.current !== perfId) {
+      commit('UNSET_CURRENT')
+    }
     commit('START_LOADING')
     return axios
       .get(`/api/performances/${perfId}`)

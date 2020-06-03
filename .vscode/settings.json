@@ -8,7 +8,7 @@
   "editor.trimAutoWhitespace": true,
   "files.trimTrailingWhitespace": true,
   "files.eol": "\n",
-  "files.insertFinalNewline": true,
+  "files.insertFinalNewline": false,
   "files.trimFinalNewlines": true,
 
   // ===
