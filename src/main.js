@@ -4,7 +4,26 @@ import moment from 'moment/moment'
 import router from '@router'
 import store from '@state/store'
 import Buefy from 'buefy'
-// import 'buefy/dist/buefy.css'
+import { library } from '@fortawesome/fontawesome-svg-core'
+// internal icons
+import {
+  faCheck,
+  faCheckCircle,
+  faInfoCircle,
+  faExclamationTriangle,
+  faExclamationCircle,
+  faArrowUp,
+  faAngleRight,
+  faAngleLeft,
+  faAngleDown,
+  faEye,
+  faEyeSlash,
+  faCaretDown,
+  faCaretUp,
+  faUpload,
+  faFrown,
+} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import App from './app.vue'
 // Globally register all `_base`-prefixed components
@@ -75,7 +94,29 @@ moment.locale('fr', {
 })
 
 Vue.use(VueMoment, { moment })
-Vue.use(Buefy)
+
+library.add(
+  faCheck,
+  faCheckCircle,
+  faInfoCircle,
+  faExclamationTriangle,
+  faExclamationCircle,
+  faArrowUp,
+  faAngleRight,
+  faAngleLeft,
+  faAngleDown,
+  faEye,
+  faEyeSlash,
+  faCaretDown,
+  faCaretUp,
+  faUpload,
+  faFrown
+)
+Vue.component('vue-fontawesome', FontAwesomeIcon)
+Vue.use(Buefy, {
+  defaultIconComponent: 'vue-fontawesome',
+  defaultIconPack: 'fas',
+})
 
 // Don't warn about using the dev version of Vue in development.
 Vue.config.productionTip = process.env.NODE_ENV === 'production'

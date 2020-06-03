@@ -13,14 +13,17 @@ export const getters = {
   getCurrent(state) {
     const { current, list } = state
     if (current != null) {
-      return list.find((perf) => perf.id === current)
+      return list.find((spectator) => spectator.id === current)
     }
+  },
+  getSpectators(state) {
+    return state
   },
 }
 
 export const mutations = {
-  SET_CURRENT(state, perfId) {
-    Vue.set(state, 'current', perfId)
+  SET_CURRENT(state, spectatorId) {
+    Vue.set(state, 'current', spectatorId)
   },
   UNSET_CURRENT(state) {
     Vue.set(state, 'current', initialState.current)
@@ -28,11 +31,11 @@ export const mutations = {
   SAVE_LIST(state, list) {
     Vue.set(state, 'list', list)
   },
-  SAVE_PERFORMANCE(state, performance) {
-    // Remove the performance from the list if it is already there
-    const filteredList = state.list.filter(({ id }) => performance.id === id)
+  SAVE_SPECTATOR(state, spectator) {
+    // Remove the spectator from the list if it is already there
+    const filteredList = state.list.filter(({ id }) => spectator.id === id)
 
-    const newList = [...filteredList, performance]
+    const newList = [...filteredList, spectator]
 
     Vue.set(state, 'list', newList)
   },
@@ -45,19 +48,19 @@ export const mutations = {
 }
 
 export const actions = {
-  fetchOne({ commit, state }, { perfId }) {
-    if (state.current !== perfId) {
+  fetchOne({ commit, state }, { spectatorId }) {
+    if (state.current !== spectatorId) {
       commit('UNSET_CURRENT')
     }
     commit('START_LOADING')
     return axios
-      .get(`/api/performances/${perfId}`)
+      .get(`/api/spectators/${spectatorId}`)
       .then((response) => {
-        const perf = response.data
-        commit('SAVE_PERFORMANCE', perf)
-        commit('SET_CURRENT', perf.id)
+        const spectator = response.data
+        commit('SAVE_SPECTATOR', spectator)
+        commit('SET_CURRENT', spectator.id)
         commit('END_LOADING')
-        return perf
+        return spectator
       })
       .catch((err) => {
         const { message } = err.response ? err.response.data : {}
@@ -65,10 +68,11 @@ export const actions = {
         commit('END_LOADING')
       })
   },
-  fetchList({ commit }) {
+  fetchList({ commit }, { perfId }) {
     commit('START_LOADING')
+    const query = perfId ? `?crossing=${perfId}` : ''
     return axios
-      .get(`/api/performances`)
+      .get(`/api/spectators${query}`)
       .then((response) => {
         const list = response.data
         commit('SAVE_LIST', list)

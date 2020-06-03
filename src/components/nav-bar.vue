@@ -19,7 +19,7 @@ export default {
       loggedInNavRoutes: [
         {
           name: 'traversees',
-          title: 'Réservations',
+          title: 'Traversées',
         },
         {
           name: 'profile',

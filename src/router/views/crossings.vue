@@ -13,7 +13,7 @@ export default {
     ...mapState(['performances']),
   },
   mounted() {
-    this.$store.dispatch('performances/fetchPerfList')
+    this.$store.dispatch('performances/fetchList')
   },
 }
 </script>

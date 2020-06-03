@@ -1,20 +1,25 @@
 <script>
 import Layout from '@layouts/local.vue'
-import { mapGetters } from 'vuex'
+import SpectatorsTable from '@components/spectators-table.vue'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   page: {
     title: 'Panneau de traversée',
     meta: [{ name: 'description', content: 'The Crossing Details page.' }],
   },
-  components: { Layout },
+  components: { Layout, SpectatorsTable },
   computed: {
+    ...mapState(['spectators']),
     ...mapGetters({
       crossing: 'performances/getCurrent',
     }),
   },
   mounted() {
-    this.$store.dispatch('performances/fetchPerf', {
+    this.$store.dispatch('performances/fetchOne', {
+      perfId: this.$route.params.id,
+    })
+    this.$store.dispatch('spectators/fetchList', {
       perfId: this.$route.params.id,
     })
   },
@@ -27,6 +32,10 @@ export default {
       <pre>
         {{ crossing }}
       </pre>
+      <SpectatorsTable
+        :spectators="spectators.list"
+        :is-loading="spectators.loading"
+      />
     </div>
   </Layout>
 </template>
