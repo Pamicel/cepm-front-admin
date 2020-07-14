@@ -1,4 +1,5 @@
 import axios from 'axios'
+const apiUrl = process.env.API_BASE_URL
 
 export const state = {
   currentUser: getSavedState('auth.currentUser'),
@@ -24,17 +25,16 @@ export const actions = {
   // starts, along with any other actions named `init` in other modules.
   init({ state, dispatch }) {
     setDefaultAuthHeaders(state)
-    dispatch('validate')
+    dispatch('verify')
   },
 
   // Logs in the current user.
-  logIn({ commit, dispatch, getters }, { username, password } = {}) {
-    if (getters.loggedIn) return dispatch('validate')
-
+  logIn({ commit, dispatch, getters }, { email, password } = {}) {
     return axios
-      .post('/api/session', { username, password })
+      .post(`${apiUrl}/login`, { email, password })
       .then((response) => {
-        const user = response.data
+        const token = response.headers['x-renewed-jwt-token']
+        const user = { ...response.data, token }
         commit('SET_CURRENT_USER', user)
         return user
       })
@@ -47,24 +47,33 @@ export const actions = {
 
   // Validates the current user's token and refreshes it
   // with new data from the API.
-  validate({ commit, state }) {
-    if (!state.currentUser) return Promise.resolve(null)
+  async verify({ commit, state, dispatch }) {
+    if (!state.currentUser || !state.currentUser.token) {
+      await dispatch('logOut')
+      return null
+    }
 
-    return axios
-      .get('/api/session')
-      .then((response) => {
-        const user = response.data
-        commit('SET_CURRENT_USER', user)
-        return user
+    try {
+      const response = await axios.get(`${apiUrl}/verify`, {
+        headers: {
+          Bearer: state.currentUser.token,
+        },
       })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          commit('SET_CURRENT_USER', null)
-        } else {
-          console.warn(error)
-        }
+
+      const newToken = response.headers['x-renewed-jwt-token']
+      const token = newToken || state.currentUser.token
+      const user = { ...response.data, token }
+      commit('SET_CURRENT_USER', user)
+      return user
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        await dispatch('logOut')
         return null
-      })
+      } else {
+        console.warn(error)
+      }
+      return null
+    }
   },
 }
 
