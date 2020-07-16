@@ -1,33 +1,10 @@
-const bodyParser = require('body-parser')
-const { createProxyMiddleware } = require('http-proxy-middleware')
 const axios = require('axios')
-const app = require('express')()
-
-app.use((request, response, next) => {
-  response.header('Access-Control-Allow-Origin', '*')
-  next()
-})
-
-app.use(bodyParser.json())
-
-if (!process.env.API_BASE_URL) {
-  console.error('variable API_BASE_URL not set')
-  process.exit(1)
-}
-
-app.use('/', createProxyMiddleware({ target: process.env.API_BASE_URL }))
-
-const createServer = async () => {
-  return new Promise((resolve) => {
-    const server = app.listen(process.env.MOCK_API_PORT, () => resolve(server))
-  })
-}
 
 module.exports = () => {
   return (async () => {
-    const pingUrl = `${process.env.API_BASE_URL}/ping`
-    const devPingUrl = `${process.env.API_BASE_URL}/dev`
-    const resetUrl = `${process.env.API_BASE_URL}/reset`
+    const pingUrl = `${process.env.API_BASE_URL}/api/ping`
+    const devPingUrl = `${process.env.API_BASE_URL}/api/dev`
+    const resetUrl = `${process.env.API_BASE_URL}/api/reset`
 
     try {
       await axios.get(devPingUrl)
@@ -44,7 +21,6 @@ module.exports = () => {
     try {
       const response = await axios.get(pingUrl)
       if (response.data.mode === 'testing') {
-        global.mockApiServer = await createServer()
         await axios.get(resetUrl)
       } else {
         throw new Error(

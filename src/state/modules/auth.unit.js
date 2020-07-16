@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as authModule from './auth'
 
-const apiUrl = process.env.API_BASE_URL
+const apiUrl = `${process.env.API_BASE_URL}/api`
 
 describe('@state/modules/auth', () => {
   it('exports a valid Vuex module', () => {

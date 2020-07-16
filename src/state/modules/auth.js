@@ -1,5 +1,7 @@
 import axios from 'axios'
 const apiUrl = process.env.API_BASE_URL
+  ? `${process.env.API_BASE_URL}/api`
+  : '/api'
 
 export const state = {
   currentUser: getSavedState('auth.currentUser'),

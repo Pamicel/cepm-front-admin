@@ -11,7 +11,7 @@ export default {
   components: { Layout },
   data() {
     return {
-      username: '',
+      email: '',
       password: '',
       authError: null,
       tryingToLogIn: false,
@@ -22,21 +22,21 @@ export default {
       return process.env.NODE_ENV === 'production'
         ? {}
         : {
-            username: 'Use "admin" to log in with the mock API',
-            password: 'Use "password" to log in with the mock API',
+            email: 'Email',
+            password: 'Password',
           }
     },
   },
   methods: {
     ...authMethods,
-    // Try to log the user in with the username
+    // Try to log the user in with the email
     // and password they provided.
     tryToLogIn() {
       this.tryingToLogIn = true
       // Reset the authError if it existed.
       this.authError = null
       return this.logIn({
-        username: this.username,
+        email: this.email,
         password: this.password,
       })
         .then((token) => {
@@ -59,10 +59,10 @@ export default {
     <form :class="$style.form" @submit.prevent="tryToLogIn">
       <h1>Se connecter</h1>
       <BaseInputText
-        v-model="username"
+        v-model="email"
         :class="$style.input"
-        name="username"
-        :placeholder="placeholders.username"
+        name="email"
+        :placeholder="placeholders.email"
       />
       <BaseInputText
         v-model="password"
