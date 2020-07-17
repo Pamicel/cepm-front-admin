@@ -8,7 +8,7 @@ describe('@views/login', () => {
   it('redirects to home after successful login', () => {
     const { vm } = mountLogin()
 
-    vm.username = 'correctUsername'
+    vm.email = 'correctEmail'
     vm.password = 'correctPassword'
 
     const routerPush = jest.fn()
@@ -25,7 +25,7 @@ describe('@views/login', () => {
   it('redirects to redirectFrom query, if it exists, after successful login', () => {
     const { vm } = mountLogin()
 
-    vm.username = 'correctUsername'
+    vm.email = 'correctEmail'
     vm.password = 'correctPassword'
 
     const routerPush = jest.fn()
@@ -61,11 +61,8 @@ function mountLogin() {
       store: {
         auth: {
           actions: {
-            logIn(_, { username, password }) {
-              if (
-                username === 'correctUsername' &&
-                password === 'correctPassword'
-              ) {
+            logIn(_, { email, password }) {
+              if (email === 'correctEmail' && password === 'correctPassword') {
                 return Promise.resolve('testToken')
               } else {
                 return Promise.reject(new Error('testError'))

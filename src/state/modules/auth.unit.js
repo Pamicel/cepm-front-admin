@@ -1,6 +1,8 @@
 import axios from 'axios'
 import * as authModule from './auth'
 
+const apiUrl = `${process.env.API_BASE_URL}/api`
+
 describe('@state/modules/auth', () => {
   it('exports a valid Vuex module', () => {
     expect(authModule).toBeAVuexModule()
@@ -8,7 +10,7 @@ describe('@state/modules/auth', () => {
 
   describe('in a store', () => {
     let store
-    beforeEach(() => {
+    beforeEach(async () => {
       store = createModuleStore(authModule)
       window.localStorage.clear()
     })
@@ -16,7 +18,9 @@ describe('@state/modules/auth', () => {
     it('mutations.SET_CURRENT_USER correctly sets axios default authorization header', () => {
       axios.defaults.headers.common.Authorization = ''
 
-      store.commit('SET_CURRENT_USER', { token: 'some-token' })
+      store.commit('SET_CURRENT_USER', {
+        token: 'some-token',
+      })
       expect(axios.defaults.headers.common.Authorization).toEqual('some-token')
 
       store.commit('SET_CURRENT_USER', null)
@@ -29,7 +33,9 @@ describe('@state/modules/auth', () => {
       )
       expect(savedCurrentUser).toEqual(null)
 
-      const expectedCurrentUser = { token: 'some-token' }
+      const expectedCurrentUser = {
+        token: 'some-token',
+      }
       store.commit('SET_CURRENT_USER', expectedCurrentUser)
 
       savedCurrentUser = JSON.parse(
@@ -48,33 +54,153 @@ describe('@state/modules/auth', () => {
       expect(store.getters.loggedIn).toEqual(false)
     })
 
-    it('actions.logIn resolves to a refreshed currentUser when already logged in', () => {
-      expect.assertions(2)
+    it('action.logIn resolves to a user', async () => {
+      const { email, password } = validUserExample
 
-      store.commit('SET_CURRENT_USER', { token: validUserExample.token })
-      return store.dispatch('logIn').then((user) => {
-        expect(user).toEqual(validUserExample)
-        expect(store.state.currentUser).toEqual(validUserExample)
+      const user = await store.dispatch('logIn', { email, password })
+
+      expect(user).toHaveProperty('id')
+      expect(user).toHaveProperty('email')
+      expect(user).toHaveProperty('dateCreated')
+
+      expect(typeof user.id).toBe('number')
+      expect(user.email).toEqual(validUserExample.email)
+
+      expect(store.state.currentUser.id).toEqual(user.id)
+      expect(store.state.currentUser.email).toEqual(user.email)
+      expect(store.state.currentUser.dateCreated).toEqual(user.dateCreated)
+      expect(store.state.currentUser.token).toBeDefined()
+    })
+
+    it('action.verify resolves to null when not logged in', async () => {
+      const user = await store.dispatch('verify')
+      expect(user).toEqual(null)
+    })
+
+    it('action.verify resolves to null when user has no token', async () => {
+      store.commit('SET_CURRENT_USER', {
+        email: validUserExample.email,
       })
+      const user = await store.dispatch('verify')
+      expect(user).toEqual(null)
     })
 
-    it('actions.logIn commits the currentUser and resolves to the user when NOT already logged in and provided a correct username and password', () => {
-      expect.assertions(2)
-
-      return store
-        .dispatch('logIn', { username: 'admin', password: 'password' })
-        .then((user) => {
-          expect(user).toEqual(validUserExample)
-          expect(store.state.currentUser).toEqual(validUserExample)
-        })
+    it('action.verify resolves to null when user has a bad token', async () => {
+      store.commit('SET_CURRENT_USER', {
+        email: validUserExample.email,
+        token: 'bla-bla-bla',
+      })
+      const user = await store.dispatch('verify')
+      expect(user).toEqual(null)
     })
 
-    it('actions.logIn rejects with 401 when NOT already logged in and provided an incorrect username and password', () => {
+    it('action.verify removes the current user when the user has no token', async () => {
+      store.commit('SET_CURRENT_USER', {
+        email: validUserExample.email,
+      })
+      await store.dispatch('verify')
+      expect(store.state.currentUser).toEqual(null)
+    })
+
+    it('action.verify removes the current user when the user has a bad token', async () => {
+      store.commit('SET_CURRENT_USER', {
+        email: validUserExample.email,
+        token: 'bla-bla-bla',
+      })
+      await store.dispatch('verify')
+      expect(store.state.currentUser).toEqual(null)
+    })
+
+    it('action.verify resolves to null when token is expired', async () => {
+      const { email } = validUserExample
+
+      const response = await axios.get(
+        `${apiUrl}/dev/create-expired-token?email=${email}`
+      )
+
+      store.commit('SET_CURRENT_USER', {
+        email: validUserExample.email,
+        token: response.data.token,
+      })
+
+      const user = await store.dispatch('verify')
+      expect(user).toEqual(null)
+    })
+
+    it('action.verify removes the currentUser when token is expired', async () => {
+      const { email } = validUserExample
+
+      const response = await axios.get(
+        `${apiUrl}/dev/create-expired-token?email=${email}`
+      )
+
+      store.commit('SET_CURRENT_USER', {
+        email: validUserExample.email,
+        token: response.data.token,
+      })
+
+      await store.dispatch('verify')
+      expect(store.state.currentUser).toEqual(null)
+    })
+
+    it('action.verify resolves to the user when freshly logged in', async () => {
+      const { email, password } = validUserExample
+
+      const loggedInUser = await store.dispatch('logIn', { email, password })
+      const { token } = store.state.currentUser
+      const user = await store.dispatch('verify')
+      expect(user).toEqual(loggedInUser)
+      expect(store.state.currentUser.token).toEqual(token)
+    })
+
+    it('action.verify renews the token when token is in grace period', async () => {
+      const { email } = validUserExample
+
+      const response = await axios.get(
+        `${apiUrl}/dev/create-grace-token?email=${email}`
+      )
+
+      const { token } = response.data
+
+      store.commit('SET_CURRENT_USER', {
+        email: validUserExample.email,
+        token,
+      })
+
+      await store.dispatch('verify')
+      expect(store.state.currentUser.token).not.toEqual(token)
+    })
+
+    it('actions.logIn rejects with 400 when provided only an email', () => {
       expect.assertions(1)
 
       return store
         .dispatch('logIn', {
-          username: 'bad username',
+          email: 'email',
+        })
+        .catch((error) => {
+          expect(error.message).toEqual('Request failed with status code 400')
+        })
+    })
+
+    it('actions.logIn rejects with 400 when provided only a password', () => {
+      expect.assertions(1)
+
+      return store
+        .dispatch('logIn', {
+          password: 'password',
+        })
+        .catch((error) => {
+          expect(error.message).toEqual('Request failed with status code 400')
+        })
+    })
+
+    it('actions.logIn rejects with 401 when provided an incorrect password', () => {
+      expect.assertions(1)
+
+      return store
+        .dispatch('logIn', {
+          email: validUserExample.email,
           password: 'bad password',
         })
         .catch((error) => {
@@ -82,40 +208,26 @@ describe('@state/modules/auth', () => {
         })
     })
 
-    it('actions.validate resolves to null when currentUser is null', () => {
+    it('actions.logIn rejects with 401 when provided an incorrect email and password', () => {
       expect.assertions(1)
 
-      store.commit('SET_CURRENT_USER', null)
-      return store.dispatch('validate').then((user) => {
-        expect(user).toEqual(null)
-      })
-    })
-
-    it('actions.validate resolves to null when currentUser contains an invalid token', () => {
-      expect.assertions(2)
-
-      store.commit('SET_CURRENT_USER', { token: 'invalid-token' })
-      return store.dispatch('validate').then((user) => {
-        expect(user).toEqual(null)
-        expect(store.state.currentUser).toEqual(null)
-      })
-    })
-
-    it('actions.validate resolves to a user when currentUser contains a valid token', () => {
-      expect.assertions(2)
-
-      store.commit('SET_CURRENT_USER', { token: validUserExample.token })
-      return store.dispatch('validate').then((user) => {
-        expect(user).toEqual(validUserExample)
-        expect(store.state.currentUser).toEqual(validUserExample)
-      })
+      return store
+        .dispatch('logIn', {
+          email: 'bad email',
+          password: 'bad password',
+        })
+        .catch((error) => {
+          expect(error.message).toEqual('Request failed with status code 401')
+        })
     })
   })
 })
 
 const validUserExample = {
-  id: 1,
-  username: 'admin',
-  name: 'Monsieur Untel',
+  email: 'director@te.st',
+  password: '000000000',
   token: 'valid-token-for-admin',
 }
+
+// const expiredToken =
+//   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOjY2LCJkYXRlQ3JlYXRlZCI6IjIwMjAtMDctMTRUMTA6NDY6MDUuMTkzWiIsImlzc3VlZCI6MTU5NDcyMzU2ODAwMywiZXhwaXJlcyI6MTU5NDcyNDQ2ODAwM30.lCa8JjIdVIkllCq96DB9yYB0hV2jpk6iXei7KCSItogZHdGj-j9gmIOdlx1Hn2P_lnUDP2jf5WMVn_Gc0xwRjw'
