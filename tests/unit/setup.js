@@ -1,8 +1,9 @@
 import fs from 'fs'
 import path from 'path'
+import * as authModule from '@state/modules/auth'
+import axios from 'axios'
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
 
 // ===
 // Utility functions
@@ -183,16 +184,22 @@ global.createComponentMocks = ({ store, router, style, mocks, stubs }) => {
 
 global.createModuleStore = (vuexModule, options = {}) => {
   vueTestUtils.createLocalVue().use(Vuex)
-  const store = new Vuex.Store({
-    ..._.cloneDeep(vuexModule),
-    modules: {
-      auth: {
+
+  const auth = options.injectAuth
+    ? {
+        namespaced: true,
+        ..._.cloneDeep(authModule),
+      }
+    : {
         namespaced: true,
         state: {
           currentUser: options.currentUser,
         },
-      },
-    },
+      }
+
+  const store = new Vuex.Store({
+    ..._.cloneDeep(vuexModule),
+    modules: { auth },
     // Enable strict mode when testing Vuex modules so that
     // mutating state outside of a mutation results in a
     // failing test.

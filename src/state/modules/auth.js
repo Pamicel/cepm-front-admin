@@ -31,12 +31,18 @@ export const actions = {
   },
 
   // Logs in the current user.
-  logIn({ commit, dispatch, getters }, { email, password } = {}) {
+  logIn({ commit }, { email, password } = {}) {
     return axios
-      .post(`${apiUrl}/login`, { email, password })
+      .post(`${apiUrl}/login`, {
+        email,
+        password,
+      })
       .then((response) => {
         const token = response.headers['x-renewed-jwt-token']
-        const user = { ...response.data, token }
+        const user = {
+          ...response.data,
+          token,
+        }
         commit('SET_CURRENT_USER', user)
         return user
       })
@@ -64,7 +70,10 @@ export const actions = {
 
       const newToken = response.headers['x-renewed-jwt-token']
       const token = newToken || state.currentUser.token
-      const user = { ...response.data, token }
+      const user = {
+        ...response.data,
+        token,
+      }
       commit('SET_CURRENT_USER', user)
       return user
     } catch (error) {
@@ -92,7 +101,7 @@ function saveState(key, state) {
 }
 
 function setDefaultAuthHeaders(state) {
-  axios.defaults.headers.common.Authorization = state.currentUser
+  axios.defaults.headers.common.Bearer = state.currentUser
     ? state.currentUser.token
     : ''
 }

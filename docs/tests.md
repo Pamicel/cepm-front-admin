@@ -2,25 +2,65 @@
 
 - [Tests and mocking the API](#tests-and-mocking-the-api)
   - [Running all tests](#running-all-tests)
+    - [From the app repo](#from-the-app-repo)
+    - [From the codebase root repo](#from-the-codebase-root-repo)
   - [Unit tests with Jest](#unit-tests-with-jest)
     - [Running unit tests](#running-unit-tests)
     - [Introduction to Jest](#introduction-to-jest)
     - [Unit test files](#unit-test-files)
     - [Unit test helpers](#unit-test-helpers)
     - [Unit test mocks](#unit-test-mocks)
+    - [Testing a store with authentication](#testing-a-store-with-authentication)
   - [End-to-end tests with Cypress](#end-to-end-tests-with-cypress)
     - [Running end-to-end tests](#running-end-to-end-tests)
     - [Introduction to Cypress](#introduction-to-cypress)
     - [Accessibility-driven end-to-end tests](#accessibility-driven-end-to-end-tests)
-  - [The mock API](#the-mock-api)
-    - [Mock authentication](#mock-authentication)
-    - [Testing/developing against a real server](#testingdeveloping-against-a-real-server)
 
 ## Running all tests
+
+### From the app repo
 
 ```bash
 # Run all tests
 yarn test
+```
+
+### From the codebase root repo
+
+(The codebase root repo is where the makefile is)
+
+The API and the app share the same codebase, and the API can be ran in test mode (with a temporary database, pre-filled with the bare minimum)
+
+Some default users are preconfigured in the testing database:
+
+| email            | password    | role       |
+| ---------------- | ----------- | ---------- |
+| `admin@te.st`    | `000000000` | `admin`    |
+| `director@te.st` | `000000000` | `director` |
+
+Before running, the test suite pings the API to check that it is in testing mode, if not, the tests don't run.
+
+Here's how to run everything:
+
+- In one terminal, run:
+
+```bash
+# start the API in mode 'testing' (temporary db)
+make start-api-test
+```
+
+- In an other terminal, run:
+
+```bash
+# start the auth layer
+make dev-auth
+```
+
+- In a third terminal, run:
+
+```bash
+# run all tests
+make test-admin
 ```
 
 ## Unit tests with Jest
@@ -61,7 +101,21 @@ Jest offers many tools for mocks, including:
 
 - [For a function](https://facebook.github.io/jest/docs/en/mock-functions.html), use `jest.fn()`.
 - [For a source file](https://facebook.github.io/jest/docs/en/manual-mocks.html#mocking-user-modules), add the mock to a `__mocks__` directory adjacent to the file.
-- [For a dependency in `node_modules`](https://facebook.github.io/jest/docs/en/manual-mocks.html#mocking-node-modules), add the mock to `tests/unit/__mocks__`. You can see an example of this with the `axios` mock, which intercepts requests with relative URLs to either [our mock API](#the-mock-api) or a local/live API if the `API_BASE_URL` environment variable is set.
+- [For a dependency in `node_modules`](https://facebook.github.io/jest/docs/en/manual-mocks.html#mocking-node-modules), add the mock to `tests/unit/__mocks__`. You can see an example of this with the `axios` mock, which intercepts requests with relative URLs to ~~either [our mock API](#the-mock-api) (removed) or~~ a local/live API if the `API_BASE_URL` environment variable is set.
+
+### Testing a store with authentication
+
+If you are testing a store which depends on authentication, just create the module with the `injectAuth` option so that it has access to the fully featured auth store:
+
+```javascript
+let store
+beforeEach(async () => {
+  store = createModuleStore(crossingsModule, {
+    injectAuth: true,
+  })
+  // ...
+})
+```
 
 ## End-to-end tests with Cypress
 
@@ -188,32 +242,3 @@ And the app now works for everyone:
 - Non-sighted users get a label with the text "Log in" read to them.
 
 This strategy could be called **accessibility-driven end-to-end tests**, because you're parsing your own app with the same mindset as your users. It happens to be great for accessibility, but also helps to ensure that your app always breaks when requirements change, but never when you've just changed the implementation.
-
-## The mock API
-
-Working against the production API can be useful sometimes, but it also has some disadvantages:
-
-- Networks requests are slow, which slows down both development and testing.
-- Development and testing become dependent on a stable network connection.
-- Hitting the production API often means modifying the production database, which you typically don't want to do during automated tests.
-- To work on a frontend feature, the backend for it must already be complete.
-
-The mock API is an [Express](https://expressjs.com/) server in `tests/mock-api` you can extend to - you guessed it - mock what the real API would do, solving all the problems listed above. This solution is also backend-agnostic, making it ideal for a wide variety of projects.
-
-### Mock authentication
-
-See the [`users` resource](../tests/mock-api/resources/users.js) in the mock API for a list of usernames and passwords you can use in development.
-
-### Testing/developing against a real server
-
-In some situations, you might prefer to test against a local server while developing, or maybe just during continuous integration. To do so, you can run any development or test command with the `API_BASE_URL` environment variable. For example:
-
-```bash
-API_BASE_URL=http://localhost:3000 yarn test
-```
-
-Or similarly, with a live server:
-
-```bash
-API_BASE_URL=https://staging.example.io yarn test
-```
