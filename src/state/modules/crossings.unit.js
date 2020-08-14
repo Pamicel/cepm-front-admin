@@ -41,6 +41,57 @@ describe('@state/modules/crossings', () => {
     expect(store.state.fetchingCrossings).toEqual(false)
   })
 
+  it('creatingCrossing starts false', () => {
+    expect(store.state.creatingCrossing).toEqual(false)
+  })
+
+  it('mutations.START_CREATING_CROSSING sets creatingCrossing to true', () => {
+    store.commit('START_CREATING_CROSSING')
+
+    expect(store.state.creatingCrossing).toEqual(true)
+  })
+
+  it('mutations.END_CREATING_CROSSING sets creatingCrossing to false', () => {
+    store.commit('START_CREATING_CROSSING')
+    expect(store.state.creatingCrossing).toEqual(true)
+    store.commit('END_CREATING_CROSSING')
+    expect(store.state.creatingCrossing).toEqual(false)
+  })
+
+  it('deletingCrossing starts false', () => {
+    expect(store.state.deletingCrossing).toEqual(false)
+  })
+
+  it('mutations.START_DELETING_CROSSING sets creatingCrossing to true', () => {
+    store.commit('START_DELETING_CROSSING')
+
+    expect(store.state.deletingCrossing).toEqual(true)
+  })
+
+  it('mutations.END_DELETING_CROSSING sets deletingCrossing to false', () => {
+    store.commit('START_DELETING_CROSSING')
+    expect(store.state.deletingCrossing).toEqual(true)
+    store.commit('END_DELETING_CROSSING')
+    expect(store.state.deletingCrossing).toEqual(false)
+  })
+
+  it('modifyingCrossing starts false', () => {
+    expect(store.state.modifyingCrossing).toEqual(false)
+  })
+
+  it('mutations.START_MODIFYING_CROSSING sets modifyingCrossing to true', () => {
+    store.commit('START_MODIFYING_CROSSING')
+
+    expect(store.state.modifyingCrossing).toEqual(true)
+  })
+
+  it('mutations.END_MODIFYING_CROSSING sets modifyingCrossing to false', () => {
+    store.commit('START_MODIFYING_CROSSING')
+    expect(store.state.modifyingCrossing).toEqual(true)
+    store.commit('END_MODIFYING_CROSSING')
+    expect(store.state.modifyingCrossing).toEqual(false)
+  })
+
   it('actions.fetchCrossings resolves to null when not logged in', async () => {
     const crossings = await store.dispatch('fetchCrossings')
     expect(crossings).toEqual(null)
