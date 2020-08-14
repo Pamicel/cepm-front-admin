@@ -2,6 +2,10 @@ const axios = require('axios')
 
 module.exports = () => {
   return (async () => {
+    if (!process.env.API_BASE_URL) {
+      throw new Error('Please provide the API_BASE_URL environment variable')
+    }
+
     const pingUrl = `${process.env.API_BASE_URL}/api/ping`
     const devPingUrl = `${process.env.API_BASE_URL}/api/dev`
     const resetUrl = `${process.env.API_BASE_URL}/api/reset`
