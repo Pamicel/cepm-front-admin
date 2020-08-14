@@ -9,6 +9,7 @@ export const state = {
   fetchingCrossings: false,
   creatingCrossing: false,
   deletingCrossing: false,
+  modifyingCrossing: false,
 }
 
 export const getters = {}
@@ -34,6 +35,12 @@ export const mutations = {
   },
   END_DELETING_CROSSING(state) {
     state.deletingCrossing = false
+  },
+  START_MODIFYING_CROSSING(state) {
+    state.modifyingCrossing = true
+  },
+  END_MODIFYING_CROSSING(state) {
+    state.modifyingCrossing = false
   },
 }
 
@@ -91,6 +98,42 @@ export const actions = {
       return true
     } catch (error) {
       commit('END_DELETING_CROSSING')
+      // console.error(error);
+      return null
+    }
+  },
+
+  async modifyCrossing({ commit, getters, state }, { id, changes }) {
+    if (!getters['auth/loggedIn']) {
+      return null
+    }
+
+    if (!id || !changes) {
+      throw new Error('missing argument')
+    }
+
+    if (Object.keys(changes).length === 0) {
+      return null
+    }
+
+    try {
+      commit('START_MODIFYING_CROSSING')
+      await axios.patch(`${apiUrl}/crossings/${id}`, changes)
+      const crossings = state.crossingList.map((cross) => {
+        if (cross.id === id) {
+          return {
+            ...cross,
+            ...changes,
+          }
+        }
+
+        return cross
+      })
+      commit('REPLACE_CROSSING_LIST', crossings)
+      commit('END_MODIFYING_CROSSING')
+      return true
+    } catch (error) {
+      commit('END_MODIFYING_CROSSING')
       // console.error(error);
       return null
     }
