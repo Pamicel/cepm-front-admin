@@ -16,15 +16,15 @@ describe('@state/modules/auth', () => {
     })
 
     it('mutations.SET_CURRENT_USER correctly sets axios default authorization header', () => {
-      axios.defaults.headers.common.Authorization = ''
+      axios.defaults.headers.common.Bearer = ''
 
       store.commit('SET_CURRENT_USER', {
         token: 'some-token',
       })
-      expect(axios.defaults.headers.common.Authorization).toEqual('some-token')
+      expect(axios.defaults.headers.common.Bearer).toEqual('some-token')
 
       store.commit('SET_CURRENT_USER', null)
-      expect(axios.defaults.headers.common.Authorization).toEqual('')
+      expect(axios.defaults.headers.common.Bearer).toEqual('')
     })
 
     it('mutations.SET_CURRENT_USER correctly saves currentUser in localStorage', () => {
@@ -57,7 +57,10 @@ describe('@state/modules/auth', () => {
     it('action.logIn resolves to a user', async () => {
       const { email, password } = validUserExample
 
-      const user = await store.dispatch('logIn', { email, password })
+      const user = await store.dispatch('logIn', {
+        email,
+        password,
+      })
 
       expect(user).toHaveProperty('id')
       expect(user).toHaveProperty('email')
@@ -146,7 +149,10 @@ describe('@state/modules/auth', () => {
     it('action.verify resolves to the user when freshly logged in', async () => {
       const { email, password } = validUserExample
 
-      const loggedInUser = await store.dispatch('logIn', { email, password })
+      const loggedInUser = await store.dispatch('logIn', {
+        email,
+        password,
+      })
       const { token } = store.state.currentUser
       const user = await store.dispatch('verify')
       expect(user).toEqual(loggedInUser)
