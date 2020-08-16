@@ -11,19 +11,19 @@ describe('@state/modules/auth', () => {
   describe('in a store', () => {
     let store
     beforeEach(async () => {
-      store = createModuleStore(authModule)
+      store = createModuleStore({ auth: authModule })
       window.localStorage.clear()
     })
 
     it('mutations.SET_CURRENT_USER correctly sets axios default authorization header', () => {
       axios.defaults.headers.common.Bearer = ''
 
-      store.commit('SET_CURRENT_USER', {
+      store.commit('auth/SET_CURRENT_USER', {
         token: 'some-token',
       })
       expect(axios.defaults.headers.common.Bearer).toEqual('some-token')
 
-      store.commit('SET_CURRENT_USER', null)
+      store.commit('auth/SET_CURRENT_USER', null)
       expect(axios.defaults.headers.common.Bearer).toEqual('')
     })
 
@@ -36,7 +36,7 @@ describe('@state/modules/auth', () => {
       const expectedCurrentUser = {
         token: 'some-token',
       }
-      store.commit('SET_CURRENT_USER', expectedCurrentUser)
+      store.commit('auth/SET_CURRENT_USER', expectedCurrentUser)
 
       savedCurrentUser = JSON.parse(
         window.localStorage.getItem('auth.currentUser')
@@ -44,20 +44,20 @@ describe('@state/modules/auth', () => {
       expect(savedCurrentUser).toEqual(expectedCurrentUser)
     })
 
-    it('getters.loggedIn returns true when currentUser is an object', () => {
-      store.commit('SET_CURRENT_USER', {})
-      expect(store.getters.loggedIn).toEqual(true)
+    it("getters['auth/loggedIn'] returns true when currentUser is an object", () => {
+      store.commit('auth/SET_CURRENT_USER', {})
+      expect(store.getters['auth/loggedIn']).toEqual(true)
     })
 
-    it('getters.loggedIn returns false when currentUser is null', () => {
-      store.commit('SET_CURRENT_USER', null)
-      expect(store.getters.loggedIn).toEqual(false)
+    it("getters['auth/loggedIn'] returns false when currentUser is null", () => {
+      store.commit('auth/SET_CURRENT_USER', null)
+      expect(store.getters['auth/loggedIn']).toEqual(false)
     })
 
     it('action.logIn resolves to a user', async () => {
       const { email, password } = validUserExample
 
-      const user = await store.dispatch('logIn', {
+      const user = await store.dispatch('auth/logIn', {
         email,
         password,
       })
@@ -69,49 +69,49 @@ describe('@state/modules/auth', () => {
       expect(typeof user.id).toBe('number')
       expect(user.email).toEqual(validUserExample.email)
 
-      expect(store.state.currentUser.id).toEqual(user.id)
-      expect(store.state.currentUser.email).toEqual(user.email)
-      expect(store.state.currentUser.dateCreated).toEqual(user.dateCreated)
-      expect(store.state.currentUser.token).toBeDefined()
+      expect(store.state.auth.currentUser.id).toEqual(user.id)
+      expect(store.state.auth.currentUser.email).toEqual(user.email)
+      expect(store.state.auth.currentUser.dateCreated).toEqual(user.dateCreated)
+      expect(store.state.auth.currentUser.token).toBeDefined()
     })
 
     it('action.verify resolves to null when not logged in', async () => {
-      const user = await store.dispatch('verify')
+      const user = await store.dispatch('auth/verify')
       expect(user).toEqual(null)
     })
 
     it('action.verify resolves to null when user has no token', async () => {
-      store.commit('SET_CURRENT_USER', {
+      store.commit('auth/SET_CURRENT_USER', {
         email: validUserExample.email,
       })
-      const user = await store.dispatch('verify')
+      const user = await store.dispatch('auth/verify')
       expect(user).toEqual(null)
     })
 
     it('action.verify resolves to null when user has a bad token', async () => {
-      store.commit('SET_CURRENT_USER', {
+      store.commit('auth/SET_CURRENT_USER', {
         email: validUserExample.email,
         token: 'bla-bla-bla',
       })
-      const user = await store.dispatch('verify')
+      const user = await store.dispatch('auth/verify')
       expect(user).toEqual(null)
     })
 
     it('action.verify removes the current user when the user has no token', async () => {
-      store.commit('SET_CURRENT_USER', {
+      store.commit('auth/SET_CURRENT_USER', {
         email: validUserExample.email,
       })
-      await store.dispatch('verify')
-      expect(store.state.currentUser).toEqual(null)
+      await store.dispatch('auth/verify')
+      expect(store.state.auth.currentUser).toEqual(null)
     })
 
     it('action.verify removes the current user when the user has a bad token', async () => {
-      store.commit('SET_CURRENT_USER', {
+      store.commit('auth/SET_CURRENT_USER', {
         email: validUserExample.email,
         token: 'bla-bla-bla',
       })
-      await store.dispatch('verify')
-      expect(store.state.currentUser).toEqual(null)
+      await store.dispatch('auth/verify')
+      expect(store.state.auth.currentUser).toEqual(null)
     })
 
     it('action.verify resolves to null when token is expired', async () => {
@@ -121,12 +121,12 @@ describe('@state/modules/auth', () => {
         `${apiUrl}/dev/create-expired-token?email=${email}`
       )
 
-      store.commit('SET_CURRENT_USER', {
+      store.commit('auth/SET_CURRENT_USER', {
         email: validUserExample.email,
         token: response.data.token,
       })
 
-      const user = await store.dispatch('verify')
+      const user = await store.dispatch('auth/verify')
       expect(user).toEqual(null)
     })
 
@@ -137,26 +137,26 @@ describe('@state/modules/auth', () => {
         `${apiUrl}/dev/create-expired-token?email=${email}`
       )
 
-      store.commit('SET_CURRENT_USER', {
+      store.commit('auth/SET_CURRENT_USER', {
         email: validUserExample.email,
         token: response.data.token,
       })
 
-      await store.dispatch('verify')
-      expect(store.state.currentUser).toEqual(null)
+      await store.dispatch('auth/verify')
+      expect(store.state.auth.currentUser).toEqual(null)
     })
 
     it('action.verify resolves to the user when freshly logged in', async () => {
       const { email, password } = validUserExample
 
-      const loggedInUser = await store.dispatch('logIn', {
+      const loggedInUser = await store.dispatch('auth/logIn', {
         email,
         password,
       })
-      const { token } = store.state.currentUser
-      const user = await store.dispatch('verify')
+      const { token } = store.state.auth.currentUser
+      const user = await store.dispatch('auth/verify')
       expect(user).toEqual(loggedInUser)
-      expect(store.state.currentUser.token).toEqual(token)
+      expect(store.state.auth.currentUser.token).toEqual(token)
     })
 
     it('action.verify renews the token when token is in grace period', async () => {
@@ -168,20 +168,20 @@ describe('@state/modules/auth', () => {
 
       const { token } = response.data
 
-      store.commit('SET_CURRENT_USER', {
+      store.commit('auth/SET_CURRENT_USER', {
         email: validUserExample.email,
         token,
       })
 
-      await store.dispatch('verify')
-      expect(store.state.currentUser.token).not.toEqual(token)
+      await store.dispatch('auth/verify')
+      expect(store.state.auth.currentUser.token).not.toEqual(token)
     })
 
     it('actions.logIn rejects with 400 when provided only an email', () => {
       expect.assertions(1)
 
       return store
-        .dispatch('logIn', {
+        .dispatch('auth/logIn', {
           email: 'email',
         })
         .catch((error) => {
@@ -193,7 +193,7 @@ describe('@state/modules/auth', () => {
       expect.assertions(1)
 
       return store
-        .dispatch('logIn', {
+        .dispatch('auth/logIn', {
           password: 'password',
         })
         .catch((error) => {
@@ -205,7 +205,7 @@ describe('@state/modules/auth', () => {
       expect.assertions(1)
 
       return store
-        .dispatch('logIn', {
+        .dispatch('auth/logIn', {
           email: validUserExample.email,
           password: 'bad password',
         })
@@ -218,7 +218,7 @@ describe('@state/modules/auth', () => {
       expect.assertions(1)
 
       return store
-        .dispatch('logIn', {
+        .dispatch('auth/logIn', {
           email: 'bad email',
           password: 'bad password',
         })

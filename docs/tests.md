@@ -103,20 +103,6 @@ Jest offers many tools for mocks, including:
 - [For a source file](https://facebook.github.io/jest/docs/en/manual-mocks.html#mocking-user-modules), add the mock to a `__mocks__` directory adjacent to the file.
 - [For a dependency in `node_modules`](https://facebook.github.io/jest/docs/en/manual-mocks.html#mocking-node-modules), add the mock to `tests/unit/__mocks__`. You can see an example of this with the `axios` mock, which intercepts requests with relative URLs to ~~either [our mock API](#the-mock-api) (removed) or~~ a local/live API if the `API_BASE_URL` environment variable is set.
 
-### Testing a store with authentication
-
-If you are testing a store which depends on authentication, just create the module with the `injectAuth` option so that it has access to the fully featured auth store:
-
-```javascript
-let store
-beforeEach(async () => {
-  store = createModuleStore(crossingsModule, {
-    injectAuth: true,
-  })
-  // ...
-})
-```
-
 ## End-to-end tests with Cypress
 
 ### Running end-to-end tests
