@@ -1,5 +1,5 @@
-import * as crossingsModule from './crossings'
 import * as authModule from './auth'
+import * as crossingsModule from './crossings'
 
 describe('@state/modules/crossings', () => {
   let store
@@ -163,7 +163,7 @@ describe('@state/modules/crossings', () => {
       },
     })
     const latest = crossings[0]
-    const unusedId = latest ? latest.id + 1 : 123
+    const unusedId = latest ? latest.id + 100 : 123
 
     const response = await store.dispatch('crossings/deleteCrossing', unusedId)
     expect(response).toEqual(null)
@@ -379,7 +379,7 @@ describe('@state/modules/crossings', () => {
       },
     })
     const latest = crossings[0]
-    const unusedId = latest ? latest.id + 1 : 123
+    const unusedId = latest ? latest.id + 100 : 123
 
     const response = await store.dispatch('crossings/modifyCrossing', {
       id: unusedId,
