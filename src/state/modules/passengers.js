@@ -35,10 +35,10 @@ export const actions = {
     { commit, rootGetters },
     { crossingId, data, fieldMap }
   ) {
-    commit('START_CREATING_PASSENGERS')
     if (!rootGetters['auth/loggedIn']) {
       return null
     }
+    commit('START_CREATING_PASSENGERS')
     try {
       await axios.post(`${apiUrl}/booking-imports`, {
         crossingId,
@@ -49,6 +49,28 @@ export const actions = {
       return true
     } catch (error) {
       commit('END_CREATING_PASSENGERS')
+      console.error(error)
+      return null
+    }
+  },
+  async fetchPassengers({ commit, rootGetters }, { crossingId }) {
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    commit('START_FETCHING_PASSENGERS')
+    try {
+      const response = await axios.get(`${apiUrl}/bookings`, {
+        where: {
+          'importedBookingType.crossingId': crossingId,
+        },
+      })
+      const { data: passengers } = response
+
+      commit('REPLACE_PASSENGER_LIST', passengers)
+      commit('END_FETCHING_PASSENGERS')
+      return passengers
+    } catch (error) {
+      commit('END_FETCHING_PASSENGERS')
       console.error(error)
       return null
     }

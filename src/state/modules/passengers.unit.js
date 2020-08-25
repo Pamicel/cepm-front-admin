@@ -102,6 +102,55 @@ describe('@state/modules/passengers', () => {
 
     expect(response).toBe(true)
   })
+
+  it('actions["passengers/fetchPassengers"] resolves to the list of passengers', async () => {
+    await logInAsDirector(store)
+    const crossing = await store.dispatch(
+      'crossings/createCrossing',
+      validCrossing
+    )
+    expect(crossing.id).toBeDefined()
+
+    /**
+     * User parses a CSV which is saved in passengerParser.parsedData
+     */
+    await store.dispatch('passengerParser/parseCSV', helloAsso)
+
+    /**
+     *  User creates the fieldMap (mapping between csv column name and the
+     *  corresponding column name the API understands)
+     */
+    const fieldMap = {
+      bookerEmail: 'Email',
+      bookerFirstName: 'Prénom acheteur',
+      bookerLastName: 'Nom acheteur',
+      firstName: 'Prénom',
+      lastName: 'Nom',
+      bookingIdentifier: 'Numéro',
+      bookingType: 'Formule',
+    }
+    for (const apiEntry in fieldMap) {
+      await store.dispatch('passengerParser/setFieldMapEntry', {
+        apiEntry,
+        originalEntry: fieldMap[apiEntry],
+      })
+    }
+
+    const data = store.getters['passengerParser/dataDigest']
+
+    await store.dispatch('passengers/createPassengers', {
+      crossingId: crossing.id,
+      data,
+      fieldMap,
+    })
+
+    expect(store.state.passengers.passengerList.length).toBe(0)
+    const result = await store.dispatch('passengers/fetchPassengers', {
+      crossingId: crossing.id,
+    })
+    expect(store.state.passengers.passengerList.length).toBeGreaterThan(0)
+    expect(result).toEqual(store.state.passengers.passengerList)
+  })
 })
 
 const validCrossing = {
