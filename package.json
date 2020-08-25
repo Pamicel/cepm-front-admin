@@ -41,6 +41,7 @@
     "lodash": "4.17.15",
     "normalize.css": "8.0.1",
     "nprogress": "0.2.0",
+    "papaparse": "^5.2.0",
     "qs": "^6.9.4",
     "vue": "2.6.11",
     "vue-meta": "2.3.3",

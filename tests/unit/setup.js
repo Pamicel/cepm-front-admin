@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import * as authModule from '@state/modules/auth'
 import axios from 'axios'
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -182,35 +181,36 @@ global.createComponentMocks = ({ store, router, style, mocks, stubs }) => {
   return returnOptions
 }
 
-global.createModuleStore = (vuexModule, options = {}) => {
+global.createModuleStore = (vuexModules) => {
   vueTestUtils.createLocalVue().use(Vuex)
 
-  const auth = options.injectAuth
-    ? {
-        namespaced: true,
-        ..._.cloneDeep(authModule),
-      }
-    : {
-        namespaced: true,
-        state: {
-          currentUser: options.currentUser,
-        },
-      }
+  const storeDefinition = _.cloneDeep(vuexModules)
+  for (const key in storeDefinition) {
+    // namespace by default
+    storeDefinition[key] = {
+      namespaced: true,
+      ...storeDefinition[key],
+    }
+  }
 
   const store = new Vuex.Store({
-    ..._.cloneDeep(vuexModule),
-    modules: { auth },
+    modules: {
+      ...storeDefinition,
+    },
     // Enable strict mode when testing Vuex modules so that
     // mutating state outside of a mutation results in a
     // failing test.
     // https://vuex.vuejs.org/guide/strict.html
     strict: true,
   })
-  axios.defaults.headers.common.Authorization = options.currentUser
-    ? options.currentUser.token
-    : ''
-  if (vuexModule.actions.init) {
-    store.dispatch('init')
+
+  // Initialize the components with an init event
+  for (const key in storeDefinition) {
+    if (storeDefinition[key].init) {
+      const event = storeDefinition[key].namespaced ? `${key}/init` : 'init'
+      store.dispatch(event)
+    }
   }
+
   return store
 }

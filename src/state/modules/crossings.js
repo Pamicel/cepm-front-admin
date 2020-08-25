@@ -45,8 +45,8 @@ export const mutations = {
 }
 
 export const actions = {
-  async fetchCrossings({ commit, getters }, { filters } = {}) {
-    if (!getters['auth/loggedIn']) {
+  async fetchCrossings({ commit, rootGetters }, { filters } = {}) {
+    if (!rootGetters['auth/loggedIn']) {
       return null
     }
 
@@ -65,8 +65,8 @@ export const actions = {
     }
   },
 
-  async createCrossing({ commit, getters }, crossing) {
-    if (!getters['auth/loggedIn']) {
+  async createCrossing({ commit, rootGetters }, crossing) {
+    if (!rootGetters['auth/loggedIn']) {
       return null
     }
 
@@ -82,8 +82,8 @@ export const actions = {
     }
   },
 
-  async deleteCrossing({ commit, getters, state }, crossingId) {
-    if (!getters['auth/loggedIn']) {
+  async deleteCrossing({ commit, state, rootGetters }, crossingId) {
+    if (!rootGetters['auth/loggedIn']) {
       return null
     }
 
@@ -103,8 +103,8 @@ export const actions = {
     }
   },
 
-  async modifyCrossing({ commit, getters, state }, { id, changes }) {
-    if (!getters['auth/loggedIn']) {
+  async modifyCrossing({ commit, state, rootGetters }, { id, changes }) {
+    if (!rootGetters['auth/loggedIn']) {
       return null
     }
 
