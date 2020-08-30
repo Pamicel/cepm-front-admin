@@ -25,7 +25,7 @@ module.exports = {
   },
   css: {
     // Enable CSS source maps.
-    sourceMap: true,
+    sourceMap: false,
   },
   // Configure Webpack's dev server.
   // https://cli.vuejs.org/guide/cli-service.html
