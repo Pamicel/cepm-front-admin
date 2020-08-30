@@ -43,10 +43,14 @@ export const state = {
   fieldMap: {
     ...initialFieldMap,
   },
+  emptyFields: [],
   parsedData: [],
 }
 
 export const getters = {
+  /**
+   * Transforms the parsed data into something the API can consume
+   */
   dataDigest(state) {
     const { parsedData, fieldMap } = state
 
@@ -93,12 +97,20 @@ export const mutations = {
   RESET_DATA(state) {
     state.parsedData = []
   },
+  SET_EMPTY_FIELDS(state, emptyFields) {
+    state.emptyFields = emptyFields
+  },
+  RESET_EMPTY_FIELDS(state) {
+    state.emptyFields = []
+  },
 }
 
 export const actions = {
   parseCSV({ commit }, csv) {
     commit('RESET_PARSING_ERRORS')
     commit('RESET_FIELDS')
+    commit('RESET_DATA')
+    commit('RESET_EMPTY_FIELDS')
 
     // Parse the csv
     const parsedCSV = Papa.parse(csv, {
@@ -119,6 +131,15 @@ export const actions = {
     // Save the data
     if (data) {
       commit('SAVE_DATA', data)
+    }
+
+    if (meta && meta.fields && data) {
+      let emptyFields = [...meta.fields]
+      for (const booking of data) {
+        // Only keep the fields that have no entries
+        emptyFields = emptyFields.filter((field) => !booking[field])
+      }
+      commit('SET_EMPTY_FIELDS', emptyFields)
     }
   },
 

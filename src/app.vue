@@ -65,7 +65,7 @@ body,
   @extend %typography-small;
 
   overflow: hidden;
-  background-image: url('~@assets/images/background.png');
+  background-image: url('~@assets/images/background-2.png');
   background-position: fixed;
   background-size: cover;
 }
@@ -80,7 +80,7 @@ a:visited {
 }
 
 h1 {
-  @extend %typography-xxlarge;
+  @extend %typography-xlarge;
 }
 
 h2 {

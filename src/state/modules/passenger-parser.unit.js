@@ -69,6 +69,15 @@ describe('@state/modules/passenger-parser', () => {
     store.commit('passengerParser/RESET_DATA')
     expect(store.state.passengerParser.parsedData).toEqual([])
   })
+  it('mutations["passengerParser/SET_EMPTY_FIELDS"] populates state.passengerParser.emptyFields', async () => {
+    const data = ['this', 'is', 'different', 1337]
+    store.commit('passengerParser/SET_EMPTY_FIELDS', data)
+    expect(store.state.passengerParser.emptyFields).toEqual(data)
+  })
+  it('mutations["passengerParser/RESET_EMPTY_FIELDS"] resets state.passengerParser.emptyFields to []', async () => {
+    store.commit('passengerParser/RESET_EMPTY_FIELDS')
+    expect(store.state.passengerParser.emptyFields).toEqual([])
+  })
 
   it('exports a valid Vuex module', () => {
     expect(passengerParserModule).toBeAVuexModule()
@@ -98,6 +107,76 @@ describe('@state/modules/passenger-parser', () => {
       Object.keys(data[0]).sort()
     )
     expect(store.state.passengerParser.parsedData).toEqual(data)
+  })
+
+  it('actions["passengerParser/parseCSV"] correctly saves empty fields in state.passengerParser.emptyFields', async () => {
+    /**
+     * Empty fields are the fields that are empty (ie falsy) in all bookings
+     *
+     * here 'happyToMeet' is empty almost everywhere so should not be in emptyFields
+     * while 'soulOfARepublican' is empty everywhere so should be in emptyFields
+     */
+
+    const data = [
+      {
+        hi: 'hi',
+        happyToMeet: 'you',
+        CraigFergussonIs: 'a genius',
+        trumpisanidiot: 'yes',
+        soulOfARepublican: '',
+      },
+      {
+        hi: 'hi',
+        happyToMeet: '',
+        CraigFergussonIs: 'a genius',
+        trumpisanidiot: 'yes',
+        soulOfARepublican: '',
+      },
+      {
+        hi: 'hi',
+        happyToMeet: '',
+        CraigFergussonIs: 'a genius',
+        trumpisanidiot: 'yes',
+        soulOfARepublican: '',
+      },
+      {
+        hi: 'hi',
+        happyToMeet: '',
+        CraigFergussonIs: 'a genius',
+        trumpisanidiot: 'yes',
+        soulOfARepublican: '',
+      },
+      {
+        hi: 'hi',
+        happyToMeet: '',
+        CraigFergussonIs: 'a genius',
+        trumpisanidiot: 'yes',
+        soulOfARepublican: '',
+      },
+      {
+        hi: 'hi',
+        happyToMeet: '',
+        CraigFergussonIs: 'a genius',
+        trumpisanidiot: 'yes',
+        soulOfARepublican: '',
+      },
+      {
+        hi: 'hi',
+        happyToMeet: '',
+        CraigFergussonIs: 'a genius',
+        trumpisanidiot: 'yes',
+        soulOfARepublican: '',
+      },
+    ]
+    const csvString = Papa.unparse(data, {
+      header: true,
+      delimiter: ';',
+    })
+
+    await store.dispatch('passengerParser/parseCSV', csvString)
+    expect(store.state.passengerParser.emptyFields).toEqual([
+      'soulOfARepublican',
+    ])
   })
 
   it('actions["passengerParser/setFieldMapEntry"] sets the entry in state.passengerParser.fieldMap', async () => {
