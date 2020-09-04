@@ -84,8 +84,12 @@ export default {
   @extend %narrow-content;
 
   .creation {
-    width: fit-content;
+    // width: fit-content;
+    width: 100%;
     transition: all 200ms;
+    .creationForm {
+      width: fit-content;
+    }
     &.creationOpen {
       @include box_shadow(1);
 
