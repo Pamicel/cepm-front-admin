@@ -9,7 +9,7 @@ export default {
   components: { Layout, ColumnSelector },
   data() {
     return {
-      apiFields: Object.keys(this.$store.state.passengerParser.fieldMap),
+      apiFields: Object.keys(this.$store.state.bookingsParser.fieldMap),
     }
   },
   page: {
@@ -18,30 +18,30 @@ export default {
   },
   computed: {
     ...mapState({
-      fieldMap: (state) => state.passengerParser.fieldMap,
-      fields: (state) => state.passengerParser.fields,
-      parsedData: (state) => state.passengerParser.parsedData,
-      emptyFields: (state) => state.passengerParser.emptyFields,
+      fieldMap: (state) => state.bookingsParser.fieldMap,
+      fields: (state) => state.bookingsParser.fields,
+      parsedData: (state) => state.bookingsParser.parsedData,
+      emptyFields: (state) => state.bookingsParser.emptyFields,
     }),
     ...mapGetters({
-      fieldMapComplete: 'passengerParser/fieldMapComplete',
+      fieldMapComplete: 'bookingsParser/fieldMapComplete',
     }),
   },
   beforeCreate() {
-    this.$store.dispatch('passengerParser/parseCSV', helloAsso)
+    this.$store.dispatch('bookingsParser/parseCSV', helloAsso)
   },
   methods: {
     setFieldMapEntry(apiEntry, originalEntry) {
       if (this.fieldMap[apiEntry] === originalEntry) {
         return this.unsetFieldMapEntry(apiEntry)
       }
-      this.$store.dispatch('passengerParser/setFieldMapEntry', {
+      this.$store.dispatch('bookingsParser/setFieldMapEntry', {
         apiEntry,
         originalEntry,
       })
     },
     unsetFieldMapEntry(apiEntry) {
-      this.$store.dispatch('passengerParser/unsetFieldMapEntry', {
+      this.$store.dispatch('bookingsParser/unsetFieldMapEntry', {
         apiEntry,
       })
     },

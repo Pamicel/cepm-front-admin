@@ -22,8 +22,8 @@ export const state = {
    * their corresponding name in the parsed data
    *
    * eg
-   * Say the API expects only an "email" field for each passenger.
-   * Now say the data format for passengers is as follows:
+   * Say the API expects only an "email" field for each booking.
+   * Now say the data format for bookings is as follows:
    *  {
    *    emailAddress: "hello@iamjohn.eg"
    *    name: "John"
@@ -48,13 +48,13 @@ export const getters = {
   dataDigest(state) {
     const { parsedData, fieldMap } = state
 
-    const data = parsedData.map((parsedPassenger) => {
-      const passenger = {}
+    const data = parsedData.map((parsedBooking) => {
+      const booking = {}
       for (const [apiEntry, originalEntry] of Object.entries(fieldMap)) {
-        passenger[apiEntry] = parsedPassenger[originalEntry]
+        booking[apiEntry] = parsedBooking[originalEntry]
       }
-      passenger.raw = JSON.stringify(parsedPassenger)
-      return passenger
+      booking.raw = JSON.stringify(parsedBooking)
+      return booking
     })
 
     return data

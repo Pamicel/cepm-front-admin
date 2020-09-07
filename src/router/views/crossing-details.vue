@@ -1,6 +1,6 @@
 <script>
 import Layout from '@layouts/local.vue'
-import SpectatorsTable from '@components/spectators-table.vue'
+import BookingsTable from '@components/bookings-table.vue'
 import { mapGetters, mapState } from 'vuex'
 
 export default {
@@ -8,9 +8,9 @@ export default {
     title: 'Panneau de traversée',
     meta: [{ name: 'description', content: 'The Crossing Details page.' }],
   },
-  components: { Layout, SpectatorsTable },
+  components: { Layout, BookingsTable },
   computed: {
-    ...mapState(['spectators']),
+    ...mapState(['bookings']),
     ...mapGetters({
       crossing: 'performances/getCurrent',
     }),
@@ -19,7 +19,7 @@ export default {
     this.$store.dispatch('performances/fetchOne', {
       perfId: this.$route.params.id,
     })
-    this.$store.dispatch('spectators/fetchList', {
+    this.$store.dispatch('bookings/fetchList', {
       perfId: this.$route.params.id,
     })
   },
@@ -32,9 +32,9 @@ export default {
       <pre>
         {{ crossing }}
       </pre>
-      <SpectatorsTable
-        :spectators="spectators.list"
-        :is-loading="spectators.loading"
+      <BookingsTable
+        :bookings="bookings.bookingList"
+        :is-loading="bookings.loading"
       />
     </div>
   </Layout>
