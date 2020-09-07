@@ -59,11 +59,9 @@ export const actions = {
     }
     commit('START_FETCHING_PASSENGERS')
     try {
-      const response = await axios.get(`${apiUrl}/bookings`, {
-        where: {
-          'importedBookingType.crossingId': crossingId,
-        },
-      })
+      const response = await axios.get(
+        `${apiUrl}/crossings/${crossingId}/bookings`
+      )
       const { data: passengers } = response
 
       commit('REPLACE_PASSENGER_LIST', passengers)

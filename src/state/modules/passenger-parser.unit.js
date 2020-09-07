@@ -79,6 +79,27 @@ describe('@state/modules/passenger-parser', () => {
     expect(store.state.passengerParser.emptyFields).toEqual([])
   })
 
+  it('getters["passengerParser/fieldMapComplete"] returns true when all fields in flieldMap are set', async () => {
+    const before = store.getters['passengerParser/fieldMapComplete']
+    expect(before).toBe(false)
+
+    const { fieldMap } = store.state.passengerParser
+
+    // NB there used to be more than one field and there might be more in the future
+    // thus the loop
+    for (const field of Object.keys(fieldMap)) {
+      const apiEntry = field
+      const originalEntry = 'whatsup'
+      await store.dispatch('passengerParser/setFieldMapEntry', {
+        apiEntry,
+        originalEntry,
+      })
+    }
+
+    const after = store.getters['passengerParser/fieldMapComplete']
+    expect(after).toBe(true)
+  })
+
   it('exports a valid Vuex module', () => {
     expect(passengerParserModule).toBeAVuexModule()
   })
@@ -193,7 +214,7 @@ describe('@state/modules/passenger-parser', () => {
   })
 
   it('actions["passengerParser/unsetFieldMapEntry"] unsets the entry in state.passengerParser.fieldMap', async () => {
-    const apiEntry = 'bookerFirstName'
+    const apiEntry = 'bookerEmail'
 
     await store.dispatch('passengerParser/setFieldMapEntry', {
       apiEntry,
@@ -219,12 +240,6 @@ describe('@state/modules/passenger-parser', () => {
 
     const fieldMap = {
       bookerEmail: 'hi',
-      bookerFirstName: 'happyToMeet',
-      bookerLastName: 'CraigFergussonIs',
-      firstName: 'trumpisanidiot',
-      lastName: 'trumpisacriminal',
-      bookingIdentifier: 'blip',
-      bookingType: 'blip',
     }
 
     const digestedData = data.map((row) => {

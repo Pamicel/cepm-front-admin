@@ -2,12 +2,6 @@ import Papa from 'papaparse'
 
 const initialFieldMap = {
   bookerEmail: null, // Email
-  bookingIdentifier: null, // Numéro
-  bookingType: null, // Formule
-  bookerFirstName: null, // Prénom acheteur (optional)
-  bookerLastName: null, // Nom acheteur (optional)
-  firstName: null, // Prénom (optional)
-  lastName: null, // Nom (optional)
 }
 
 export const state = {
@@ -64,6 +58,13 @@ export const getters = {
     })
 
     return data
+  },
+  fieldMapComplete(state) {
+    const { fieldMap } = state
+
+    return Object.entries(fieldMap).every(
+      ([key, value]) => value !== initialFieldMap[key] // is different from the default value
+    )
   },
 }
 

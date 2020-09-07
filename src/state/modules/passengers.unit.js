@@ -78,12 +78,6 @@ describe('@state/modules/passengers', () => {
      */
     const fieldMap = {
       bookerEmail: 'Email',
-      bookerFirstName: 'Prénom acheteur',
-      bookerLastName: 'Nom acheteur',
-      firstName: 'Prénom',
-      lastName: 'Nom',
-      bookingIdentifier: 'Numéro',
-      bookingType: 'Formule',
     }
     for (const apiEntry in fieldMap) {
       await store.dispatch('passengerParser/setFieldMapEntry', {
@@ -122,12 +116,6 @@ describe('@state/modules/passengers', () => {
      */
     const fieldMap = {
       bookerEmail: 'Email',
-      bookerFirstName: 'Prénom acheteur',
-      bookerLastName: 'Nom acheteur',
-      firstName: 'Prénom',
-      lastName: 'Nom',
-      bookingIdentifier: 'Numéro',
-      bookingType: 'Formule',
     }
     for (const apiEntry in fieldMap) {
       await store.dispatch('passengerParser/setFieldMapEntry', {
