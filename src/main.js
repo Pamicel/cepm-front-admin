@@ -24,6 +24,7 @@ import {
   faCaretUp,
   faUpload,
   faFrown,
+  faTicketAlt,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -114,7 +115,8 @@ library.add(
   faCaretDown,
   faCaretUp,
   faUpload,
-  faFrown
+  faFrown,
+  faTicketAlt
 )
 Vue.component('vue-fontawesome', FontAwesomeIcon)
 Vue.use(Buefy, {

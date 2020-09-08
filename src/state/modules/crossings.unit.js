@@ -412,6 +412,87 @@ describe('@state/modules/crossings', () => {
     })
     expect(response).toEqual(null)
   })
+
+  // Select Crossing
+
+  it('crossings/selectedCrossing starts null', async () => {
+    expect(store.state.crossings.selectedCrossing).toBe(null)
+  })
+
+  it('mutations("crossings/SELECT_CROSSING", crossing) fills selectedCrossing with the given value', async () => {
+    const crossing = { hello: 'hi' }
+    store.commit('crossings/SELECT_CROSSING', crossing)
+    expect(store.state.crossings.selectedCrossing).toEqual(crossing)
+  })
+
+  it('dispatch("crossings/selectCrossing", crossingId) selects a crossing if it is in the crossingList', async () => {
+    store.commit('crossings/REPLACE_CROSSING_LIST', [...validCrossings])
+    store.dispatch('crossings/selectCrossing', validCrossings[0].id)
+    expect(store.state.crossings.selectedCrossing).toEqual(validCrossings[0])
+  })
+
+  it('dispatch("crossings/selectCrossing", crossingId) selects no crossing if crossingList is empty', async () => {
+    store.dispatch('crossings/selectCrossing', validCrossings[0].id)
+    expect(store.state.crossings.selectedCrossing).toEqual(null)
+  })
+
+  it('dispatch("crossings/selectCrossing", crossingId) selects no crossing if not in crossingList', async () => {
+    store.commit('crossings/REPLACE_CROSSING_LIST', [
+      ...validCrossings.slice(1),
+    ])
+    store.dispatch('crossings/selectCrossing', validCrossings[0].id)
+    expect(store.state.crossings.selectedCrossing).toEqual(null)
+  })
+
+  // Fetch Single Crossing
+
+  it('mutations.START_FETCHING_SINGLE_CROSSING sets fetchingSingleCrossing to true', () => {
+    store.commit('crossings/START_FETCHING_SINGLE_CROSSING')
+
+    expect(store.state.crossings.fetchingSingleCrossing).toEqual(true)
+  })
+
+  it('mutations.END_FETCHING_SINGLE_CROSSING sets fetchingSingleCrossing to false', () => {
+    store.commit('crossings/START_FETCHING_SINGLE_CROSSING')
+    expect(store.state.crossings.fetchingSingleCrossing).toEqual(true)
+    store.commit('crossings/END_FETCHING_SINGLE_CROSSING')
+    expect(store.state.crossings.fetchingSingleCrossing).toEqual(false)
+  })
+
+  it('dispatch("crossings/fetchSingleCrossing", crossingId) resolves to null when not logged in', async () => {
+    const crossing = await store.dispatch('crossings/fetchSingleCrossing', 123)
+    expect(crossing).toBe(null)
+    expect(store.state.crossings.selectedCrossing).toBe(null)
+  })
+  it('dispatch("crossings/fetchSingleCrossing", crossingId) fetches and selects existing crossing', async () => {
+    await logInAsDirector(store)
+    const { id: crossingId } = await store.dispatch(
+      'crossings/createCrossing',
+      validCrossing
+    )
+    const crossing = await store.dispatch(
+      'crossings/fetchSingleCrossing',
+      crossingId
+    )
+    expect(crossing).toBeDefined()
+    expect(crossing.id).toBe(crossingId)
+    expect(store.state.crossings.selectedCrossing).toEqual(crossing)
+  })
+  it('dispatch("crossings/fetchSingleCrossing", crossingId) resolves to null when crossing does not exist', async () => {
+    await logInAsDirector(store)
+    const crossings = await store.dispatch('crossings/fetchCrossings', {
+      filters: {
+        order: ['id DESC'],
+      },
+    })
+    const latest = crossings[0]
+    const unusedId = latest ? latest.id + 100 : 123
+    const crossing = await store.dispatch(
+      'crossings/fetchSingleCrossing',
+      unusedId
+    )
+    expect(crossing).toBe(null)
+  })
 })
 
 const validCrossing = {

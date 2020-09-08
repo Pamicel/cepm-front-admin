@@ -33,7 +33,7 @@ export default {
       return `${duration}min`
     },
     clickRow(row) {
-      this.$router.push({ name: 'traversee', params: { id: row.id } })
+      this.$emit('select', row.id)
     },
     endTime(startDate, duration) {
       const endDate = new Date(startDate.getTime() + duration * 60 * 1000)

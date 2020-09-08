@@ -54,9 +54,9 @@ export default {
       <section class="section">
         <div class="content has-text-grey has-text-centered">
           <p>
-            <b-icon icon="frown" size="is-large"> </b-icon>
+            <b-icon icon="ticket-alt" size="is-large"> </b-icon>
           </p>
-          <p>Aucune traversée.</p>
+          <p>Aucune reservation.</p>
         </div>
       </section>
     </template>

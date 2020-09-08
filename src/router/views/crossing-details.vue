@@ -1,7 +1,7 @@
 <script>
 import Layout from '@layouts/local.vue'
 import BookingsTable from '@components/bookings-table.vue'
-import { mapGetters, mapState } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   page: {
@@ -10,17 +10,19 @@ export default {
   },
   components: { Layout, BookingsTable },
   computed: {
-    ...mapState(['bookings']),
-    ...mapGetters({
-      crossing: 'performances/getCurrent',
+    ...mapState({
+      fetchingCrossing: (state) => state.crossings.fetchingSingleCrossing,
+      crossing: (state) => state.crossings.selectedCrossing,
+      bookings: (state) => state.bookings,
     }),
   },
   mounted() {
-    this.$store.dispatch('performances/fetchOne', {
-      perfId: this.$route.params.id,
-    })
-    this.$store.dispatch('bookings/fetchList', {
-      perfId: this.$route.params.id,
+    const crossingId = this.$route.params.id
+    if (!this.crossing || this.crossing.id !== crossingId) {
+      this.$store.dispatch('crossings/fetchSingleCrossing', crossingId)
+    }
+    this.$store.dispatch('bookings/fetchBookings', {
+      crossingId,
     })
   },
 }
@@ -30,11 +32,11 @@ export default {
   <Layout>
     <div :class="$style.container">
       <pre>
-        {{ crossing }}
+        {{ fetchingCrossing ? '...' : crossing }}
       </pre>
       <BookingsTable
         :bookings="bookings.bookingList"
-        :is-loading="bookings.loading"
+        :is-loading="bookings.fetchingBookings"
       />
     </div>
   </Layout>

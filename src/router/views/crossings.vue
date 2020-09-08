@@ -38,6 +38,10 @@ export default {
     toggleModal() {
       this.formOpen = !this.formOpen
     },
+    selectCrossing(crossingId) {
+      this.$emit('crossings/selectCrossing', crossingId)
+      this.$router.push({ name: 'traversee', params: { id: crossingId } })
+    },
   },
 }
 </script>
@@ -72,6 +76,7 @@ export default {
         :class="$style.crossingsTable"
         :performances="crossingList"
         :is-loading="fetchingCrossings || creatingCrossing"
+        @select="selectCrossing"
       />
     </div>
   </Layout>
