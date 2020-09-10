@@ -20,7 +20,9 @@ export default [
         // If the user is already logged in
         if (store.getters['auth/loggedIn']) {
           // Redirect to the home page instead
-          next({ name: 'home' })
+          next({
+            name: 'home',
+          })
         } else {
           // Continue to the login page
           next()
@@ -35,7 +37,9 @@ export default [
     meta: {
       authRequired: true,
     },
-    props: (route) => ({ user: store.state.auth.currentUser || {} }),
+    props: (route) => ({
+      user: store.state.auth.currentUser || {},
+    }),
   },
   {
     path: '/traversees',
@@ -44,7 +48,9 @@ export default [
     meta: {
       authRequired: true,
     },
-    props: (route) => ({ user: store.state.auth.currentUser || {} }),
+    props: (route) => ({
+      user: store.state.auth.currentUser || {},
+    }),
   },
   {
     path: '/traversees/:id',
@@ -53,7 +59,14 @@ export default [
     meta: {
       authRequired: true,
     },
-    props: (route) => ({ user: store.state.auth.currentUser || {} }),
+    props: (route) => ({
+      user: store.state.auth.currentUser || {},
+    }),
+  },
+  {
+    path: '/traversees/:id/upload',
+    name: 'bookings-upload',
+    component: () => lazyLoadView(import('@views/field-map-selector.vue')),
   },
   {
     path: '/profile/:username',
@@ -68,7 +81,9 @@ export default [
       beforeResolve(routeTo, routeFrom, next) {
         store
           // Try to fetch the user's information by their username
-          .dispatch('users/fetchUser', { username: routeTo.params.username })
+          .dispatch('users/fetchUser', {
+            username: routeTo.params.username,
+          })
           .then((user) => {
             // Add the user to `meta.tmp`, so that it can
             // be provided as a prop.
@@ -79,13 +94,20 @@ export default [
           .catch(() => {
             // If a user with the provided username could not be
             // found, redirect to the 404 page.
-            next({ name: '404', params: { resource: 'User' } })
+            next({
+              name: '404',
+              params: {
+                resource: 'User',
+              },
+            })
           })
       },
     },
     // Set the user from the route params, once it's set in the
     // beforeResolve route guard.
-    props: (route) => ({ user: route.meta.tmp.user }),
+    props: (route) => ({
+      user: route.meta.tmp.user,
+    }),
   },
   {
     path: '/logout',
@@ -98,7 +120,15 @@ export default [
           (route) => route.meta.authRequired
         )
         // Navigate back to previous page, or home as a fallback
-        next(authRequiredOnPreviousRoute ? { name: 'home' } : { ...routeFrom })
+        next(
+          authRequiredOnPreviousRoute
+            ? {
+                name: 'home',
+              }
+            : {
+                ...routeFrom,
+              }
+        )
       },
     },
   },

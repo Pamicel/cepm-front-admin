@@ -2,5 +2,5 @@
 import format from 'date-fns/format'
 
 export default function formatHour(date) {
-  return format(date, 'H:mm')
+  return format(date, "H'h'mm")
 }

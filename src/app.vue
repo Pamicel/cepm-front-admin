@@ -65,7 +65,7 @@ body,
   @extend %typography-small;
 
   overflow: hidden;
-  background-image: url('~@assets/images/background.png');
+  background-image: url('~@assets/images/background-2.png');
   background-position: fixed;
   background-size: cover;
 }
@@ -80,7 +80,7 @@ a:visited {
 }
 
 h1 {
-  @extend %typography-xxlarge;
+  @extend %typography-xlarge;
 }
 
 h2 {
@@ -106,5 +106,14 @@ h6 {
 
 #nprogress .bar {
   background: $color-link-text;
+}
+
+// transitions
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

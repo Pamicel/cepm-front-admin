@@ -1,7 +1,7 @@
 <script>
 export default {
   props: {
-    spectators: {
+    bookings: {
       type: Array,
       default: () => [],
     },
@@ -12,7 +12,7 @@ export default {
   },
   computed: {
     isEmpty() {
-      return this.spectators.length === 0
+      return this.bookings.length === 0
     },
   },
 }
@@ -20,7 +20,7 @@ export default {
 
 <template>
   <b-table
-    :data="isEmpty ? [] : spectators"
+    :data="isEmpty ? [] : bookings"
     :loading="isLoading"
     striped
     mobile-cards
@@ -54,9 +54,9 @@ export default {
       <section class="section">
         <div class="content has-text-grey has-text-centered">
           <p>
-            <b-icon icon="frown" size="is-large"> </b-icon>
+            <b-icon icon="ticket-alt" size="is-large"> </b-icon>
           </p>
-          <p>Aucune traversée.</p>
+          <p>Aucune reservation.</p>
         </div>
       </section>
     </template>

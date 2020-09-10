@@ -1,13 +1,23 @@
 import Papa from 'papaparse'
 
+const parseFileAsync = async (file) => {
+  const isFile = file instanceof File
+  const isCSVFile = isFile && file.type.indexOf('csv') !== -1
+  const isString = typeof file === 'string'
+  if (!isCSVFile && !isString) {
+    throw new Error('Invalid file type')
+  }
+  return new Promise((resolve, reject) =>
+    Papa.parse(file, {
+      error: reject,
+      complete: resolve,
+      header: true,
+    })
+  )
+}
+
 const initialFieldMap = {
   bookerEmail: null, // Email
-  bookingIdentifier: null, // Numéro
-  bookingType: null, // Formule
-  bookerFirstName: null, // Prénom acheteur (optional)
-  bookerLastName: null, // Nom acheteur (optional)
-  firstName: null, // Prénom (optional)
-  lastName: null, // Nom (optional)
 }
 
 export const state = {
@@ -28,8 +38,8 @@ export const state = {
    * their corresponding name in the parsed data
    *
    * eg
-   * Say the API expects only an "email" field for each passenger.
-   * Now say the data format for passengers is as follows:
+   * Say the API expects only an "email" field for each booking.
+   * Now say the data format for bookings is as follows:
    *  {
    *    emailAddress: "hello@iamjohn.eg"
    *    name: "John"
@@ -43,23 +53,34 @@ export const state = {
   fieldMap: {
     ...initialFieldMap,
   },
+  emptyFields: [],
   parsedData: [],
 }
 
 export const getters = {
+  /**
+   * Transforms the parsed data into something the API can consume
+   */
   dataDigest(state) {
     const { parsedData, fieldMap } = state
 
-    const data = parsedData.map((parsedPassenger) => {
-      const passenger = {}
+    const data = parsedData.map((parsedBooking) => {
+      const booking = {}
       for (const [apiEntry, originalEntry] of Object.entries(fieldMap)) {
-        passenger[apiEntry] = parsedPassenger[originalEntry]
+        booking[apiEntry] = parsedBooking[originalEntry]
       }
-      passenger.raw = JSON.stringify(parsedPassenger)
-      return passenger
+      booking.raw = JSON.stringify(parsedBooking)
+      return booking
     })
 
     return data
+  },
+  fieldMapComplete(state) {
+    const { fieldMap } = state
+
+    return Object.entries(fieldMap).every(
+      ([key, value]) => value !== initialFieldMap[key] // is different from the default value
+    )
   },
 }
 
@@ -93,17 +114,23 @@ export const mutations = {
   RESET_DATA(state) {
     state.parsedData = []
   },
+  SET_EMPTY_FIELDS(state, emptyFields) {
+    state.emptyFields = emptyFields
+  },
+  RESET_EMPTY_FIELDS(state) {
+    state.emptyFields = []
+  },
 }
 
 export const actions = {
-  parseCSV({ commit }, csv) {
+  async parseCSV({ commit }, csv) {
     commit('RESET_PARSING_ERRORS')
     commit('RESET_FIELDS')
+    commit('RESET_DATA')
+    commit('RESET_EMPTY_FIELDS')
 
     // Parse the csv
-    const parsedCSV = Papa.parse(csv, {
-      header: true,
-    })
+    const parsedCSV = await parseFileAsync(csv)
     const { errors, meta, data } = parsedCSV
 
     // Save the fields
@@ -119,6 +146,15 @@ export const actions = {
     // Save the data
     if (data) {
       commit('SAVE_DATA', data)
+    }
+
+    if (meta && meta.fields && data) {
+      let emptyFields = [...meta.fields]
+      for (const booking of data) {
+        // Only keep the fields that have no entries
+        emptyFields = emptyFields.filter((field) => !booking[field])
+      }
+      commit('SET_EMPTY_FIELDS', emptyFields)
     }
   },
 

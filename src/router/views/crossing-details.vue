@@ -1,27 +1,34 @@
 <script>
 import Layout from '@layouts/local.vue'
-import SpectatorsTable from '@components/spectators-table.vue'
-import { mapGetters, mapState } from 'vuex'
+import BookingsTable from '@components/bookings-table.vue'
+import { mapState } from 'vuex'
 
 export default {
   page: {
     title: 'Panneau de traversée',
     meta: [{ name: 'description', content: 'The Crossing Details page.' }],
   },
-  components: { Layout, SpectatorsTable },
+  components: { Layout, BookingsTable },
   computed: {
-    ...mapState(['spectators']),
-    ...mapGetters({
-      crossing: 'performances/getCurrent',
+    ...mapState({
+      fetchingCrossing: (state) => state.crossings.fetchingSingleCrossing,
+      crossing: (state) => state.crossings.selectedCrossing,
+      bookings: (state) => state.bookings,
     }),
   },
   mounted() {
-    this.$store.dispatch('performances/fetchOne', {
-      perfId: this.$route.params.id,
+    const crossingId = this.$route.params.id
+    if (!this.crossing || this.crossing.id !== crossingId) {
+      this.$store.dispatch('crossings/fetchSingleCrossing', crossingId)
+    }
+    this.$store.dispatch('bookings/fetchBookings', {
+      crossingId,
     })
-    this.$store.dispatch('spectators/fetchList', {
-      perfId: this.$route.params.id,
-    })
+  },
+  methods: {
+    async goToUploadPage(file) {
+      this.$router.push({ name: 'bookings-upload' })
+    },
   },
 }
 </script>
@@ -30,11 +37,12 @@ export default {
   <Layout>
     <div :class="$style.container">
       <pre>
-        {{ crossing }}
+        {{ fetchingCrossing ? '...' : crossing }}
       </pre>
-      <SpectatorsTable
-        :spectators="spectators.list"
-        :is-loading="spectators.loading"
+      <b-button @click="goToUploadPage">Uploader des reservations</b-button>
+      <BookingsTable
+        :bookings="bookings.bookingList"
+        :is-loading="bookings.fetchingBookings"
       />
     </div>
   </Layout>

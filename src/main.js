@@ -12,6 +12,8 @@ import {
   faInfoCircle,
   faExclamationTriangle,
   faExclamationCircle,
+  faMinus,
+  faPlus,
   faArrowUp,
   faAngleRight,
   faAngleLeft,
@@ -22,6 +24,7 @@ import {
   faCaretUp,
   faUpload,
   faFrown,
+  faTicketAlt,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -101,6 +104,8 @@ library.add(
   faInfoCircle,
   faExclamationTriangle,
   faExclamationCircle,
+  faMinus,
+  faPlus,
   faArrowUp,
   faAngleRight,
   faAngleLeft,
@@ -110,7 +115,8 @@ library.add(
   faCaretDown,
   faCaretUp,
   faUpload,
-  faFrown
+  faFrown,
+  faTicketAlt
 )
 Vue.component('vue-fontawesome', FontAwesomeIcon)
 Vue.use(Buefy, {
