@@ -102,9 +102,26 @@ describe('@state/modules/bookings-parser', () => {
     expect(bookingsParserModule).toBeAVuexModule()
   })
 
-  it('actions["bookingsParser/parseCSV"] resolves with correct csv', async () => {
+  it('actions["bookingsParser/parseCSV"] resolves with correct csv string', async () => {
     const result = await store.dispatch('bookingsParser/parseCSV', helloAsso)
     expect(result).toBe(undefined)
+  })
+
+  it('actions["bookingsParser/parseCSV"] resolves with correct csv file', async () => {
+    const file = new File([helloAsso], 'helloAsso.csv', {
+      type: 'text/csv',
+    })
+    const result = await store.dispatch('bookingsParser/parseCSV', file)
+    expect(result).toBe(undefined)
+  })
+
+  it('actions["bookingsParser/parseCSV"] throws with csv file with incorrect mime type', async () => {
+    const file = new File([helloAsso], 'helloAsso.csv', {
+      type: 'text/plain',
+    })
+    await expect(
+      store.dispatch('bookingsParser/parseCSV', file)
+    ).rejects.toThrow('Invalid file type')
   })
 
   it('actions["bookingsParser/parseCSV"] correctly saves data in state.bookingsParser.parsedData', async () => {

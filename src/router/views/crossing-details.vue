@@ -25,6 +25,11 @@ export default {
       crossingId,
     })
   },
+  methods: {
+    async goToUploadPage(file) {
+      this.$router.push({ name: 'bookings-upload' })
+    },
+  },
 }
 </script>
 
@@ -34,6 +39,7 @@ export default {
       <pre>
         {{ fetchingCrossing ? '...' : crossing }}
       </pre>
+      <b-button @click="goToUploadPage">Uploader des reservations</b-button>
       <BookingsTable
         :bookings="bookings.bookingList"
         :is-loading="bookings.fetchingBookings"

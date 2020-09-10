@@ -1,5 +1,21 @@
 import Papa from 'papaparse'
 
+const parseFileAsync = async (file) => {
+  const isFile = file instanceof File
+  const isCSVFile = isFile && file.type.indexOf('csv') !== -1
+  const isString = typeof file === 'string'
+  if (!isCSVFile && !isString) {
+    throw new Error('Invalid file type')
+  }
+  return new Promise((resolve, reject) =>
+    Papa.parse(file, {
+      error: reject,
+      complete: resolve,
+      header: true,
+    })
+  )
+}
+
 const initialFieldMap = {
   bookerEmail: null, // Email
 }
@@ -107,16 +123,14 @@ export const mutations = {
 }
 
 export const actions = {
-  parseCSV({ commit }, csv) {
+  async parseCSV({ commit }, csv) {
     commit('RESET_PARSING_ERRORS')
     commit('RESET_FIELDS')
     commit('RESET_DATA')
     commit('RESET_EMPTY_FIELDS')
 
     // Parse the csv
-    const parsedCSV = Papa.parse(csv, {
-      header: true,
-    })
+    const parsedCSV = await parseFileAsync(csv)
     const { errors, meta, data } = parsedCSV
 
     // Save the fields

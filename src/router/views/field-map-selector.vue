@@ -3,12 +3,12 @@ import Layout from '@layouts/local.vue'
 import ColumnSelector from '@components/column-selector.vue'
 import { mapState, mapGetters } from 'vuex'
 
-import helloAsso from './field-map-selector-debug.js'
-
 export default {
   components: { Layout, ColumnSelector },
   data() {
     return {
+      file: null,
+      fileError: null,
       apiFields: Object.keys(this.$store.state.bookingsParser.fieldMap),
     }
   },
@@ -28,9 +28,20 @@ export default {
     }),
   },
   beforeCreate() {
-    this.$store.dispatch('bookingsParser/parseCSV', helloAsso)
+    if (this.parsedData.length === 0) {
+      this.$router.replace('')
+    }
   },
   methods: {
+    async readNewFile(file) {
+      this.fileError = false
+      try {
+        await this.$store.dispatch('bookingsParser/parseCSV', file)
+      } catch (error) {
+        console.error(error)
+        this.fileError = true
+      }
+    },
     setFieldMapEntry(apiEntry, originalEntry) {
       if (this.fieldMap[apiEntry] === originalEntry) {
         return this.unsetFieldMapEntry(apiEntry)
@@ -52,36 +63,91 @@ export default {
 <template>
   <Layout>
     <div :class="$style.container">
-      <div :class="$style.mainTitle">
-        <BaseTitle>Avant de continuer</BaseTitle>
-      </div>
-
-      <div :class="$style.field">
+      <div>
+        <div :class="$style.mainTitle">
+          <BaseTitle>Nouvelles réservations</BaseTitle>
+        </div>
         <div :class="$style.description">
           <h3 :class="$style.descriptionInstruction">
-            Pour aider le serveur à s'y retrouver, selectionnez la colonne
-            contenant les
-            <span :class="$style.apiColumnDesc">emails des acheteurs</span> :
+            Uploadez
+            <span :class="$style.apiColumnDesc"
+              >le fichier .csv contenant les réservations</span
+            >
+            :
           </h3>
-          <p :class="$style.nottabene">
-            Si une seule colonne contient des emails, selectionnez celle-ci.
-          </p>
         </div>
-
-        <ColumnSelector
-          :column-names="fields.filter((field) => !emptyFields.includes(field))"
-          :selected-column="fieldMap['bookerEmail']"
-          :data="parsedData"
-          @select="(selected) => setFieldMapEntry('bookerEmail', selected)"
-          @unselect="() => unsetFieldMapEntry('bookerEmail')"
-        />
+        <div :class="$style.upload">
+          <b-upload
+            v-model="file"
+            drag-drop
+            :type="fileError ? 'is-danger' : file ? 'is-success' : ''"
+            accept=".csv"
+            class="file-label"
+            @input="readNewFile"
+          >
+            <section class="section">
+              <div class="content has-text-centered">
+                <p>
+                  <b-icon :icon="file ? 'check' : 'upload'" size="is-large" />
+                </p>
+                <p>{{ file ? file.name : 'Cliquez ou glissez un fichier' }}</p>
+              </div>
+            </section>
+          </b-upload>
+        </div>
       </div>
+      <Transition name="fade">
+        <div
+          v-if="file && !fileError && parsedData && parsedData.length > 0"
+          :class="$style.afterUpload"
+        >
+          <div>
+            <div :class="$style.description">
+              <h3 :class="$style.descriptionInstruction">
+                Avant de continuer, pour aider le serveur à s'y retrouver,
+                selectionnez la colonne contenant les
+                <span :class="$style.apiColumnDesc">emails des acheteurs</span>
+                :
+              </h3>
+              <p :class="$style.nottabene">
+                Faites très attention, il y a parfois plusieurs colonnes
+                d'email, veillez à sélectionner la bonne colonne.
+              </p>
+            </div>
 
-      <Transition appear>
-        <div v-if="fieldMapComplete" :class="$style.buttonContainer">
-          <b-button type="is-success" size="is-medium">
-            Tout envoyer →
-          </b-button>
+            <ColumnSelector
+              :column-names="
+                fields.filter((field) => !emptyFields.includes(field))
+              "
+              :selected-column="fieldMap['bookerEmail']"
+              :data="parsedData"
+              @select="(selected) => setFieldMapEntry('bookerEmail', selected)"
+              @unselect="() => unsetFieldMapEntry('bookerEmail')"
+            />
+          </div>
+
+          <Transition name="fade">
+            <div v-if="fieldMapComplete" :class="$style.buttonContainer">
+              <b-button
+                size="is-medium"
+                @click="() => unsetFieldMapEntry('bookerEmail')"
+              >
+                Changer
+              </b-button>
+
+              <div :class="$style.conclusion">
+                <div :class="$style.description">
+                  <h3 :class="$style.descriptionInstruction">
+                    Merci, toutes les données peuvent maintenant être envoyées
+                    au serveur
+                  </h3>
+                </div>
+              </div>
+              <b-button type="is-success" size="is-medium">
+                Envoyer →
+              </b-button>
+            </div>
+          </Transition>
         </div>
       </Transition>
     </div>
@@ -90,6 +156,11 @@ export default {
 
 <style lang="scss" module>
 @import '@design';
+
+.upload {
+  text-align: center;
+}
+
 .mainTitle {
   max-width: $size-content-width-max;
   margin: auto;
@@ -99,6 +170,10 @@ export default {
   }
 }
 
+.conclusion {
+  margin-top: 1rem;
+}
+
 .buttonContainer {
   max-width: $size-content-width-max;
   padding: 1rem;
@@ -106,21 +181,21 @@ export default {
   text-align: center;
 }
 
-.field {
-  max-width: 100%;
-  margin: 0 auto 2rem;
-  .descriptionInstruction {
-    margin-bottom: 0.5rem;
-  }
-  .apiColumnDesc {
-    border-bottom: 1px solid black;
-  }
-  .description {
-    max-width: $size-content-width-max;
-    padding: 1rem;
-    margin: 0 auto;
-  }
+// .field {
+//   max-width: 100%;
+//   margin: 0 auto 2rem;
+.descriptionInstruction {
+  margin-bottom: 0.5rem;
 }
+.apiColumnDesc {
+  border-bottom: 1px solid black;
+}
+.description {
+  max-width: $size-content-width-max;
+  padding: 1rem;
+  margin: 0 auto;
+}
+// }
 .nottabene {
   font-size: 0.9em;
 }

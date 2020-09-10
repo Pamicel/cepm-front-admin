@@ -12,11 +12,6 @@ export default [
     component: () => lazyLoadView(import('@views/histoire.vue')),
   },
   {
-    path: '/dev-fieldmap',
-    name: 'dev-fieldmap',
-    component: () => lazyLoadView(import('@views/field-map-selector.vue')),
-  },
-  {
     path: '/login',
     name: 'login',
     component: () => lazyLoadView(import('@views/login.vue')),
@@ -67,6 +62,11 @@ export default [
     props: (route) => ({
       user: store.state.auth.currentUser || {},
     }),
+  },
+  {
+    path: '/traversees/:id/upload',
+    name: 'bookings-upload',
+    component: () => lazyLoadView(import('@views/field-map-selector.vue')),
   },
   {
     path: '/profile/:username',
