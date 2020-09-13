@@ -15,6 +15,19 @@ describe('@state/modules/auth', () => {
       window.localStorage.clear()
     })
 
+    it('mutations.START_LOGGING_IN sets loggingIn to true', () => {
+      expect(store.state.auth.loggingIn).toBe(false)
+      store.commit('auth/START_LOGGING_IN')
+      expect(store.state.auth.loggingIn).toBe(true)
+    })
+
+    it('mutations.END_LOGGING_IN sets loggingIn to true', () => {
+      store.commit('auth/START_LOGGING_IN')
+      expect(store.state.auth.loggingIn).toBe(true)
+      store.commit('auth/END_LOGGING_IN')
+      expect(store.state.auth.loggingIn).toBe(false)
+    })
+
     it('mutations.SET_CURRENT_USER correctly sets axios default authorization header', () => {
       axios.defaults.headers.common.Bearer = ''
 

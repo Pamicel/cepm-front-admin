@@ -4,6 +4,7 @@ const apiUrl = process.env.API_BASE_URL
   : '/api'
 
 export const state = {
+  loggingIn: false,
   currentUser: getSavedState('auth.currentUser'),
 }
 
@@ -12,6 +13,12 @@ export const mutations = {
     state.currentUser = newValue
     saveState('auth.currentUser', newValue)
     setDefaultAuthHeaders(state)
+  },
+  START_LOGGING_IN(state) {
+    state.loggingIn = true
+  },
+  END_LOGGING_IN(state) {
+    state.loggingIn = false
   },
 }
 
@@ -31,21 +38,26 @@ export const actions = {
   },
 
   // Logs in the current user.
-  logIn({ commit }, { email, password } = {}) {
-    return axios
-      .post(`${apiUrl}/login`, {
+  async logIn({ commit }, { email, password } = {}) {
+    commit('START_LOGGING_IN')
+    try {
+      const response = await axios.post(`${apiUrl}/login`, {
         email,
         password,
       })
-      .then((response) => {
-        const token = response.headers['x-renewed-jwt-token']
-        const user = {
-          ...response.data,
-          token,
-        }
-        commit('SET_CURRENT_USER', user)
-        return user
-      })
+
+      const token = response.headers['x-renewed-jwt-token']
+      const user = {
+        ...response.data,
+        token,
+      }
+      commit('SET_CURRENT_USER', user)
+      commit('END_LOGGING_IN')
+      return user
+    } catch (error) {
+      commit('END_LOGGING_IN')
+      throw error
+    }
   },
 
   // Logs out the current user.

@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import Buefy from 'buefy'
 import axios from 'axios'
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -122,6 +123,7 @@ global.createComponentMocks = ({ store, router, style, mocks, stubs }) => {
   // Vue and thereby affecting other tests.
   // https://vue-test-utils.vuejs.org/api/#createlocalvue
   const localVue = vueTestUtils.createLocalVue()
+  localVue.use(Buefy)
   const returnOptions = { localVue }
 
   // https://vue-test-utils.vuejs.org/api/options.html#stubs

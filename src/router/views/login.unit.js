@@ -40,19 +40,6 @@ describe('@views/login', () => {
       expect(routerPush).toHaveBeenCalledWith(redirectFrom)
     })
   })
-
-  it('displays an error after failed login', () => {
-    const { vm } = mountLogin()
-
-    const routerPush = jest.fn()
-    vm.$router = { push: routerPush }
-
-    expect.assertions(2)
-    return vm.tryToLogIn().then(() => {
-      expect(vm.authError).toBeTruthy()
-      expect(vm.$el.textContent).toContain('error')
-    })
-  })
 })
 
 function mountLogin() {
