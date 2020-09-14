@@ -66,6 +66,9 @@ export default [
   {
     path: '/traversees/:id/upload',
     name: 'bookings-upload',
+    meta: {
+      authRequired: true,
+    },
     component: () => lazyLoadView(import('@views/field-map-selector.vue')),
   },
   {
@@ -113,7 +116,6 @@ export default [
     path: '/logout',
     name: 'logout',
     meta: {
-      authRequired: true,
       beforeResolve(routeTo, routeFrom, next) {
         store.dispatch('auth/logOut')
         const authRequiredOnPreviousRoute = routeFrom.matched.some(

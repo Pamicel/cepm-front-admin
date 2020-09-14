@@ -65,7 +65,7 @@ body,
   @extend %typography-small;
 
   overflow: hidden;
-  background-image: url('~@assets/images/background-2.png');
+  background-image: url('~@assets/images/background.png');
   background-position: fixed;
   background-size: cover;
 }
