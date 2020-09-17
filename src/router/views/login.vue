@@ -85,7 +85,7 @@ export default {
           :class="$style.submitButton"
           @click="tryToLogIn"
         >
-          <BaseIcon v-if="loggingIn" name="sync" spin />
+          <BaseIcon v-if="loggingIn" name="fan" spin />
           <span v-else>
             Se connecter
           </span>

@@ -8,6 +8,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 // internal icons
 import {
   faCheck,
+  faTimes,
   faCheckCircle,
   faInfoCircle,
   faExclamationTriangle,
@@ -25,6 +26,8 @@ import {
   faUpload,
   faFrown,
   faTicketAlt,
+  faFan,
+  faFile,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -116,7 +119,10 @@ library.add(
   faCaretUp,
   faUpload,
   faFrown,
-  faTicketAlt
+  faTicketAlt,
+  faFan,
+  faFile,
+  faTimes
 )
 Vue.component('vue-fontawesome', FontAwesomeIcon)
 Vue.use(Buefy, {

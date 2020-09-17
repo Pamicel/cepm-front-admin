@@ -85,6 +85,13 @@ export default {
       >
         <div :class="$style.columnName">
           {{ name }}
+          <b-button
+            v-if="selectedColumn === name"
+            rounded
+            type="is-small"
+            :class="$style.columnNameButton"
+            >changer</b-button
+          >
         </div>
         <div
           v-for="[key, value] of Object.entries(columnContent(name))"
@@ -131,7 +138,7 @@ $row-bg-color: white;
   flex-direction: row;
   flex-wrap: nowrap;
   width: 100%;
-  padding: 1rem;
+  padding: 0 1rem;
   margin: auto;
   overflow: auto;
 
@@ -198,7 +205,15 @@ $row-bg-color: white;
       .columnName {
         @extend .row;
 
+        position: relative;
         background-color: var(--header-bg-color);
+
+        .columnNameButton {
+          position: absolute;
+          top: 10%;
+          right: 0.5rem;
+          height: 80%;
+        }
       }
     }
 
