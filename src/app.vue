@@ -108,12 +108,27 @@ h6 {
   background: $color-link-text;
 }
 
-// transitions
+// ===
+// Transitions
+// ===
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.1s ease;
+}
+.slide-fade-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(10px);
 }
 </style>

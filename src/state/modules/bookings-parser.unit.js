@@ -22,6 +22,9 @@ describe('@state/modules/bookings-parser', () => {
     expect(store.state.bookingsParser.parsingErrors).toEqual(data)
   })
   it('mutations["bookingsParser/RESET_PARSING_ERRORS"] sets state.bookingsParser.parsingErrors to [] ', async () => {
+    const data = ['a', 'b', 'c']
+    store.commit('bookingsParser/SAVE_PARSING_ERRORS', data)
+    expect(store.state.bookingsParser.parsingErrors).toEqual(data)
     store.commit('bookingsParser/RESET_PARSING_ERRORS')
     expect(store.state.bookingsParser.parsingErrors).toEqual([])
   })
@@ -31,6 +34,9 @@ describe('@state/modules/bookings-parser', () => {
     expect(store.state.bookingsParser.fields).toEqual(data)
   })
   it('mutations["bookingsParser/RESET_FIELDS"] sets state.bookingsParser.fields to []', async () => {
+    const data = ['foo', 4, 'hi']
+    store.commit('bookingsParser/SAVE_FIELDS', data)
+    expect(store.state.bookingsParser.fields).toEqual(data)
     store.commit('bookingsParser/RESET_FIELDS')
     expect(store.state.bookingsParser.fields).toEqual([])
   })
@@ -51,6 +57,13 @@ describe('@state/modules/bookings-parser', () => {
     expect(store.state.bookingsParser.fieldMap[apiEntry]).toEqual(null)
   })
   it('mutations["bookingsParser/RESET_FIELD_MAP"] sets all values in state.bookingsParser.fieldMap to null', async () => {
+    const apiEntry = 'name of entry'
+    const originalEntry = Infinity
+    store.commit('bookingsParser/SET_FIELD_MAP_ENTRY', {
+      apiEntry,
+      originalEntry,
+    })
+    expect(store.state.bookingsParser.fieldMap[apiEntry]).toEqual(originalEntry)
     store.commit('bookingsParser/RESET_FIELD_MAP')
     expect(
       Object.values(store.state.bookingsParser.fieldMap).every(
@@ -64,6 +77,9 @@ describe('@state/modules/bookings-parser', () => {
     expect(store.state.bookingsParser.parsedData).toEqual(data)
   })
   it('mutations["bookingsParser/RESET_DATA"] resets state.bookingsParser.parsedData to []', async () => {
+    const data = ['mommy', 'why', 'Freud', 'Dolan']
+    store.commit('bookingsParser/SAVE_DATA', data)
+    expect(store.state.bookingsParser.parsedData).toEqual(data)
     store.commit('bookingsParser/RESET_DATA')
     expect(store.state.bookingsParser.parsedData).toEqual([])
   })
@@ -73,8 +89,54 @@ describe('@state/modules/bookings-parser', () => {
     expect(store.state.bookingsParser.emptyFields).toEqual(data)
   })
   it('mutations["bookingsParser/RESET_EMPTY_FIELDS"] resets state.bookingsParser.emptyFields to []', async () => {
+    const data = ['this', 'is', 'different', 1337]
+    store.commit('bookingsParser/SET_EMPTY_FIELDS', data)
+    expect(store.state.bookingsParser.emptyFields).toEqual(data)
     store.commit('bookingsParser/RESET_EMPTY_FIELDS')
     expect(store.state.bookingsParser.emptyFields).toEqual([])
+  })
+
+  it('actions["bookingsParser/reset"] resets everything to its initial value', async () => {
+    // Fill the state with arbitrary values
+
+    // parsingError
+    const parsingErrors = ['a', 'b', 'c']
+    store.commit('bookingsParser/SAVE_PARSING_ERRORS', parsingErrors)
+    // fields
+    const fields = ['foo', 4, 'hi']
+    store.commit('bookingsParser/SAVE_FIELDS', fields)
+    // fieldMap
+    const apiEntry = 'name of entry'
+    const originalEntry = Infinity
+    store.commit('bookingsParser/SET_FIELD_MAP_ENTRY', {
+      apiEntry,
+      originalEntry,
+    })
+    // emptyFields
+    const emptyFields = ['this', 'is', 'different', 1337]
+    store.commit('bookingsParser/SET_EMPTY_FIELDS', emptyFields)
+    // data
+    const data = ['mommy', 'why', 'Freud', 'Dolan']
+    store.commit('bookingsParser/SAVE_DATA', data)
+
+    // Reset everything
+
+    store.dispatch('bookingsParser/reset')
+
+    // Check that the state is at its initial value after reset
+
+    // parsingErrors
+    expect(store.state.bookingsParser.parsingErrors).toEqual([])
+    // fields
+    expect(store.state.bookingsParser.fields).toEqual([])
+    // fieldMap
+    const fieldMapValues = Object.values(store.state.bookingsParser.fieldMap)
+    const isNull = (val) => val === null
+    expect(fieldMapValues.every(isNull)).toEqual(true)
+    // emptyFields
+    expect(store.state.bookingsParser.emptyFields).toEqual([])
+    // data
+    expect(store.state.bookingsParser.parsedData).toEqual([])
   })
 
   it('getters["bookingsParser/fieldMapComplete"] returns true when all fields in flieldMap are set', async () => {
@@ -215,6 +277,43 @@ describe('@state/modules/bookings-parser', () => {
     ])
   })
 
+  it('actions["bookingsParser/parseCSV"] sets parsing error when csv is not correct', async () => {
+    const csvString = invalidCSVStrings.missingQuotes
+    await store.dispatch('bookingsParser/parseCSV', csvString)
+    expect(store.state.bookingsParser.parsingErrors.length > 0).toBe(true)
+  })
+
+  it('actions["bookingsParser/parseCSV"] has parsing error type "Quotes" when csv has mismatched quotes', async () => {
+    const csvString = invalidCSVStrings.missingQuotes
+    await store.dispatch('bookingsParser/parseCSV', csvString)
+    const hasMissingQuotesError = !!store.state.bookingsParser.parsingErrors.find(
+      (error) => error.type === 'Quotes'
+    )
+    expect(hasMissingQuotesError).toBe(true)
+  })
+
+  it('actions["bookingsParser/parseCSV"] has parsing error type "FieldMismatch" when csv has rows either too long or too short', async () => {
+    const csvString = `"ID","Name","Org_ID","TransType","Amount"
+    "1453","John Joe","AZ7629","CREDIT_CARD","23.44","ONE MORE COLUMN"
+    "1455","Donny","13DSFKJ","CASH"
+    "1480","Big Guy","CREDIT_CARD","3.43"`
+    await store.dispatch('bookingsParser/parseCSV', csvString)
+    const hasFieldMismatchError = !!store.state.bookingsParser.parsingErrors.find(
+      (error) => error.type === 'FieldMismatch'
+    )
+    expect(hasFieldMismatchError).toBe(true)
+  })
+
+  it('actions["bookingsParser/parseCSV"] parses anyway when csv has rows either too long or too short', async () => {
+    const csvString = `"ID","Name","Org_ID","TransType","Amount"
+    "1453","John Joe","AZ7629","CREDIT_CARD","23.44","ONE MORE COLUMN"
+    "1455","Donny","13DSFKJ","CASH"
+    "1480","Big Guy","CREDIT_CARD","3.43"`
+    await store.dispatch('bookingsParser/parseCSV', csvString)
+    const allRowsParsed = store.state.bookingsParser.parsedData.length === 3
+    expect(allRowsParsed).toBe(true)
+  })
+
   it('actions["bookingsParser/setFieldMapEntry"] sets the entry in state.bookingsParser.fieldMap', async () => {
     const apiEntry = 'bookerEmail'
     const originalEntry = 'whatsup'
@@ -287,4 +386,62 @@ describe('@state/modules/bookings-parser', () => {
       raw: undefined,
     })
   })
+
+  it('getters["bookingsParser/rowsWithMissingRequiredFields"] returns all rows that have missing required values', async () => {
+    const incomplete = [
+      {
+        id: '2', // everything is string because the data is parsed to csv and back
+        hello: '', // maps to the required
+      },
+      {
+        id: '3',
+        hello: '',
+      },
+    ]
+    const complete = [
+      {
+        id: '1',
+        hello: 'hi',
+      },
+    ]
+
+    const data = [...incomplete, ...complete]
+
+    const fieldMap = {
+      bookerEmail: 'hello',
+    }
+
+    const csvString = Papa.unparse(data, {
+      header: true,
+      delimiter: ';',
+    })
+    await store.dispatch('bookingsParser/parseCSV', csvString)
+    for (const [apiEntry, originalEntry] of Object.entries(fieldMap)) {
+      await store.dispatch('bookingsParser/setFieldMapEntry', {
+        apiEntry,
+        originalEntry,
+      })
+    }
+
+    expect(
+      store.getters['bookingsParser/rowsWithMissingRequiredFields']
+    ).toEqual(incomplete)
+  })
 })
+
+const invalidCSVStrings = {
+  missingQuotes: `"ID","Name","Org_ID","TransType","Amount"
+  "1453","John Joe","AZ7629","CREDIT_CARD,"23.44"
+  "1455","Donny","13DSFKJ","CASH","2.33"
+  "1480","Big Guy","FEID123","CREDIT_CARD","3.43"`,
+
+  allInvalidRows: `"ID","Name","Org_ID","TransType","Amount"
+  "1453","John Joe","AZ7629","CREDIT_CARD","23.44","ONE MORE COLUMN"
+  "1455","Donny","13DSFKJ","CASH"
+  "1480","Big Guy","CREDIT_CARD","3.43"`,
+
+  someInvalidRows: `"ID","Name","Org_ID","TransType","Amount"
+  "1453","John Joe","AZ7629","CREDIT_CARD","23.44",
+  "1455","Donny","13DSFKJ","CASH","2.33","ONE MORE COLUMN"
+  "1480","Big Guy","FEID123","CREDIT_CARD","3.43"`,
+}

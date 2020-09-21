@@ -20,6 +20,8 @@ const initialFieldMap = {
   bookerEmail: null, // Email
 }
 
+const requiredFields = ['bookerEmail']
+
 export const state = {
   parsingErrors: [
     /*
@@ -58,20 +60,46 @@ export const state = {
 }
 
 export const getters = {
+  rowsWithMissingRequiredFields(state) {
+    const { parsedData, fieldMap } = state
+
+    return parsedData
+      .map((parsedBooking) => {
+        for (const [apiEntry, originalEntry] of Object.entries(fieldMap)) {
+          const isRequired = requiredFields.includes(apiEntry)
+          const isEmpty = !parsedBooking[originalEntry]
+          if (isRequired && isEmpty) {
+            // Interupt and return the booking if any required field has an "empty" value
+            return parsedBooking
+          }
+        }
+        return null
+      })
+      .filter(Boolean) // filter the null bookings
+  },
   /**
    * Transforms the parsed data into something the API can consume
    */
   dataDigest(state) {
     const { parsedData, fieldMap } = state
 
-    const data = parsedData.map((parsedBooking) => {
-      const booking = {}
-      for (const [apiEntry, originalEntry] of Object.entries(fieldMap)) {
-        booking[apiEntry] = parsedBooking[originalEntry]
-      }
-      booking.raw = JSON.stringify(parsedBooking)
-      return booking
-    })
+    const data = parsedData
+      .map((parsedBooking) => {
+        const booking = {}
+        for (const [apiEntry, originalEntry] of Object.entries(fieldMap)) {
+          const isRequired = requiredFields.includes(apiEntry)
+          const isEmpty = !parsedBooking[originalEntry]
+          if (isRequired && isEmpty) {
+            // Interupt and return null if the field is required and the value is falsy
+            return null
+          }
+          // Otherwise fill this entry for the booking
+          booking[apiEntry] = parsedBooking[originalEntry]
+        }
+        booking.raw = JSON.stringify(parsedBooking)
+        return booking
+      })
+      .filter(Boolean) // filter the null bookings
 
     return data
   },
@@ -123,11 +151,8 @@ export const mutations = {
 }
 
 export const actions = {
-  async parseCSV({ commit }, csv) {
-    commit('RESET_PARSING_ERRORS')
-    commit('RESET_FIELDS')
-    commit('RESET_DATA')
-    commit('RESET_EMPTY_FIELDS')
+  async parseCSV({ commit, dispatch }, csv) {
+    dispatch('reset')
 
     // Parse the csv
     const parsedCSV = await parseFileAsync(csv)
@@ -172,5 +197,12 @@ export const actions = {
     commit('UNSET_FIELD_MAP_ENTRY', {
       apiEntry,
     })
+  },
+  reset({ commit }) {
+    commit('RESET_PARSING_ERRORS')
+    commit('RESET_FIELDS')
+    commit('RESET_DATA')
+    commit('RESET_EMPTY_FIELDS')
+    commit('RESET_FIELD_MAP')
   },
 }
