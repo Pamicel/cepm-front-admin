@@ -31,10 +31,10 @@ export default {
 
 <template>
   <Layout v-if="offlineConfirmed">
-    <h1 :class="$style.title">
-      The page timed out while loading. Are you sure you're still connected to
-      the Internet?
-    </h1>
+    <h1 :class="$style.title"
+      >La demande de chargement de la page a expirée, êtes-vous sûr•e d'être
+      toujours connecté•e à internet ?</h1
+    >
   </Layout>
   <LoadingView v-else />
 </template>
