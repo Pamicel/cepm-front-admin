@@ -42,3 +42,27 @@
     box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
   }
 }
+
+@mixin _embossed_paper_shadow($size) {
+  box-shadow: $size $size ($size * 2) 0 rgba(0, 0, 0, 0.06),
+    (-$size) (-$size) ($size * 2) 0 #fff;
+}
+
+@mixin embossed_paper_shadow($level) {
+  @if $level == 1 {
+    @include _embossed_paper_shadow(2px);
+  } @else if $level == 2 {
+    @include _embossed_paper_shadow(4px);
+  } @else if $level == 3 {
+    @include _embossed_paper_shadow(8px);
+  }
+}
+
+@mixin _debossed_paper_shadow($size) {
+  box-shadow: inset $size $size ($size * 2) 0 rgba(0, 0, 0, 0.06),
+    inset (-$size) (-$size) ($size * 2) 0 #fff;
+}
+
+@mixin debossed_paper_shadow() {
+  @include _debossed_paper_shadow(3px);
+}

@@ -110,6 +110,7 @@ export default {
 
       padding: 0;
       margin: 0 0 1rem;
+      background-color: transparent;
       border-bottom: 0.1em solid transparent;
       transition: all 100ms;
       &:hover {

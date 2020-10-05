@@ -100,25 +100,25 @@ export default {
 
 .loginBox {
   @media screen and (min-width: $size-content-width-min) {
-    .illustration {
-      width: 100%;
-      height: 10rem;
-      background-image: url('~@assets/images/background-2.png');
-      background-position: center;
-      background-size: cover;
-    }
+    // .illustration {
+    //   width: 100%;
+    //   height: 10rem;
+    //   background-image: url('~@assets/images/background-2.png');
+    //   background-position: center;
+    //   background-size: cover;
+    // }
 
-    @include box_shadow(1);
+    @include embossed_paper_shadow(3);
 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     max-width: $size-content-width-min;
+    // padding: 2rem;
     margin: auto;
     overflow: hidden;
-    background-color: #fff;
-    border-radius: 5px;
+    border-radius: 8px;
   }
 
   .form {
@@ -128,7 +128,7 @@ export default {
       text-align: center;
     }
 
-    padding: 2rem;
+    padding: 4rem;
     .input {
       color: black;
     }

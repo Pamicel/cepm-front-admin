@@ -117,7 +117,7 @@ export default {
     text-align: justify;
 
     em {
-      background-color: $color-b;
+      background-color: $color-a;
     }
 
     .contentImg,

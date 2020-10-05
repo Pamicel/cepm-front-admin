@@ -31,7 +31,12 @@ export default {
         >
         <br />
       </span>
-      <b-button rounded type="is-large" @click="$router.push('login')">
+      <b-button
+        :class="$style.button"
+        rounded
+        type="is-large"
+        @click="$router.push('login')"
+      >
         Entrer
       </b-button>
     </div>
@@ -40,6 +45,17 @@ export default {
 
 <style lang="scss" module>
 @import '@design';
+
+.button {
+  @include embossed_paper_shadow(2);
+
+  background-color: $color-body-bg;
+  border: 0;
+  transition: all 200ms ease-in-out;
+  &:hover {
+    @include embossed_paper_shadow(3);
+  }
+}
 
 .hello {
   display: flex;
@@ -53,10 +69,7 @@ export default {
   text-align: center;
 
   .helloLogo {
-    // position: absolute;
-    // bottom: 100%;
     height: 10vh;
-    // transform: translateY(40%);
   }
   .helloText {
     position: relative;
@@ -65,7 +78,6 @@ export default {
     align-items: center;
     justify-content: center;
     margin: 1rem 0;
-    // background-color: $color-c;
     border-radius: 2rem;
 
     $size: 25rem;
