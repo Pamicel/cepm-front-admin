@@ -32,7 +32,7 @@ const router = new VueRouter({
 })
 
 // Before each route evaluates...
-router.beforeEach((routeTo, routeFrom, next) => {
+router.beforeEach(async (routeTo, routeFrom, next) => {
   // If this isn't an initial page load...
   if (routeFrom.name !== null) {
     // Start the route progress bar.
@@ -41,7 +41,9 @@ router.beforeEach((routeTo, routeFrom, next) => {
 
   // Check if auth is required on this route
   // (including nested routes).
-  const authRequired = routeTo.matched.some((route) => route.meta.authRequired)
+  const [route] = routeTo.matched
+  const authRequired = route.meta.authRequired
+  const authRoles = route.meta.authRoles
 
   // If auth isn't required for the route, just continue.
   if (!authRequired) return next()
@@ -49,11 +51,23 @@ router.beforeEach((routeTo, routeFrom, next) => {
   // If auth is required and the user is logged in...
   if (store.getters['auth/loggedIn']) {
     // Validate the local user token...
-    return store.dispatch('auth/verify').then((validUser) => {
-      // Then continue if the token still represents a valid user,
-      // otherwise redirect to login.
-      validUser ? next() : redirectToLogin()
-    })
+    const validUser = await store.dispatch('auth/verify')
+
+    // If verification fails: redirect to login.
+    if (!validUser) {
+      return redirectToLogin()
+    }
+
+    // Check authRoles (absence of authRoles means all roles are allowed)
+    if (authRoles && !authRoles.includes(validUser.auth.role)) {
+      return next({
+        name: '404',
+        query: { redirectFrom: routeTo.fullPath },
+      })
+    }
+
+    // Continue if verification succeeds.
+    return next()
   }
 
   // If auth is required and the user is NOT currently logged in,
