@@ -22,6 +22,18 @@ describe('@views/login', () => {
     })
   })
 
+  it('sets authError after failed login', () => {
+    const { vm } = mountLogin()
+
+    vm.email = 'correctEmail'
+    vm.password = '%%%incorrectPwd%%%'
+
+    expect.assertions(1)
+    return vm.tryToLogIn().then(() => {
+      expect(vm.authError).not.toBeFalsy()
+    })
+  })
+
   it('redirects to redirectFrom query, if it exists, after successful login', () => {
     const { vm } = mountLogin()
 

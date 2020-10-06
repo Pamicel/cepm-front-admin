@@ -8,14 +8,14 @@ describe('Authentication', () => {
     cy.visit('/login')
 
     // Enter bad login info
-    cy.get('input[name="username"]').type('badUsername')
+    cy.get('input[name="email"]').type('badUsername')
     cy.get('input[name="password"]').type('badPassword')
 
     // Submit the login form
     cy.contains('button', 'Se connecter').click()
 
     // Ensure that an error displays
-    cy.contains('error logging in')
+    cy.contains("L'identifiant semble erroné")
   })
 
   // it('successful login works redirects to the home page and logging out works', () => {

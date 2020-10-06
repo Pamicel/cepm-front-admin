@@ -79,6 +79,17 @@ export default {
             @keyup.enter.native="tryToLogIn"
           />
         </b-field>
+        <b-tag
+          v-if="authError"
+          type="is-danger"
+          attached
+          closable
+          close-type="is-danger"
+          aria-close-label="Fermer"
+          @close="authError = null"
+        >
+          L'identifiant semble erroné
+        </b-tag>
         <b-button
           :disabled="loggingIn || incomplete"
           size="is-medium"
