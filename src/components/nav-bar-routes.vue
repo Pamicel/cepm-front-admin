@@ -27,6 +27,7 @@ export default {
         tag='li'
         key={route.name}
         to={route}
+        class={$style.link}
         exact-active-class={$style.active}
       >
         <a>{getRouteTitle(route)}</a>
@@ -39,6 +40,10 @@ export default {
 <style lang="scss" module>
 @import '@design';
 
+.link {
+  display: inline-block;
+  margin-right: $size-grid-padding;
+}
 .active a {
   font-weight: 600;
   color: $color-link-text-active;

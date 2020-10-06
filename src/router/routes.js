@@ -47,6 +47,7 @@ export default [
     component: () => lazyLoadView(import('@views/crossings.vue')),
     meta: {
       authRequired: true,
+      authRoles: ['director'],
     },
     props: (route) => ({
       user: store.state.auth.currentUser || {},
@@ -58,6 +59,7 @@ export default [
     component: () => lazyLoadView(import('@views/crossing-details.vue')),
     meta: {
       authRequired: true,
+      authRoles: ['director'],
     },
     props: (route) => ({
       user: store.state.auth.currentUser || {},
@@ -68,6 +70,7 @@ export default [
     name: 'bookings-upload',
     meta: {
       authRequired: true,
+      authRoles: ['director'],
     },
     component: () => lazyLoadView(import('@views/field-map-selector.vue')),
   },
@@ -81,29 +84,27 @@ export default [
       // and the `props` function, we must create an object for temporary
       // data only used during route resolution.
       tmp: {},
-      beforeResolve(routeTo, routeFrom, next) {
-        store
+      async beforeResolve(routeTo, _, next) {
+        try {
           // Try to fetch the user's information by their username
-          .dispatch('users/fetchUser', {
+          const user = await store.dispatch('users/fetchUser', {
             username: routeTo.params.username,
           })
-          .then((user) => {
-            // Add the user to `meta.tmp`, so that it can
-            // be provided as a prop.
-            routeTo.meta.tmp.user = user
-            // Continue to the route.
-            next()
+          // Add the user to `meta.tmp`, so that it can
+          // be provided as a prop.
+          routeTo.meta.tmp.user = user
+          // Continue to the route.
+          next()
+        } catch (error) {
+          // If a user with the provided username could not be
+          // found, redirect to the 404 page.
+          next({
+            name: '404',
+            params: {
+              resource: 'User',
+            },
           })
-          .catch(() => {
-            // If a user with the provided username could not be
-            // found, redirect to the 404 page.
-            next({
-              name: '404',
-              params: {
-                resource: 'User',
-              },
-            })
-          })
+        }
       },
     },
     // Set the user from the route params, once it's set in the
@@ -113,10 +114,19 @@ export default [
     }),
   },
   {
+    path: '/users',
+    name: 'users',
+    component: () => lazyLoadView(import('@views/users.vue')),
+    meta: {
+      authRequired: true,
+      authRoles: ['admin'],
+    },
+  },
+  {
     path: '/logout',
     name: 'logout',
     meta: {
-      beforeResolve(routeTo, routeFrom, next) {
+      beforeResolve(_, routeFrom, next) {
         store.dispatch('auth/logOut')
         const authRequiredOnPreviousRoute = routeFrom.matched.some(
           (route) => route.meta.authRequired

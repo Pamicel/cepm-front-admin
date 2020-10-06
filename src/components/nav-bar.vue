@@ -1,12 +1,12 @@
 <script>
-import { authComputed } from '@state/helpers'
+import { mapGetters, mapState } from 'vuex'
 import NavBarRoutes from './nav-bar-routes.vue'
 
 export default {
   components: { NavBarRoutes },
   data() {
     return {
-      persistentNavRoutes: [
+      persistentRoutes: [
         {
           name: 'home',
           title: 'Accueil',
@@ -16,21 +16,31 @@ export default {
           title: 'À propos',
         },
       ],
-      loggedInNavRoutes: [
-        {
-          name: 'traversees',
-          title: 'Traversées',
-        },
-        {
-          name: 'profile',
-          title: 'Mon compte',
-        },
-        {
-          name: 'logout',
-          title: 'Se déconnecter',
-        },
-      ],
-      loggedOutNavRoutes: [
+      loggedInRoutes: {
+        adminsOnly: [
+          {
+            name: 'users',
+            title: 'Utilisateurs',
+          },
+        ],
+        directorsOnly: [
+          {
+            name: 'traversees',
+            title: 'Traversées',
+          },
+        ],
+        account: [
+          {
+            name: 'profile',
+            title: 'Mon compte',
+          },
+          {
+            name: 'logout',
+            title: 'Se déconnecter',
+          },
+        ],
+      },
+      loggedOutRoutes: [
         {
           name: 'login',
           title: 'Se connecter',
@@ -39,16 +49,31 @@ export default {
     }
   },
   computed: {
-    ...authComputed,
+    ...mapGetters({
+      loggedIn: 'auth/loggedIn',
+    }),
+    ...mapState({
+      currentUser: (state) => state.auth.currentUser,
+    }),
+    isAdmin() {
+      return this.currentUser.auth && this.currentUser.auth.role === 'admin'
+    },
+    isDirector() {
+      return this.currentUser.auth && this.currentUser.auth.role === 'director'
+    },
   },
 }
 </script>
 
 <template>
   <ul :class="$style.container">
-    <NavBarRoutes :routes="persistentNavRoutes" />
-    <NavBarRoutes v-if="loggedIn" :routes="loggedInNavRoutes" />
-    <NavBarRoutes v-else :routes="loggedOutNavRoutes" />
+    <NavBarRoutes :routes="persistentRoutes" />
+    <span v-if="loggedIn">
+      <NavBarRoutes v-if="isAdmin" :routes="loggedInRoutes.adminsOnly" />
+      <NavBarRoutes v-if="isDirector" :routes="loggedInRoutes.directorsOnly" />
+      <NavBarRoutes :routes="loggedInRoutes.account" />
+    </span>
+    <NavBarRoutes v-else :routes="loggedOutRoutes" />
   </ul>
 </template>
 
@@ -63,10 +88,5 @@ export default {
   margin: 0;
   text-align: right;
   list-style-type: none;
-
-  > li {
-    display: inline-block;
-    margin-right: $size-grid-padding;
-  }
 }
 </style>
