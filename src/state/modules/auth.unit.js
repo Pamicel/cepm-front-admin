@@ -239,6 +239,53 @@ describe('@state/modules/auth', () => {
           expect(error.message).toEqual('Request failed with status code 401')
         })
     })
+
+    // Change password
+
+    it('state.changingPassword starts false', () => {
+      expect(store.state.auth.changingPassword).toBe(false)
+    })
+    it('commit("auth/START_CHANGING_PASSWORD") sets state.changingPassword to true', () => {
+      store.commit('auth/START_CHANGING_PASSWORD')
+      expect(store.state.auth.changingPassword).toBe(true)
+    })
+    it('commit("auth/END_CHANGING_PASSWORD") sets state.changingPassword to false', () => {
+      store.commit('auth/START_CHANGING_PASSWORD')
+      store.commit('auth/END_CHANGING_PASSWORD')
+      expect(store.state.auth.changingPassword).toBe(false)
+    })
+
+    // ↓ BREAKS EVERYTHING! this behavious should be tested at the api level actually, not here.
+    // it('actions.changePassword modifies the password', async () => {
+    //   const { email, password } = validUserExample
+    //   const newPassword = 'new password'
+
+    //   // Log in to get the user's id
+    //   const loggedInUser = await store.dispatch('auth/logIn', {
+    //     email,
+    //     password,
+    //   })
+    //   const userId = loggedInUser.id
+
+    //   // changePassword succeeds
+    //   const firstChange = await store.dispatch('auth/changePassword', {
+    //     userId,
+    //     newPassword,
+    //     oldPassword: password,
+    //   })
+    //   expect(firstChange).toBe(true)
+
+    //   // User can log in with the new password
+    //   const user = await store.dispatch('auth/logIn', {
+    //     email,
+    //     password: newPassword,
+    //   })
+    //   expect(user).toBeDefined()
+
+    //   // Important cleanup
+    //   await store.dispatch('auth/logOut')
+    //   await axios.get(`${apiUrl}/reset`)
+    // })
   })
 })
 

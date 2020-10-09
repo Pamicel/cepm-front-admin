@@ -22,9 +22,9 @@ export default {
     translateRole(role) {
       switch (role) {
         case 'admin':
-          return 'Administrateur'
+          return 'Admin'
         case 'director':
-          return 'Metteur·e en scène'
+          return 'Mise en scène'
         default:
           return 'Staff'
       }

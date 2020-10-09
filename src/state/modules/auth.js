@@ -5,6 +5,7 @@ const apiUrl = process.env.API_BASE_URL
 
 export const state = {
   loggingIn: false,
+  changingPassword: false,
   currentUser: getSavedState('auth.currentUser'),
 }
 
@@ -19,6 +20,12 @@ export const mutations = {
   },
   END_LOGGING_IN(state) {
     state.loggingIn = false
+  },
+  START_CHANGING_PASSWORD(state) {
+    state.changingPassword = true
+  },
+  END_CHANGING_PASSWORD(state) {
+    state.changingPassword = false
   },
 }
 
@@ -95,6 +102,38 @@ export const actions = {
       } else {
         console.warn(error)
       }
+      return null
+    }
+  },
+
+  async changePassword(
+    { state, commit },
+    { userId, oldPassword, newPassword }
+  ) {
+    if (!state.currentUser || !state.currentUser.token) {
+      return null
+    }
+
+    try {
+      commit('START_CHANGING_PASSWORD')
+      await axios.patch(
+        `${apiUrl}/update-password`,
+        {
+          userId,
+          newPassword,
+          oldPassword,
+        },
+        {
+          headers: {
+            Bearer: state.currentUser.token,
+          },
+        }
+      )
+      commit('END_CHANGING_PASSWORD')
+      return true
+    } catch (error) {
+      commit('END_CHANGING_PASSWORD')
+      console.warn(error)
       return null
     }
   },
