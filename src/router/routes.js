@@ -75,8 +75,8 @@ export default [
     component: () => lazyLoadView(import('@views/field-map-selector.vue')),
   },
   {
-    path: '/profile/:username',
-    name: 'username-profile',
+    path: '/users/:id',
+    name: 'single-user',
     component: () => lazyLoadView(import('@views/profile.vue')),
     meta: {
       authRequired: true,
