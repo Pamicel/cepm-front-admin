@@ -15,12 +15,6 @@ export default {
     }
   },
   components: { Layout },
-  // props: {
-  //   user: {
-  //     type: Object,
-  //     required: true,
-  //   },
-  // },
   data() {
     const roleTranslations = {
       admin: 'Admin',
@@ -42,21 +36,29 @@ export default {
     },
     ...mapState({
       user: (state) => state.users.selectedUser,
+      deletingUser: (state) => state.users.deletingUser,
     }),
   },
   methods: {
     roleChangeSender(userId, role) {
       return async () => {
-        await this.$store.dispatch('users/updateUserRole', {
+        const response = await this.$store.dispatch('users/updateUserRole', {
           userId,
           role,
         })
-        this.$buefy.toast.open({
-          duration: 3000,
-          message: "Le role de l'utilisateur à été modifié",
-          // position: 'is-bottom',
-          type: 'is-success',
-        })
+        if (response) {
+          this.$buefy.toast.open({
+            duration: 3000,
+            message: "Le role de l'utilisateur à été modifié",
+            type: 'is-success',
+          })
+        } else {
+          this.$buefy.toast.open({
+            duration: 3000,
+            message: "Erreur API: l'utilisateur n'a pas été modifié",
+            type: 'is-warning',
+          })
+        }
       }
     },
     updateRole() {
@@ -84,6 +86,56 @@ export default {
           type: 'is-danger',
         })
       }
+    },
+
+    async deleteUser() {
+      const { id: userId } = this.user
+      const response = await this.$store.dispatch('users/deleteUser', {
+        userId,
+      })
+      if (response) {
+        this.$buefy.toast.open({
+          duration: 3000,
+          message: "L'utilisateur a été supprimé",
+          type: 'is-warning',
+        })
+        this.$router.push({ name: 'users' })
+      } else {
+        this.$buefy.dialog.alert({
+          duration: 3000,
+          title: 'Erreur',
+          message: 'Échec de la suppression',
+          type: 'is-danger',
+        })
+      }
+    },
+    deleteUserConfirm() {
+      const deleteIfCorrectId = (userId) => {
+        if (parseInt(this.user.id) === parseInt(userId)) {
+          this.deleteUser()
+        } else {
+          return this.$buefy.dialog.alert({
+            duration: 3000,
+            title: 'Erreur',
+            message: "L'identifiant est incorrect",
+            type: 'is-danger',
+          })
+        }
+      }
+
+      this.$buefy.dialog.prompt({
+        title: `Supprimer l'utilisateur #${this.user.id}`,
+        message:
+          "Entrez l'identifiant de l'utilisateur pour confirmer la suppression",
+        confirmText: "Supprimer l'utilisateur",
+        onConfirm: deleteIfCorrectId,
+        cancelText: 'Annuler',
+        type: 'is-danger',
+        inputAttrs: {
+          placeholder: 'Identifiant',
+          prefix: '#',
+        },
+      })
     },
   },
 }
@@ -172,6 +224,18 @@ export default {
             </p>
           </b-field>
         </div>
+      </div>
+
+      <hr />
+      <div :class="$style.deleteUser">
+        <b-button
+          type="is-danger"
+          rounded
+          :disabled="deletingUser || (user.auth && user.auth.role === 'admin')"
+          :loading="deletingUser"
+          @click="deleteUserConfirm"
+          >Supprimer l'utilisateur</b-button
+        >
       </div>
     </div>
   </Layout>

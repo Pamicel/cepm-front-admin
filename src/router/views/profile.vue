@@ -40,6 +40,7 @@ export default {
   computed: {
     ...mapState({
       changingPassword: (state) => state.auth.changingPassword,
+      deletingAccount: (state) => state.auth.deletingAccount,
     }),
     pwdFormComplete() {
       return (
@@ -97,6 +98,60 @@ export default {
         })
       }
     },
+
+    async deleteAccount(password) {
+      const response = await this.$store.dispatch('auth/deleteAccount', {
+        password,
+      })
+      if (response) {
+        this.$buefy.toast.open({
+          duration: 3000,
+          message: 'Le compte a été supprimé',
+          type: 'is-warning',
+        })
+        this.$router.push({ name: 'logout' })
+      } else {
+        this.$buefy.dialog.alert({
+          duration: 3000,
+          title: 'Erreur',
+          message: `
+              <p>La suppression du compte n'a pu avoir lieu.</p>
+              <br/>
+              <p>Vérifiez que vous êtes bien connecté·e à internet et réessayez.</p>
+            `,
+          type: 'is-danger',
+        })
+      }
+    },
+    deleteAccountAskPassword() {
+      this.$buefy.dialog.prompt({
+        message: 'Entrez votre mot de passe pour confirmer la suppression',
+        title: 'Supprimer votre compte',
+        confirmText: 'Supprimer le compte',
+        onConfirm: this.deleteAccount,
+        cancelText: 'Annuler',
+        type: 'is-danger',
+        inputAttrs: {
+          type: 'password',
+          placeholder: 'Mot de passe',
+          message: 'Ne peut pas être vide',
+        },
+      })
+    },
+    deleteAccountConfirm() {
+      this.$buefy.dialog.confirm({
+        message: `
+          <p>Êtes-vous sûr·e de vouloir supprimer votre compte ?</p>
+          <br/>
+          <p>Vous ne pourrez pas revenir en arrière, toutes les données associées au compte seront supprimées.</p>
+        `,
+        title: 'Supprimer votre compte',
+        confirmText: 'Oui',
+        onConfirm: this.deleteAccountAskPassword,
+        cancelText: 'Annuler',
+        type: 'is-danger',
+      })
+    },
   },
 }
 </script>
@@ -117,14 +172,14 @@ export default {
       <div :class="$style.role" role="button">
         <div :class="$style.roleDisplay">
           <b-tag
-            v-if="user.auth.role === 'director'"
+            v-if="user.auth && user.auth.role === 'director'"
             type="is-success"
             rounded
             size="is-medium"
             >{{ roleTranslations.director }}</b-tag
           >
           <b-tag
-            v-else-if="user.auth.role === 'admin'"
+            v-else-if="user.auth && user.auth.role === 'admin'"
             type="is-danger"
             rounded
             size="is-medium"
@@ -134,57 +189,72 @@ export default {
             roleTranslations.staff
           }}</b-tag>
         </div>
-        <hr />
-        <div>
-          <h3 :class="$style.fieldTitle">Changer de mot de passe</h3>
-          <br />
-          <b-field label="Ancien mot de passe">
-            <b-input
-              v-model="oldPwd"
-              type="password"
-              :disabled="changingPassword"
-              :loading="changingPassword"
-            ></b-input>
-          </b-field>
-          <br />
-          <b-field
-            label="Nouveau mot de passe"
-            :type="pwdFormLengthError ? 'is-danger' : ''"
-            message="Minimum 9 caratères"
+      </div>
+
+      <hr />
+      <div :class="$style.passwordChange">
+        <h3 :class="$style.fieldTitle">Changer de mot de passe</h3>
+        <br />
+        <b-field label="Ancien mot de passe">
+          <b-input
+            v-model="oldPwd"
+            type="password"
+            :disabled="changingPassword"
+            :loading="changingPassword"
+          ></b-input>
+        </b-field>
+        <br />
+        <b-field
+          label="Nouveau mot de passe"
+          :type="pwdFormLengthError ? 'is-danger' : ''"
+          message="Minimum 9 caratères"
+        >
+          <b-input
+            v-model="newPwd"
+            type="password"
+            :disabled="changingPassword"
+            :loading="changingPassword"
+          ></b-input>
+        </b-field>
+        <b-field
+          label="Répéter le nouveau mot de passe"
+          :type="pwdFormRepeatError ? 'is-danger' : ''"
+          :message="
+            pwdFormRepeatError ? 'Les mots de passe ne correspondent pas' : ''
+          "
+        >
+          <b-input
+            v-model="newPwdRepeat"
+            type="password"
+            :disabled="changingPassword"
+            :loading="changingPassword"
+          ></b-input>
+        </b-field>
+        <br />
+        <div :class="$style.fieldButton">
+          <b-button
+            :disabled="!pwdFormComplete || changingPassword"
+            :loading="changingPassword"
+            type="is-info"
+            rounded
+            @click="sendNewPassword"
+            >Changer</b-button
           >
-            <b-input
-              v-model="newPwd"
-              type="password"
-              :disabled="changingPassword"
-              :loading="changingPassword"
-            ></b-input>
-          </b-field>
-          <b-field
-            label="Répéter le nouveau mot de passe"
-            :type="pwdFormRepeatError ? 'is-danger' : ''"
-            :message="
-              pwdFormRepeatError ? 'Les mots de passe ne correspondent pas' : ''
-            "
-          >
-            <b-input
-              v-model="newPwdRepeat"
-              type="password"
-              :disabled="changingPassword"
-              :loading="changingPassword"
-            ></b-input>
-          </b-field>
-          <br />
-          <div :class="$style.fieldButton">
-            <b-button
-              :disabled="!pwdFormComplete || changingPassword"
-              :loading="changingPassword"
-              type="is-info"
-              rounded
-              @click="sendNewPassword"
-              >Changer</b-button
-            >
-          </div>
         </div>
+      </div>
+
+      <hr />
+      <div :class="$style.deleteAccount">
+        <b-button
+          type="is-danger"
+          rounded
+          :disabled="
+            deletingAccount || (user.auth && user.auth.role === 'admin')
+          "
+          :loading="deletingAccount"
+          @click="deleteAccountConfirm"
+          >Supprimer mon compte</b-button
+        >
       </div>
     </div>
   </Layout>
