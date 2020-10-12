@@ -16,10 +16,27 @@ export const state = {
   fetchingSingleUser: false,
   creatingUser: false,
   deletingUser: false,
-  updatingRole: [],
+  updatingRoles: [],
 }
 
-export const getters = {}
+export const getters = {
+  isUpdatingUserRole: (state) => (id) => state.updatingRoles.includes(id),
+  user: (state) => (userId) => {
+    const hadSameId = (id) => (usr) => usr.id === id
+
+    const userInCache = state.cached.find(hadSameId(userId))
+    if (userInCache) {
+      return { ...userInCache }
+    }
+
+    const userInList = state.userList.find(hadSameId(userId))
+    if (userInList) {
+      return { ...userInList }
+    }
+
+    return null
+  },
+}
 
 export const mutations = {
   CACHE_USER(state, newUser) {
@@ -35,6 +52,15 @@ export const mutations = {
     state.userList = [...users]
   },
   UPDATE_USER(state, updatedUser) {
+    if (!updatedUser) return
+
+    if (
+      state.selectedUser &&
+      parseInt(state.selectedUser.id) === parseInt(updatedUser.id)
+    ) {
+      state.selectedUser = updatedUser
+    }
+
     const replaceUpdatedUser = (oldUser) => {
       const isCorrectUser = parseInt(oldUser.id) === parseInt(updatedUser.id)
       return isCorrectUser ? updatedUser : oldUser
@@ -69,10 +95,10 @@ export const mutations = {
     state.deletingUser = false
   },
   START_UPDATING_USER_ROLE(state, userId) {
-    state.updatingRole = [...state.updatingRole, userId]
+    state.updatingRoles = [...state.updatingRoles, userId]
   },
   END_UPDATING_USER_ROLE(state, userId) {
-    state.updatingRole = state.updatingRole.filter((id) => id !== userId)
+    state.updatingRoles = state.updatingRoles.filter((id) => id !== userId)
   },
 
   SELECT_USER(state, user) {
@@ -84,7 +110,8 @@ export const actions = {
   async selectUser({ commit, state }, { userId }) {
     const userMemory = [...state.userList, ...state.cached]
     // Try to find the user in the userList or the cache, default to null
-    const user = userMemory.find((user) => user.id === userId) || null
+    const user =
+      userMemory.find((user) => parseInt(user.id) === parseInt(userId)) || null
     commit('SELECT_USER', user)
   },
 
@@ -163,7 +190,7 @@ export const actions = {
     }
   },
 
-  async updateUserRole({ commit, rootGetters }, { userId, role }) {
+  async updateUserRole({ commit, rootGetters, getters }, { userId, role }) {
     if (!rootGetters['auth/loggedIn']) {
       return null
     }
@@ -172,6 +199,20 @@ export const actions = {
       commit('START_UPDATING_USER_ROLE', userId)
       await axios.patch(`${apiUrl}/users/${userId}/update-role`, { name: role })
       commit('END_UPDATING_USER_ROLE', userId)
+
+      // Update the user in the memory
+      const user = { ...getters.user(userId) }
+      if (user) {
+        const updatedUser = {
+          ...user,
+          auth: {
+            ...user.auth,
+            role,
+          },
+        }
+        commit('UPDATE_USER', updatedUser)
+      }
+
       return true
     } catch (error) {
       commit('END_UPDATING_USER_ROLE', userId)

@@ -247,23 +247,23 @@ describe('@state/modules/users', () => {
 
   // Updating role
 
-  it('updatingRole starts as an empty array', () => {
-    expect(store.state.users.updatingRole).toEqual([])
+  it('updatingRoles starts as an empty array', () => {
+    expect(store.state.users.updatingRoles).toEqual([])
   })
 
-  it('commit("users/START_UPDATING_USER_ROLE", userId) adds the userId to the updatingRole array', () => {
+  it('commit("users/START_UPDATING_USER_ROLE", userId) adds the userId to the updatingRoles array', () => {
     const userId = 123
 
     store.commit('users/START_UPDATING_USER_ROLE', userId)
-    expect(store.state.users.updatingRole).toEqual([userId])
+    expect(store.state.users.updatingRoles).toEqual([userId])
 
     // Calling START_UPDATING_USER_ROLE twice on the same userId is not defined
     //    further than "the user id should still be present in the list"
     store.commit('users/START_UPDATING_USER_ROLE', userId)
-    expect(store.state.users.updatingRole).toContain(userId)
+    expect(store.state.users.updatingRoles).toContain(userId)
   })
 
-  it('commit("users/END_UPDATING_USER_ROLE", userId) removes the userId to the updatingRole array if present', () => {
+  it('commit("users/END_UPDATING_USER_ROLE", userId) removes the userId to the updatingRoles array if present', () => {
     const firstUserId = 234
     const secondUserId = 345
 
@@ -281,9 +281,9 @@ describe('@state/modules/users', () => {
     store.commit('users/END_UPDATING_USER_ROLE', firstUserId)
 
     // First user id should disapear
-    expect(store.state.users.updatingRole).not.toContain(firstUserId)
+    expect(store.state.users.updatingRoles).not.toContain(firstUserId)
     // Second user id should remain
-    expect(store.state.users.updatingRole).toContain(secondUserId)
+    expect(store.state.users.updatingRoles).toContain(secondUserId)
   })
 
   it('dispatch("users/updateUserRole", { userId, role }) resolves to null when not logged in', async () => {

@@ -15,12 +15,12 @@ export default {
     }
   },
   components: { Layout },
-  props: {
-    user: {
-      type: Object,
-      required: true,
-    },
-  },
+  // props: {
+  //   user: {
+  //     type: Object,
+  //     required: true,
+  //   },
+  // },
   data() {
     const roleTranslations = {
       admin: 'Admin',
@@ -29,7 +29,6 @@ export default {
     }
 
     return {
-      roleChangeOpen: false,
       roleChangeSelection: null,
       roleTranslations,
       oldPwd: '',
@@ -38,17 +37,53 @@ export default {
     }
   },
   computed: {
+    isUpdatingRole() {
+      return this.$store.getters['users/isUpdatingUserRole'](this.user.id)
+    },
     ...mapState({
-      currentUser: (state) => state.auth.currentUser,
-      isChangingPassword: (state) => state.auth.isChangingPassword,
+      user: (state) => state.users.selectedUser,
     }),
   },
   methods: {
-    openRoleChange() {
-      this.roleChangeOpen = true
+    roleChangeSender(userId, role) {
+      return async () => {
+        await this.$store.dispatch('users/updateUserRole', {
+          userId,
+          role,
+        })
+        this.$buefy.toast.open({
+          duration: 3000,
+          message: "Le role de l'utilisateur à été modifié",
+          // position: 'is-bottom',
+          type: 'is-success',
+        })
+      }
     },
-    closeRoleChange() {
-      this.roleChangeOpen = false
+    updateRole() {
+      const { roleChangeSelection: role, user } = this
+
+      if (!role) {
+        this.$buefy.dialog.alert({
+          message: 'Veuillez selectionner un rôle',
+          title: 'Changement de rôle',
+        })
+      } else if (user.auth && user.auth.role === role) {
+        // If already user role -> dialog saying so
+        this.$buefy.dialog.alert({
+          message: `"${this.roleTranslations[role]}" est déjà le rôle de cet utilisateur.`,
+          title: 'Changement de rôle',
+        })
+      } else {
+        // Otherwise -> confirmation dialog
+        this.$buefy.dialog.confirm({
+          message: `Êtes-vous sûr·e de vouloir donner à cet utilisateur le rôle "${this.roleTranslations[role]}" .`,
+          title: 'Changement de rôle',
+          confirmText: 'Oui',
+          onConfirm: this.roleChangeSender(user.id, role),
+          cancelText: 'Annuler',
+          type: 'is-danger',
+        })
+      }
     },
   },
 }
@@ -57,6 +92,11 @@ export default {
 <template>
   <Layout>
     <div :class="$style.container">
+      <div :class="$style.breadcrumb">
+        <BaseLink name="users">
+          ← Utilisateurs
+        </BaseLink>
+      </div>
       <h1> #{{ user.id }} </h1>
       <h2 :class="$style.email">
         {{ user.email }}
@@ -68,19 +108,8 @@ export default {
       <hr />
 
       <div :class="$style.role" role="button">
-        <div v-if="roleChangeOpen">
-          <b-field v-model="roleChangeSelection">
-            <b-select :placeholder="roleTranslations[user.auth.role]" rounded>
-              <option value="admin">{{ roleTranslations.admin }}</option>
-              <option value="director">{{ roleTranslations.director }}</option>
-              <option value="staff">{{ roleTranslations.staff }}</option>
-            </b-select>
-            <p class="control">
-              <b-button type="is-danger" rounded>Annuler</b-button>
-            </p>
-          </b-field>
-        </div>
-        <div v-else :class="$style.roleDisplay" @click="openRoleChange">
+        <div :class="$style.roleCurrent">
+          <h3>Rôle:</h3>
           <b-tag
             v-if="user.auth.role === 'director'"
             type="is-success"
@@ -95,9 +124,53 @@ export default {
             size="is-medium"
             >{{ roleTranslations.admin }}</b-tag
           >
-          <b-tag v-else rounded type="is-info" size="is-medium">{{
-            roleTranslations.staff
-          }}</b-tag>
+          <b-tag
+            v-else-if="user.auth.role === 'staff'"
+            rounded
+            type="is-info"
+            size="is-medium"
+            >{{ roleTranslations.staff }}</b-tag
+          >
+
+          <b-tag v-else rounded type="is-warning" size="is-medium"
+            >Pas de rôle</b-tag
+          >
+        </div>
+
+        <br />
+
+        <div :class="$style.roleChange">
+          <h3>Changer de rôle</h3>
+          <b-field>
+            <b-select
+              v-model="roleChangeSelection"
+              :placeholder="roleTranslations[user.auth.role]"
+              rounded
+              :disabled="isUpdatingRole"
+            >
+              <option :disabled="user.auth.role === 'admin'" value="admin">{{
+                roleTranslations.admin
+              }}</option>
+              <option
+                :disabled="user.auth.role === 'director'"
+                value="director"
+                >{{ roleTranslations.director }}</option
+              >
+              <option :disabled="user.auth.role === 'staff'" value="staff">{{
+                roleTranslations.staff
+              }}</option>
+            </b-select>
+            <p class="control">
+              <b-button
+                :disabled="isUpdatingRole"
+                :loading="isUpdatingRole"
+                type="is-info"
+                rounded
+                @click="updateRole"
+                >Changer</b-button
+              >
+            </p>
+          </b-field>
         </div>
       </div>
     </div>
@@ -108,6 +181,10 @@ export default {
 @import '@design';
 
 .container {
+  .breadcrumb {
+    margin-bottom: 1rem;
+  }
+
   width: $size-content-width-min;
   margin: auto;
 
@@ -125,6 +202,9 @@ export default {
 
   .role {
     margin-top: 8px;
+    h3 {
+      @extend %typography-medium;
+    }
   }
 }
 </style>

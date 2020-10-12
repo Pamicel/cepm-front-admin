@@ -88,12 +88,12 @@ export default [
       async beforeResolve(routeTo, _, next) {
         try {
           // Try to fetch the user's information by their id
-          const user = await store.dispatch('users/fetchSingleUser', {
+          await store.dispatch('users/fetchSingleUser', {
             userId: routeTo.params.id,
           })
-          // Add the user to `meta.tmp`, so that it can
-          // be provided as a prop.
-          routeTo.meta.tmp.user = user
+          await store.dispatch('users/selectUser', {
+            userId: routeTo.params.id,
+          })
           // Continue to the route.
           next()
         } catch (error) {

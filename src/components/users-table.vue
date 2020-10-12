@@ -25,8 +25,10 @@ export default {
           return 'Admin'
         case 'director':
           return 'Mise en scène'
-        default:
+        case 'staff':
           return 'Staff'
+        default:
+          return 'Pas de rôle'
       }
     },
   },
