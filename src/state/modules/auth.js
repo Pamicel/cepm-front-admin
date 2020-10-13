@@ -5,6 +5,8 @@ const apiUrl = process.env.API_BASE_URL
 
 export const state = {
   loggingIn: false,
+  changingPassword: false,
+  deletingAccount: false,
   currentUser: getSavedState('auth.currentUser'),
 }
 
@@ -19,6 +21,18 @@ export const mutations = {
   },
   END_LOGGING_IN(state) {
     state.loggingIn = false
+  },
+  START_DELETING_ACCOUNT(state) {
+    state.deletingAccount = true
+  },
+  END_DELETING_ACCOUNT(state) {
+    state.deletingAccount = false
+  },
+  START_CHANGING_PASSWORD(state) {
+    state.changingPassword = true
+  },
+  END_CHANGING_PASSWORD(state) {
+    state.changingPassword = false
   },
 }
 
@@ -74,11 +88,7 @@ export const actions = {
     }
 
     try {
-      const response = await axios.get(`${apiUrl}/verify`, {
-        headers: {
-          Bearer: state.currentUser.token,
-        },
-      })
+      const response = await axios.get(`${apiUrl}/verify`) // Auth header is implicit
 
       const newToken = response.headers['x-renewed-jwt-token']
       const token = newToken || state.currentUser.token
@@ -95,6 +105,48 @@ export const actions = {
       } else {
         console.warn(error)
       }
+      return null
+    }
+  },
+
+  async changePassword(
+    { state, commit },
+    { userId, oldPassword, newPassword }
+  ) {
+    if (!state.currentUser || !state.currentUser.token) {
+      return null
+    }
+
+    try {
+      commit('START_CHANGING_PASSWORD')
+      await axios.patch(`${apiUrl}/update-password`, {
+        userId,
+        newPassword,
+        oldPassword,
+      })
+      commit('END_CHANGING_PASSWORD')
+      return true
+    } catch (error) {
+      commit('END_CHANGING_PASSWORD')
+      console.warn(error)
+      return null
+    }
+  },
+
+  async deleteAccount({ state, commit, dispatch }, { password }) {
+    if (!state.currentUser || !state.currentUser.token) {
+      return null
+    }
+
+    try {
+      commit('START_DELETING_ACCOUNT')
+      await axios.post(`${apiUrl}/delete-account`, { password })
+      commit('END_DELETING_ACCOUNT')
+      dispatch('logOut')
+      return true
+    } catch (error) {
+      console.warn(error)
+      commit('END_DELETING_ACCOUNT')
       return null
     }
   },

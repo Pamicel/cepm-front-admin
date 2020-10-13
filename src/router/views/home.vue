@@ -17,7 +17,7 @@ export default {
     <div :class="$style.hello">
       <img
         :class="$style.helloLogo"
-        src="@assets/images/logo-calmes.png"
+        src="@assets/images/target.svg"
         alt="logo de l'application"
       />
       <span :class="$style.helloText">

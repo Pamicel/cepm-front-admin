@@ -23,7 +23,7 @@ export default {
     <div :class="$style.logo">
       <BaseLink name="home">
         <img
-          src="@assets/images/logo-calmes.png"
+          src="@assets/images/target.svg"
           :class="$style.logoCalmes"
           aria-label="Accueil"
         />

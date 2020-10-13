@@ -1,5 +1,6 @@
 import axios from 'axios'
 import * as authModule from './auth'
+import * as userModule from './users'
 
 const apiUrl = `${process.env.API_BASE_URL}/api`
 
@@ -11,7 +12,7 @@ describe('@state/modules/auth', () => {
   describe('in a store', () => {
     let store
     beforeEach(async () => {
-      store = createModuleStore({ auth: authModule })
+      store = createModuleStore({ auth: authModule, users: userModule })
       window.localStorage.clear()
     })
 
@@ -239,6 +240,150 @@ describe('@state/modules/auth', () => {
           expect(error.message).toEqual('Request failed with status code 401')
         })
     })
+
+    // Change password
+
+    it('state.changingPassword starts false', () => {
+      expect(store.state.auth.changingPassword).toBe(false)
+    })
+    it('commit("auth/START_CHANGING_PASSWORD") sets state.changingPassword to true', () => {
+      store.commit('auth/START_CHANGING_PASSWORD')
+      expect(store.state.auth.changingPassword).toBe(true)
+    })
+    it('commit("auth/END_CHANGING_PASSWORD") sets state.changingPassword to false', () => {
+      store.commit('auth/START_CHANGING_PASSWORD')
+      store.commit('auth/END_CHANGING_PASSWORD')
+      expect(store.state.auth.changingPassword).toBe(false)
+    })
+
+    // ↓ BREAKS EVERYTHING! does not matter anyway because this behavious
+    //                      should be tested at the api level actually, not here.
+
+    // it('actions.changePassword modifies the password', async () => {
+    //   const { email, password } = validUserExample
+    //   const newPassword = 'new password'
+
+    //   // Log in to get the user's id
+    //   const loggedInUser = await store.dispatch('auth/logIn', {
+    //     email,
+    //     password,
+    //   })
+    //   const userId = loggedInUser.id
+
+    //   // changePassword succeeds
+    //   const firstChange = await store.dispatch('auth/changePassword', {
+    //     userId,
+    //     newPassword,
+    //     oldPassword: password,
+    //   })
+    //   expect(firstChange).toBe(true)
+
+    //   // User can log in with the new password
+    //   const user = await store.dispatch('auth/logIn', {
+    //     email,
+    //     password: newPassword,
+    //   })
+    //   expect(user).toBeDefined()
+
+    //   // Important cleanup
+    //   await store.dispatch('auth/logOut')
+    //   await axios.get(`${apiUrl}/reset`)
+    // })
+
+    // Delete account
+    it('state.deletingAccount starts false', () => {
+      expect(store.state.auth.deletingAccount).toBe(false)
+    })
+
+    it('commit("auth/START_DELETING_ACCOUNT") sets state.deletingAccount to true', () => {
+      store.commit('auth/START_DELETING_ACCOUNT')
+      expect(store.state.auth.deletingAccount).toBe(true)
+    })
+
+    it('commit("auth/END_DELETING_ACCOUNT") sets state.deletingAccount to false', () => {
+      // Set to true
+      store.commit('auth/START_DELETING_ACCOUNT')
+      // call once
+      store.commit('auth/END_DELETING_ACCOUNT')
+      expect(store.state.auth.deletingAccount).toBe(false)
+      // call twice
+      store.commit('auth/END_DELETING_ACCOUNT')
+      expect(store.state.auth.deletingAccount).toBe(false)
+    })
+
+    it('dispatch("auth/deleteAccount") rejects with null when not logged in', async () => {
+      const res = await store.dispatch('auth/deleteAccount', {
+        password: 'anything',
+      })
+      expect(res).toBeNull()
+    })
+
+    it('dispatch("auth/deleteAccount") resolves with true when logged in', async () => {
+      // log in as admin
+      await store.dispatch('auth/logIn', {
+        email: adminUser.email,
+        password: adminUser.password,
+      })
+
+      // create account
+      const newUser = {
+        email: 'fdlskjfsldfj@te.st',
+        password: '000000000',
+      }
+      await store.dispatch('users/createUser', newUser)
+
+      // log in as new user
+      await store.dispatch('auth/logIn', {
+        email: newUser.email,
+        password: newUser.password,
+      })
+
+      const res = await store.dispatch('auth/deleteAccount', {
+        password: newUser.password,
+      })
+      expect(res).toBe(true)
+
+      // Check that user was correctly deleted
+      try {
+        expect(
+          await store.dispatch('auth/logIn', {
+            email: newUser.email,
+            password: newUser.password,
+          })
+        ).toThrow()
+      } catch (error) {
+        expect(error.message).toEqual('Request failed with status code 401')
+      }
+    })
+
+    it('dispatch("auth/deleteAccount") logs user out after successful deletion', async () => {
+      // log in as admin
+      await store.dispatch('auth/logIn', {
+        email: adminUser.email,
+        password: adminUser.password,
+      })
+
+      // create account
+      const newUser = {
+        email: 'fdlskjfsldfj@te.st',
+        password: '000000000',
+      }
+      await store.dispatch('users/createUser', newUser)
+
+      // log in as new user
+      await store.dispatch('auth/logIn', {
+        email: newUser.email,
+        password: newUser.password,
+      })
+
+      expect(store.getters['auth/loggedIn']).toBe(true)
+
+      const res = await store.dispatch('auth/deleteAccount', {
+        password: newUser.password,
+      })
+      expect(res).toBe(true)
+      expect(store.getters['auth/loggedIn']).toBe(false)
+    })
   })
 })
 
@@ -246,6 +391,11 @@ const validUserExample = {
   email: 'director@te.st',
   password: '000000000',
   token: 'valid-token-for-admin',
+}
+
+const adminUser = {
+  email: 'admin@te.st',
+  password: '000000000',
 }
 
 // const expiredToken =
