@@ -8,16 +8,25 @@ export const state = {
   booking: {},
   creatingBookings: false,
   fetchingBookings: false,
+  bookingCreationResponse: {},
 }
 
-export const getters = {}
+export const getters = {
+  bookingCreationResponseIsEmpty(state) {
+    return Object.keys(state.bookingCreationResponse).length === 0
+  },
+}
 
 export const mutations = {
+  SET_BOOKING_CREATION_RESPONSE(state, bookingCreationResponse = {}) {
+    state.bookingCreationResponse = bookingCreationResponse
+  },
   REPLACE_BOOKING_LIST(state, newValue) {
     state.bookingList = [...newValue]
   },
   START_CREATING_BOOKINGS(state) {
     state.creatingBookings = true
+    state.bookingCreationResponse = {}
   },
   END_CREATING_BOOKINGS(state) {
     state.creatingBookings = false
@@ -40,11 +49,15 @@ export const actions = {
     }
     commit('START_CREATING_BOOKINGS')
     try {
-      await axios.post(`${apiUrl}/booking-imports`, {
-        crossingId,
-        data,
-        fieldMap,
-      })
+      const { data: bookingCreationResponse } = await axios.post(
+        `${apiUrl}/booking-imports`,
+        {
+          crossingId,
+          data,
+          fieldMap,
+        }
+      )
+      commit('SET_BOOKING_CREATION_RESPONSE', bookingCreationResponse)
       commit('END_CREATING_BOOKINGS')
       return true
     } catch (error) {

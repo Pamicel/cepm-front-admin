@@ -16,11 +16,18 @@ export default {
       bookings: (state) => state.bookings,
     }),
   },
-  mounted() {
+  async mounted() {
     const crossingId = this.$route.params.id
     if (!this.crossing || this.crossing.id !== crossingId) {
-      this.$store.dispatch('crossings/fetchSingleCrossing', crossingId)
+      const crossing = await this.$store.dispatch(
+        'crossings/fetchSingleCrossing',
+        crossingId
+      )
+      if (crossing === null) {
+        return this.$router.replace({ name: 'traversees' })
+      }
     }
+
     this.$store.dispatch('bookings/fetchBookings', {
       crossingId,
     })

@@ -52,6 +52,24 @@ describe('@state/modules/bookings', () => {
     expect(store.state.bookings.creatingBookings).toEqual(true)
   })
 
+  it('mutations["bookings/SET_BOOKING_CREATION_RESPONSE"] sets the value of bookingCreationResponse', () => {
+    expect(store.state.bookings.bookingCreationResponse).toEqual({})
+
+    const value = 'fdslkjfsd'
+    store.commit('bookings/SET_BOOKING_CREATION_RESPONSE', value)
+
+    expect(store.state.bookings.bookingCreationResponse).toEqual(value)
+  })
+
+  it('mutations["bookings/START_CREATING_BOOKINGS"] resets bookingCreationResponse to {}', () => {
+    const value = 'fdslkjfsd'
+    store.commit('bookings/SET_BOOKING_CREATION_RESPONSE', value)
+    expect(store.state.bookings.bookingCreationResponse).toEqual(value)
+
+    store.commit('bookings/START_CREATING_BOOKINGS')
+    expect(store.state.bookings.bookingCreationResponse).toEqual({})
+  })
+
   it('mutations["bookings/END_CREATING_BOOKINGS"] sets creatingBookings to false', () => {
     store.commit('bookings/START_CREATING_BOOKINGS')
     expect(store.state.bookings.creatingBookings).toEqual(true)

@@ -29,10 +29,17 @@ export default {
       parsingErrors: (state) => state.bookingsParser.parsingErrors,
       emptyFields: (state) => state.bookingsParser.emptyFields,
       crossing: (state) => state.crossings.selectedCrossing,
+      creatingBookings: (state) => state.bookings.creatingBookings,
+      bookingCreationResponse: (state) =>
+        state.bookings.bookingCreationResponse,
     }),
     ...mapGetters({
       fieldMapComplete: 'bookingsParser/fieldMapComplete',
+      responseIsEmpty: 'bookings/bookingCreationResponseIsEmpty',
     }),
+    pageDisabled() {
+      return !this.crossing || this.creatingBookings
+    },
     uploadInputState() {
       const hasError = this.fileError
       const hasFile = !!this.file
@@ -68,7 +75,7 @@ export default {
         crossingId
       )
       if (crossing === null) {
-        return this.$router.push({ name: 'traversees' })
+        return this.$router.replace({ name: 'traversees' })
       }
     }
     await this.$store.dispatch('bookings/fetchBookings', {
@@ -128,7 +135,98 @@ export default {
           position: 'is-bottom',
           type: 'is-danger',
         })
+      } else {
+        this.showResponse()
       }
+    },
+    showResponse() {
+      const { bookingCreationResponse } = this
+      const {
+        created,
+        numberOfRowsRecieved,
+        numberOfRowsSkipped,
+        rowsSkipped,
+      } = bookingCreationResponse
+
+      const message = (
+        numberOfRowsRecieved,
+        numberOfRowsSkipped,
+        rowsSkipped
+      ) => {
+        const recievedMessage = `<p><b>${numberOfRowsRecieved} ligne${
+          numberOfRowsRecieved > 1 ? 's ont été traitées' : 'a été traitée'
+        }</b></p>`
+        const numCreated = created.length
+        const createdMessage = () => {
+          const pre = '<p><b>'
+          const post = '</b></p>'
+          if (numCreated === 0) {
+            return `${pre}Aucune nouvelle réservation n'a été créée${post}`
+          } else if (numCreated === 1) {
+            return `${pre}1 nouvelle réservation a été créée${post}`
+          }
+          return `${pre}${numCreated} nouvelles réservations ont été créées${post}`
+        }
+
+        const initialAcc = {
+          exist: 0,
+          invalid: 0,
+          incomplete: 0,
+        }
+        const { exist, invalid } = (rowsSkipped || []).reduce((acc, row) => {
+          switch (row.reason) {
+            case 'exists':
+              acc.exist++
+              break
+            case 'invalid':
+              acc.invalid++
+              break
+          }
+
+          return acc
+        }, initialAcc)
+
+        const existMessage = `Réservations déjà existantes : ${exist}`
+        const invalidMessage = `Réservations dont l'email n'est pas valide : ${invalid}`
+        const ignored =
+          numberOfRowsSkipped > 0
+            ? `
+                <br/>
+                <p>
+                  <b>Lignes ignorées</b> : <br/>
+                  ${existMessage}<br/>
+                  ${invalidMessage}
+                </p>
+              `
+            : ''
+
+        return `${recievedMessage}${createdMessage()}${ignored}`
+      }
+
+      const procede = () => {
+        this.$router.push({
+          name: 'traversee',
+          params: { id: this.crossing.id },
+        })
+      }
+
+      const allBad = numberOfRowsRecieved === numberOfRowsSkipped
+
+      return this.$buefy.dialog.confirm({
+        title: allBad ? '⚠ Importation terminée' : 'Importation terminée',
+        message: message(
+          numberOfRowsRecieved,
+          numberOfRowsSkipped,
+          rowsSkipped
+        ),
+        confirmText: 'Terminer',
+        cancelText: 'Réessayer',
+        type: 'is-black',
+        onConfirm: procede,
+        canCancel: false,
+        ariaRole: 'alertdialog',
+        ariaModal: true,
+      })
     },
     async readNewFile(file) {
       this.fileError = false
@@ -201,10 +299,10 @@ export default {
               accept=".csv"
               class="file-label"
               :class="$style.uploadButton"
-              :disabled="!crossing"
+              :disabled="pageDisabled"
               @input="readNewFile"
             >
-              <b-loading :active="!crossing" :is-full-page="false">
+              <b-loading :active="pageDisabled" :is-full-page="false">
                 <BaseIcon :class="$style.loadingIcon" name="fan" spin />
               </b-loading>
               <section class="section">
@@ -308,6 +406,8 @@ export default {
               :class="$style.sendButton"
               type="is-success"
               size="is-medium"
+              :loading="pageDisabled"
+              :disabled="pageDisabled"
               @click="send"
             >
               Envoyer →
