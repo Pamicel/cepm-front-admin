@@ -60,12 +60,18 @@ export default {
       return 'upload'
     },
   },
-  mounted() {
+  async mounted() {
     const crossingId = this.$route.params.id
     if (!this.crossing || this.crossing.id !== crossingId) {
-      this.$store.dispatch('crossings/fetchSingleCrossing', crossingId)
+      const crossing = await this.$store.dispatch(
+        'crossings/fetchSingleCrossing',
+        crossingId
+      )
+      if (crossing === null) {
+        return this.$router.push({ name: 'traversees' })
+      }
     }
-    this.$store.dispatch('bookings/fetchBookings', {
+    await this.$store.dispatch('bookings/fetchBookings', {
       crossingId,
     })
   },
@@ -194,8 +200,13 @@ export default {
               :type="uploadInputType"
               accept=".csv"
               class="file-label"
+              :class="$style.uploadButton"
+              :disabled="!crossing"
               @input="readNewFile"
             >
+              <b-loading :active="!crossing" :is-full-page="false">
+                <BaseIcon :class="$style.loadingIcon" name="fan" spin />
+              </b-loading>
               <section class="section">
                 <div class="content has-text-centered">
                   <p>
@@ -362,6 +373,10 @@ export default {
 .upload {
   @extend .leftAlignedNarrow;
 
+  .uploadButton {
+    position: relative; // Keep the loader inside the container
+  }
+
   padding: 0 1rem;
   text-align: center;
 }
@@ -375,7 +390,6 @@ export default {
   }
 }
 
-// }
 .nottabene {
   font-size: 0.9em;
 }
