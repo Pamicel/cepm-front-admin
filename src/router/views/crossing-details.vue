@@ -57,4 +57,8 @@ export default {
 
 <style lang="scss" module>
 @import '@design';
+
+.container {
+  @extend %narrow-content;
+}
 </style>
