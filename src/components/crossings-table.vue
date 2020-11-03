@@ -53,31 +53,47 @@ export default {
     @click="clickRow"
   >
     <template slot-scope="props">
-      <b-table-column field="id" label="Numéro" width="40" numeric>
+      <b-table-column
+        :class="$style.col"
+        field="id"
+        label="Numéro"
+        width="40"
+        numeric
+      >
         {{ props.row.id }}
       </b-table-column>
 
-      <b-table-column field="date" label="Date" centered>
+      <b-table-column :class="$style.col" field="date" label="Date" centered>
         <span>
           {{ new Date(props.row.startDate).toLocaleDateString() }}
         </span>
       </b-table-column>
 
-      <b-table-column field="audience" label="Jauge" centered>
+      <b-table-column
+        :class="$style.col"
+        field="audience"
+        label="Jauge"
+        centered
+      >
         {{ props.row.audienceSize }}
       </b-table-column>
 
-      <b-table-column field="hour" label="Début" centered>
+      <b-table-column :class="$style.col" field="hour" label="Début" centered>
         {{ formatHour(new Date(props.row.startDate)) }}
       </b-table-column>
 
-      <b-table-column field="hour" label="Fin" centered>
+      <b-table-column :class="$style.col" field="hour" label="Fin" centered>
         {{
           formatHour(endTime(new Date(props.row.startDate), props.row.duration))
         }}
       </b-table-column>
 
-      <b-table-column field="duration" centered label="Durée">
+      <b-table-column
+        :class="$style.col"
+        field="duration"
+        centered
+        label="Durée"
+      >
         {{ duration(props.row.duration) }}
       </b-table-column>
     </template>
@@ -97,4 +113,8 @@ export default {
 
 <style lang="scss" module>
 @import '@design';
+
+.col {
+  cursor: pointer;
+}
 </style>
