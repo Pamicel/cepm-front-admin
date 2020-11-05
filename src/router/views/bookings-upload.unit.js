@@ -1,18 +1,18 @@
-import FieldMapSelector from './field-map-selector'
+import BookingsUpload from './bookings-upload'
 
-describe('@views/field-map-selector', () => {
+describe('@views/bookings-upload', () => {
   it('is a valid view', () => {
-    expect(FieldMapSelector).toBeAViewComponent()
+    expect(BookingsUpload).toBeAViewComponent()
   })
 
   // it('Toggles an error message when upload fails', () => {
-  //   const { vm } = mountFieldMapSelector()
+  //   const { vm } = mountBookingsUpload()
 
   // })
 })
 
-// function mountFieldMapSelector() {
-//   return shallowMountView(FieldMapSelector, {
+// function mountBookingsUpload() {
+//   return shallowMountView(BookingsUpload, {
 //     ...createComponentMocks({
 //       store: {
 //         bookings: {

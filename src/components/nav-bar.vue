@@ -25,7 +25,7 @@ export default {
         ],
         directorsOnly: [
           {
-            name: 'traversees',
+            name: 'crossings',
             title: 'Traversées',
           },
         ],

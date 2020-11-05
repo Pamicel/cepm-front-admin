@@ -75,7 +75,7 @@ export default {
         crossingId
       )
       if (crossing === null) {
-        return this.$router.replace({ name: 'traversees' })
+        return this.$router.replace({ name: 'crossings' })
       }
     }
     await this.$store.dispatch('bookings/fetchBookings', {
@@ -205,7 +205,7 @@ export default {
 
       const procede = () => {
         this.$router.push({
-          name: 'traversee',
+          name: 'bookings',
           params: { id: this.crossing.id },
         })
       }

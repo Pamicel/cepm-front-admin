@@ -1,5 +1,6 @@
 <script>
 import Layout from '@layouts/local.vue'
+import BookingsTable from '@components/bookings-table.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -7,7 +8,7 @@ export default {
     title: 'Panneau de traversée',
     meta: [{ name: 'description', content: 'The Crossing Details page.' }],
   },
-  components: { Layout },
+  components: { Layout, BookingsTable },
   computed: {
     ...mapState({
       fetchingCrossing: (state) => state.crossings.fetchingSingleCrossing,
@@ -32,11 +33,8 @@ export default {
     })
   },
   methods: {
-    async goToUploadPage() {
+    async goToUploadPage(file) {
       this.$router.push({ name: 'bookings-upload' })
-    },
-    async goToBookingsPage() {
-      this.$router.push({ name: 'bookings' })
     },
   },
 }
@@ -48,12 +46,11 @@ export default {
       <pre>
         {{ fetchingCrossing ? '...' : crossing }}
       </pre>
-      <b-button v-if="bookings.bookingList.length" @click="goToBookingsPage"
-        >Voir les réservations</b-button
-      >
-      <b-button v-else @click="goToUploadPage"
-        >Uploader des réservations</b-button
-      >
+      <b-button @click="goToUploadPage">Uploader des reservations</b-button>
+      <BookingsTable
+        :bookings="bookings.bookingList"
+        :is-loading="bookings.fetchingBookings"
+      />
     </div>
   </Layout>
 </template>
