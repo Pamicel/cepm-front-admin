@@ -16,8 +16,8 @@ module.exports = () => {
       throw new Error(
         `
         ${devPingUrl} is unattainable
-        You might want to reboot the auth-layer in development mode:
-        $ make dev-auth
+        You might want to reboot the auth-layer in testing mode:
+        $ make start-auth-test
         `
       )
     }

@@ -53,7 +53,7 @@ By default, dev and tests filter requests through [the mock API](/docs/tests.md#
 
 ```bash
 # To develop against a local backend server
-API_BASE_URL=http://localhost:3000 yarn dev
+API_BASE_URL=http://localhost:8000 yarn dev
 
 # To test and develop against a production server
 API_BASE_URL=https://example.io yarn dev:e2e
