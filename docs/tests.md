@@ -53,7 +53,7 @@ make start-api-test
 
 ```bash
 # start the auth layer
-make dev-auth
+make start-auth-test
 ```
 
 - In a third terminal, run:
