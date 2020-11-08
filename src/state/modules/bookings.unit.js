@@ -157,6 +157,35 @@ describe('@state/modules/bookings', () => {
     expect(store.state.bookings.bookingList.length).toBeGreaterThan(0)
     expect(result).toEqual(store.state.bookings.bookingList)
   })
+
+  // Email to booker
+  it('mutations["bookings/START_SENDING_EMAIL_TO_BOOKER"] sets the values of sendingEmailToBookers', async () => {
+    expect(store.state.bookings.sendingEmailToBookers).toEqual([])
+    const value1 = 'abc'
+    const value2 = 123
+    store.commit('bookings/START_SENDING_EMAIL_TO_BOOKER', value1)
+    store.commit('bookings/START_SENDING_EMAIL_TO_BOOKER', value2)
+    expect(store.state.bookings.sendingEmailToBookers).toContain(value1)
+    expect(store.state.bookings.sendingEmailToBookers).toContain(value2)
+  })
+  it('mutations["bookings/START_SENDING_EMAIL_TO_BOOKER"] sets the values of sendingEmailToBookers only once', async () => {
+    expect(store.state.bookings.sendingEmailToBookers).toEqual([])
+    const value = 'abc'
+    store.commit('bookings/START_SENDING_EMAIL_TO_BOOKER', value)
+    store.commit('bookings/START_SENDING_EMAIL_TO_BOOKER', value)
+    expect(store.state.bookings.sendingEmailToBookers).toEqual([value])
+  })
+  it('mutations["bookings/END_SENDING_EMAIL_TO_BOOKER"] removed the specific value from sendingEmailToBookers', async () => {
+    const value1 = 'monsieur'
+    const value2 = 'madame'
+    store.commit('bookings/START_SENDING_EMAIL_TO_BOOKER', value1)
+    store.commit('bookings/START_SENDING_EMAIL_TO_BOOKER', value2)
+    expect(store.state.bookings.sendingEmailToBookers).toContain(value1)
+    expect(store.state.bookings.sendingEmailToBookers).toContain(value2)
+    store.commit('bookings/END_SENDING_EMAIL_TO_BOOKER', value1)
+    expect(store.state.bookings.sendingEmailToBookers).not.toContain(value1)
+    expect(store.state.bookings.sendingEmailToBookers).toContain(value2)
+  })
 })
 
 const validCrossing = {

@@ -51,7 +51,9 @@ export const mutations = {
     state.modifyingCrossing = false
   },
   SELECT_CROSSING(state, crossing) {
-    state.selectedCrossing = crossing && { ...crossing }
+    state.selectedCrossing = crossing && {
+      ...crossing,
+    }
   },
 }
 

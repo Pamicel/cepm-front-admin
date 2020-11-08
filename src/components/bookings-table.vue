@@ -13,6 +13,7 @@ export default {
   data() {
     return {
       opened: [],
+      searchString: '',
     }
   },
   computed: {
@@ -35,90 +36,130 @@ export default {
         }
       })
     },
+    data() {
+      if (this.isEmpty) {
+        return []
+      } else if (this.searchString) {
+        return this.searchResult()
+      }
+
+      return this.parsedBookings
+    },
+  },
+  methods: {
+    searchResult() {
+      const removeDiatrics = (str) =>
+        str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      const simplified = (str) => removeDiatrics(str.toLowerCase())
+
+      const searchString = removeDiatrics(this.searchString)
+
+      return this.parsedBookings.filter((booking) => {
+        const rawValues = Object.values(booking.parsedRaw).join(' ')
+        const toSearch = `${rawValues} ${booking.deathNumber}`
+
+        return simplified(toSearch).includes(simplified(searchString))
+      })
+    },
   },
 }
 </script>
 
 <template>
-  <b-table
-    :data="isEmpty ? [] : parsedBookings"
-    :loading="isLoading"
-    striped
-    mobile-cards
-    sort-icon="arrow-up"
-    :opened-detailed="opened"
-    detailed
-    detail-key="id"
-    show-detail-icon
-  >
-    <template slot-scope="props">
-      <b-table-column field="id" label="ID" width="40" sortable numeric>
-        {{ props.row.id }}
-      </b-table-column>
-
-      <b-table-column field="bookerEmail" label="Email de réservation" sortable>
-        {{ props.row.bookerEmail }}
-      </b-table-column>
-
-      <b-table-column field="deathNumber" label="Dossier Mortem" sortable>
-        {{ props.row.deathNumber }}
-      </b-table-column>
-
-      <b-table-column
-        field="importDate"
-        label="Date d'import"
-        centered
-        date
-        sortable
-      >
-        <span v-if="props.row.importDate">
-          {{ new Date(props.row.importDate).toLocaleDateString() }}
-        </span>
-        <span v-else class="tag is-warning">
-          N/A
-        </span>
-      </b-table-column>
-
-      <b-table-column field="emailed" label="Email envoyé" boolean sortable>
-        <span v-if="props.row.emailed" class="tag is-success">
-          Oui
-        </span>
-        <span v-else class="tag is-warning">
-          Non
-        </span>
-      </b-table-column>
-    </template>
-
-    <template
-      slot="detail"
-      slot-scope="props"
-      field="tableRaw"
+  <div>
+    <b-input v-model="searchString" type="text" />
+    <b-table
+      :data="data"
+      :loading="isLoading"
+      striped
       mobile-cards
       sort-icon="arrow-up"
+      :opened-detailed="opened"
+      detailed
+      detail-key="id"
+      show-detail-icon
     >
-      <b-table :data="props.row.tableRaw">
-        <template slot-scope="table">
-          <b-table-column field="key" label="Champ" sortable>{{
-            table.row.key
-          }}</b-table-column>
-          <b-table-column field="value" label="Valeur" sortable>{{
-            table.row.value
-          }}</b-table-column>
-        </template>
-      </b-table>
-    </template>
+      <template slot-scope="props">
+        <b-table-column field="id" label="ID" width="40" sortable numeric>
+          {{ props.row.id }}
+        </b-table-column>
 
-    <template slot="empty">
-      <section class="section">
-        <div class="content has-text-grey has-text-centered">
-          <p>
-            <b-icon icon="ticket-alt" size="is-large"> </b-icon>
-          </p>
-          <p>Aucune reservation.</p>
-        </div>
-      </section>
-    </template>
-  </b-table>
+        <b-table-column
+          field="bookerEmail"
+          label="Email de réservation"
+          sortable
+        >
+          {{ props.row.bookerEmail }}
+        </b-table-column>
+
+        <b-table-column field="deathNumber" label="Dossier Mortem" sortable>
+          {{ props.row.deathNumber }}
+        </b-table-column>
+
+        <b-table-column
+          field="importDate"
+          label="Date d'import"
+          centered
+          date
+          sortable
+        >
+          <span v-if="props.row.importDate">
+            {{ new Date(props.row.importDate).toLocaleDateString() }}
+          </span>
+          <span v-else class="tag is-warning">
+            N/A
+          </span>
+        </b-table-column>
+
+        <b-table-column field="emailed" label="Email envoyé" boolean sortable>
+          <span v-if="props.row.emailed" class="tag is-success">
+            Oui
+          </span>
+          <span v-else-if="props.row.emailing">
+            <BaseIcon :class="$style.loadingIcon" name="fan" spin />
+          </span>
+          <b-button
+            v-else
+            type="is-warning"
+            size="is-small"
+            @click="$emit('sendEmail', props.row.bookerEmail)"
+          >
+            Non
+          </b-button>
+        </b-table-column>
+      </template>
+
+      <template
+        slot="detail"
+        slot-scope="props"
+        field="tableRaw"
+        mobile-cards
+        sort-icon="arrow-up"
+      >
+        <b-table :data="props.row.tableRaw">
+          <template slot-scope="table">
+            <b-table-column field="key" label="Champ" sortable>{{
+              table.row.key
+            }}</b-table-column>
+            <b-table-column field="value" label="Valeur" sortable>{{
+              table.row.value
+            }}</b-table-column>
+          </template>
+        </b-table>
+      </template>
+
+      <template slot="empty">
+        <section class="section">
+          <div class="content has-text-grey has-text-centered">
+            <p>
+              <b-icon icon="ticket-alt" size="is-large"> </b-icon>
+            </p>
+            <p>Aucune reservation.</p>
+          </div>
+        </section>
+      </template>
+    </b-table>
+  </div>
 </template>
 
 <style lang="scss" module>

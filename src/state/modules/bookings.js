@@ -8,6 +8,7 @@ export const state = {
   booking: {},
   creatingBookings: false,
   fetchingBookings: false,
+  sendingEmailToBookers: [],
   bookingCreationResponse: {},
 }
 
@@ -36,6 +37,17 @@ export const mutations = {
   },
   END_FETCHING_BOOKINGS(state) {
     state.fetchingBookings = false
+  },
+  START_SENDING_EMAIL_TO_BOOKER(state, bookerEmail) {
+    if (state.sendingEmailToBookers.includes(bookerEmail)) {
+      return
+    }
+    state.sendingEmailToBookers = [...state.sendingEmailToBookers, bookerEmail]
+  },
+  END_SENDING_EMAIL_TO_BOOKER(state, bookerEmail) {
+    state.sendingEmailToBookers = state.sendingEmailToBookers.filter(
+      (email) => email !== bookerEmail
+    )
   },
 }
 
@@ -84,6 +96,30 @@ export const actions = {
       commit('END_FETCHING_BOOKINGS')
       console.error(error)
       return null
+    }
+  },
+  async sendEmailToBooker(
+    { commit, rootGetters, dispatch },
+    { bookerEmail, crossingId }
+  ) {
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    commit('START_SENDING_EMAIL_TO_BOOKER', bookerEmail)
+    try {
+      await axios.post(`${apiUrl}/email/firm-cta`, {
+        bookerEmail,
+        crossingId,
+      })
+      await dispatch('fetchBookings', {
+        crossingId,
+      })
+      commit('END_SENDING_EMAIL_TO_BOOKER', bookerEmail)
+    } catch (error) {
+      console.error(error)
+      // 400 -> no new passenger === email already sent for everyone
+      // 404 booker does not exist in this crossing
+      commit('END_SENDING_EMAIL_TO_BOOKER', bookerEmail)
     }
   },
 }

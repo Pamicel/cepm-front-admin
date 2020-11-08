@@ -11,10 +11,26 @@ export default {
   components: { Layout, BookingsTable },
   computed: {
     ...mapState({
+      fetchingBookings: (state) => state.crossings.fetchingBookings,
       fetchingCrossing: (state) => state.crossings.fetchingSingleCrossing,
+      sendingEmailToBookers: (state) => state.bookings.sendingEmailToBookers,
       crossing: (state) => state.crossings.selectedCrossing,
-      bookings: (state) => state.bookings,
+      bookingList: (state) => state.bookings.bookingList,
     }),
+    bookings() {
+      if (this.sendingEmailToBookers.length === 0) {
+        return this.bookingList
+      }
+      return this.bookingList.map((booking) => {
+        const emailing = this.sendingEmailToBookers.includes(
+          booking.bookerEmail
+        )
+        return {
+          ...booking,
+          emailing,
+        }
+      })
+    },
   },
   async mounted() {
     const crossingId = this.$route.params.id
@@ -27,7 +43,6 @@ export default {
         return this.$router.replace({ name: 'crossings' })
       }
     }
-
     this.$store.dispatch('bookings/fetchBookings', {
       crossingId,
     })
@@ -35,6 +50,13 @@ export default {
   methods: {
     async goToUploadPage(file) {
       this.$router.push({ name: 'bookings-upload' })
+    },
+    async sendEmail(bookerEmail) {
+      const crossingId = this.$route.params.id
+      this.$store.dispatch('bookings/sendEmailToBooker', {
+        bookerEmail,
+        crossingId,
+      })
     },
   },
 }
@@ -48,8 +70,9 @@ export default {
       </pre>
       <b-button @click="goToUploadPage">Uploader des reservations</b-button>
       <BookingsTable
-        :bookings="bookings.bookingList"
-        :is-loading="bookings.fetchingBookings"
+        :bookings="bookings"
+        :is-loading="fetchingBookings"
+        @sendEmail="sendEmail"
       />
     </div>
   </Layout>

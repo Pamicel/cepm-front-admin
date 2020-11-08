@@ -26,12 +26,16 @@ export const getters = {
 
     const userInCache = state.cached.find(hadSameId(userId))
     if (userInCache) {
-      return { ...userInCache }
+      return {
+        ...userInCache,
+      }
     }
 
     const userInList = state.userList.find(hadSameId(userId))
     if (userInList) {
-      return { ...userInList }
+      return {
+        ...userInList,
+      }
     }
 
     return null
@@ -102,7 +106,9 @@ export const mutations = {
   },
 
   SELECT_USER(state, user) {
-    state.selectedUser = user && { ...user }
+    state.selectedUser = user && {
+      ...user,
+    }
   },
 }
 
@@ -197,11 +203,15 @@ export const actions = {
 
     try {
       commit('START_UPDATING_USER_ROLE', userId)
-      await axios.patch(`${apiUrl}/users/${userId}/update-role`, { name: role })
+      await axios.patch(`${apiUrl}/users/${userId}/update-role`, {
+        name: role,
+      })
       commit('END_UPDATING_USER_ROLE', userId)
 
       // Update the user in the memory
-      const user = { ...getters.user(userId) }
+      const user = {
+        ...getters.user(userId),
+      }
       if (user) {
         const updatedUser = {
           ...user,

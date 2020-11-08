@@ -12,7 +12,10 @@ describe('@state/modules/auth', () => {
   describe('in a store', () => {
     let store
     beforeEach(async () => {
-      store = createModuleStore({ auth: authModule, users: userModule })
+      store = createModuleStore({
+        auth: authModule,
+        users: userModule,
+      })
       window.localStorage.clear()
     })
 
