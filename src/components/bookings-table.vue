@@ -56,7 +56,7 @@ export default {
 
       return this.parsedBookings.filter((booking) => {
         const rawValues = Object.values(booking.parsedRaw).join(' ')
-        const toSearch = `${rawValues} ${booking.deathNumber}`
+        const toSearch = `${rawValues} ${booking.groupNumber}`
 
         return simplified(toSearch).includes(simplified(searchString))
       })
@@ -92,8 +92,8 @@ export default {
           {{ props.row.bookerEmail }}
         </b-table-column>
 
-        <b-table-column field="deathNumber" label="Dossier Mortem" sortable>
-          {{ props.row.deathNumber }}
+        <b-table-column field="groupNumber" label="Dossier Mortem" sortable>
+          {{ props.row.groupNumber }}
         </b-table-column>
 
         <b-table-column
