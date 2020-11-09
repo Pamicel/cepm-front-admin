@@ -80,8 +80,18 @@ export default {
       show-detail-icon
     >
       <template slot-scope="props">
-        <b-table-column field="id" label="ID" width="40" sortable numeric>
-          {{ props.row.id }}
+        <b-table-column field="id" label="Numéro de Décédé·e" sortable>
+          <b-tag type="is-dark" size="is-medium" :class="$style.deathNumber">
+            {{
+              `${props.row.id}-${props.row.crossingId}-${props.row.deathNumber}`
+            }}
+          </b-tag>
+        </b-table-column>
+
+        <b-table-column field="groupNumber" label="Dossier Mortem" sortable>
+          <span :class="$style.groupNumber">
+            {{ props.row.groupNumber }}
+          </span>
         </b-table-column>
 
         <b-table-column
@@ -90,10 +100,6 @@ export default {
           sortable
         >
           {{ props.row.bookerEmail }}
-        </b-table-column>
-
-        <b-table-column field="groupNumber" label="Dossier Mortem" sortable>
-          {{ props.row.groupNumber }}
         </b-table-column>
 
         <b-table-column
@@ -164,4 +170,11 @@ export default {
 
 <style lang="scss" module>
 @import '@design';
+.groupNumber {
+  opacity: 0.7;
+}
+.deathNumber {
+  font-family: monospace;
+  font-weight: bold;
+}
 </style>
