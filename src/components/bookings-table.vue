@@ -1,7 +1,10 @@
 <script>
+import BookingDetails from '@components/booking-details.vue'
+
 export default {
+  components: { BookingDetails },
   props: {
-    bookings: {
+    groups: {
       type: Array,
       default: () => [],
     },
@@ -18,23 +21,7 @@ export default {
   },
   computed: {
     isEmpty() {
-      return this.bookings.length === 0
-    },
-    parsedBookings() {
-      return this.bookings.map((booking) => {
-        const parsedRaw = JSON.parse(booking.raw)
-        const tableRaw = Object.entries(parsedRaw)
-          .filter(([key, value]) => value)
-          .map(([key, value]) => ({
-            key,
-            value,
-          }))
-        return {
-          ...booking,
-          parsedRaw,
-          tableRaw,
-        }
-      })
+      return this.groups.length === 0
     },
     data() {
       if (this.isEmpty) {
@@ -43,23 +30,47 @@ export default {
         return this.searchResult()
       }
 
-      return this.parsedBookings
+      return this.groups
     },
   },
   methods: {
     searchResult() {
+      if (this.searchString === '') {
+        return this.groups
+      }
+
       const removeDiatrics = (str) =>
         str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       const simplified = (str) => removeDiatrics(str.toLowerCase())
 
       const searchString = removeDiatrics(this.searchString)
 
-      return this.parsedBookings.filter((booking) => {
-        const rawValues = Object.values(booking.parsedRaw).join(' ')
-        const toSearch = `${rawValues} ${booking.groupNumber}`
+      const match = []
 
-        return simplified(toSearch).includes(simplified(searchString))
-      })
+      for (const group of this.groups) {
+        const bookings = group.bookings.map((booking) => {
+          const rawValues = Object.values(booking.parsedRaw).join(' ')
+          const toSearch = `${rawValues} ${booking.groupNumber}`
+
+          if (simplified(toSearch).includes(simplified(searchString))) {
+            return {
+              ...booking,
+              match: true,
+            }
+          }
+
+          return booking
+        })
+
+        if (bookings.filter((booking) => booking.match).length !== 0) {
+          match.push({
+            ...group,
+            bookings,
+          })
+        }
+      }
+
+      return match
     },
   },
 }
@@ -67,7 +78,13 @@ export default {
 
 <template>
   <div>
-    <b-input v-model="searchString" type="text" />
+    <h1 :class="$style.title">Réservations</h1>
+    <b-input
+      v-model="searchString"
+      :class="$style.searchField"
+      icon="search"
+      type="text"
+    />
     <b-table
       :data="data"
       :loading="isLoading"
@@ -76,16 +93,14 @@ export default {
       sort-icon="arrow-up"
       :opened-detailed="opened"
       detailed
-      detail-key="id"
+      detail-key="groupNumber"
       show-detail-icon
     >
       <template slot-scope="props">
-        <b-table-column field="id" label="Numéro de Décédé·e" sortable>
-          <b-tag type="is-dark" size="is-medium" :class="$style.deathNumber">
-            {{
-              `${props.row.id}-${props.row.crossingId}-${props.row.deathNumber}`
-            }}
-          </b-tag>
+        <b-table-column field="numberOfBookings" label="Nombre" sortable>
+          <span :class="$style.numberOfBookings">
+            {{ props.row.numberOfBookings }}
+          </span>
         </b-table-column>
 
         <b-table-column field="groupNumber" label="Dossier Mortem" sortable>
@@ -100,21 +115,6 @@ export default {
           sortable
         >
           {{ props.row.bookerEmail }}
-        </b-table-column>
-
-        <b-table-column
-          field="importDate"
-          label="Date d'import"
-          centered
-          date
-          sortable
-        >
-          <span v-if="props.row.importDate">
-            {{ new Date(props.row.importDate).toLocaleDateString() }}
-          </span>
-          <span v-else class="tag is-warning">
-            N/A
-          </span>
         </b-table-column>
 
         <b-table-column field="emailed" label="Email envoyé" boolean sortable>
@@ -138,20 +138,15 @@ export default {
       <template
         slot="detail"
         slot-scope="props"
-        field="tableRaw"
+        field="bookings"
         mobile-cards
         sort-icon="arrow-up"
       >
-        <b-table :data="props.row.tableRaw">
-          <template slot-scope="table">
-            <b-table-column field="key" label="Champ" sortable>{{
-              table.row.key
-            }}</b-table-column>
-            <b-table-column field="value" label="Valeur" sortable>{{
-              table.row.value
-            }}</b-table-column>
-          </template>
-        </b-table>
+        <BookingDetails
+          v-for="booking of props.row.bookings"
+          :key="booking.deathNumber"
+          :booking="booking"
+        />
       </template>
 
       <template slot="empty">
@@ -170,11 +165,19 @@ export default {
 
 <style lang="scss" module>
 @import '@design';
+.title {
+  text-align: center;
+}
+
 .groupNumber {
   opacity: 0.7;
 }
 .deathNumber {
   font-family: monospace;
   font-weight: bold;
+}
+.searchField {
+  width: 80%;
+  margin: 1rem auto 2rem;
 }
 </style>

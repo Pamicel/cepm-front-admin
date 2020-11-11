@@ -29,6 +29,11 @@ import {
   faTicketAlt,
   faFan,
   faFile,
+  faReceipt,
+  faClipboardList,
+  faCalendarTimes,
+  faCalendarPlus,
+  faSearch,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -123,7 +128,12 @@ library.add(
   faTicketAlt,
   faFan,
   faFile,
-  faTimes
+  faTimes,
+  faReceipt,
+  faCalendarTimes,
+  faCalendarPlus,
+  faClipboardList,
+  faSearch
 )
 Vue.component('vue-fontawesome', FontAwesomeIcon)
 

@@ -52,12 +52,13 @@ export default [
   },
   {
     path: '/traversees/:id',
+    redirect: { name: 'bookings' },
     name: 'crossing-details',
-    component: () => lazyLoadView(import('@views/crossing-details.vue')),
-    meta: {
-      authRequired: true,
-      authRoles: ['director'],
-    },
+    // component: () => lazyLoadView(import('@views/crossing-details.vue')),
+    // meta: {
+    //   authRequired: true,
+    //   authRoles: ['director'],
+    // },
   },
   {
     path: '/traversees/:id/reservations',
