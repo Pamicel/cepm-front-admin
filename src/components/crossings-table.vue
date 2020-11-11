@@ -55,12 +55,12 @@ export default {
     <template slot-scope="props">
       <b-table-column
         :class="$style.col"
-        field="id"
+        field="crossingNumber"
         label="Numéro"
         width="40"
         numeric
       >
-        {{ props.row.id }}
+        {{ new Intl.NumberFormat('fr-FR').format(props.row.crossingNumber) }}
       </b-table-column>
 
       <b-table-column :class="$style.col" field="date" label="Date" centered>

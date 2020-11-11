@@ -20,7 +20,10 @@ export default {
 
 <template>
   <div :class="$style.container">
-    <h1>Traversée {{ crossing.id }}</h1>
+    <h1
+      >Traversée
+      {{ new Intl.NumberFormat('fr-FR').format(crossing.crossingNumber) }}</h1
+    >
     <div :class="$style.infos">
       <p
         >Date: {{ formatDate(new Date(crossing.startDate)) }}
