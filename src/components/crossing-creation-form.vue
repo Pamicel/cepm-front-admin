@@ -59,9 +59,9 @@ export default {
     },
     send() {
       this.$emit('send', {
-        duration: this.duration,
+        duration: parseInt(this.duration),
         startDate: this.startDate,
-        audienceSize: this.audienceSize,
+        audienceSize: parseInt(this.audienceSize),
       })
       this.resetState()
     },
@@ -90,6 +90,7 @@ export default {
             type="number"
             :class="$style.input"
             min="1"
+            data-test-name="audienceInput"
           >
           </b-input>
         </div>
