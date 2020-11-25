@@ -1,4 +1,6 @@
 <script>
+import formatDuration from '@utils/format-duration.js'
+
 export default {
   data() {
     return this.initData()
@@ -25,18 +27,7 @@ export default {
       return minuteDiff
     },
     durationDisplay(state) {
-      const hourInMinutes = 60
-      const dayInMinutes = 24 * 60
-      const minuteDiff = state.duration
-
-      if (minuteDiff >= hourInMinutes) {
-        const hours = Math.floor((minuteDiff % dayInMinutes) / hourInMinutes)
-        const minutes = `${minuteDiff % hourInMinutes}`.padStart(2, '0')
-
-        return `${hours}h${minutes}min`
-      }
-
-      return `${minuteDiff}min`
+      return formatDuration(state.duration)
     },
   },
   methods: {
@@ -68,9 +59,9 @@ export default {
     },
     send() {
       this.$emit('send', {
-        duration: this.duration,
+        duration: parseInt(this.duration),
         startDate: this.startDate,
-        audienceSize: this.audienceSize,
+        audienceSize: parseInt(this.audienceSize),
       })
       this.resetState()
     },
@@ -99,6 +90,7 @@ export default {
             type="number"
             :class="$style.input"
             min="1"
+            data-test-name="audienceInput"
           >
           </b-input>
         </div>

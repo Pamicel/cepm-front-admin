@@ -33,6 +33,9 @@ export default {
     deployed() {
       return !this.selectedColumn
     },
+    lessThanTenColumns() {
+      return this.columnNames.length < 10
+    },
   },
   methods: {
     columnContent(columnName) {
@@ -54,6 +57,11 @@ export default {
         200
       )
       this.$emit('select', name)
+    },
+    fillerColumns() {
+      return this.lessThanTenColumns && this.deployed
+        ? new Array(10 - this.columnNames.length).map((row, index) => index)
+        : []
     },
   },
 }
@@ -100,6 +108,22 @@ export default {
         >
           {{ value || '(vide)' }}
         </div>
+        <div v-if="!deployed" :class="$style.row">
+          ...
+        </div>
+      </div>
+      <div
+        v-for="col of fillerColumns()"
+        :key="col"
+        :class="[$style.column, $style.fillerColumn]"
+      >
+        <div :class="$style.columnName">{{/* empty element */}}</div>
+        <div
+          v-for="index in numberColumnIndices()"
+          :key="index"
+          :class="$style.row"
+          >{{/* empty element */}}</div
+        >
         <div v-if="!deployed" :class="$style.row">
           ...
         </div>
@@ -215,6 +239,10 @@ $row-bg-color: white;
           height: 80%;
         }
       }
+    }
+
+    .fillerColumn {
+      pointer-events: none;
     }
 
     .numbersColumn {

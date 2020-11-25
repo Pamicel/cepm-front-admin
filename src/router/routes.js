@@ -43,27 +43,31 @@ export default [
   },
   {
     path: '/traversees',
-    name: 'traversees',
+    name: 'crossings',
     component: () => lazyLoadView(import('@views/crossings.vue')),
     meta: {
       authRequired: true,
       authRoles: ['director'],
     },
-    props: (route) => ({
-      user: store.state.auth.currentUser || {},
-    }),
   },
   {
     path: '/traversees/:id',
-    name: 'traversee',
-    component: () => lazyLoadView(import('@views/crossing-details.vue')),
+    redirect: { name: 'bookings' },
+    name: 'crossing-details',
+    // component: () => lazyLoadView(import('@views/crossing-details.vue')),
+    // meta: {
+    //   authRequired: true,
+    //   authRoles: ['director'],
+    // },
+  },
+  {
+    path: '/traversees/:id/reservations',
+    name: 'bookings',
+    component: () => lazyLoadView(import('@views/bookings.vue')),
     meta: {
       authRequired: true,
       authRoles: ['director'],
     },
-    props: (route) => ({
-      user: store.state.auth.currentUser || {},
-    }),
   },
   {
     path: '/traversees/:id/upload',
@@ -72,7 +76,7 @@ export default [
       authRequired: true,
       authRoles: ['director'],
     },
-    component: () => lazyLoadView(import('@views/field-map-selector.vue')),
+    component: () => lazyLoadView(import('@views/bookings-upload.vue')),
   },
   {
     path: '/users/:id',

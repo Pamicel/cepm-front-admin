@@ -40,7 +40,10 @@ export default {
     },
     selectCrossing(crossingId) {
       this.$emit('crossings/selectCrossing', crossingId)
-      this.$router.push({ name: 'traversee', params: { id: crossingId } })
+      this.$router.push({
+        name: 'crossing-details',
+        params: { id: crossingId },
+      })
     },
   },
 }

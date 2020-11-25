@@ -140,7 +140,9 @@ export const actions = {
 
     try {
       commit('START_DELETING_ACCOUNT')
-      await axios.post(`${apiUrl}/delete-account`, { password })
+      await axios.post(`${apiUrl}/delete-account`, {
+        password,
+      })
       commit('END_DELETING_ACCOUNT')
       dispatch('logOut')
       return true
