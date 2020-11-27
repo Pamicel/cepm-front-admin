@@ -13,6 +13,8 @@ export default {
   data() {
     return {
       formOpen: false,
+      showVisitors: false,
+      showStaff: true,
     }
   },
   computed: {
@@ -21,6 +23,21 @@ export default {
       fetchingUsers: (state) => state.users.fetchingUsers,
       creatingUser: (state) => state.users.creatingUser,
     }),
+    displayedUsers: (state) => {
+      const { userList, showVisitors, showStaff } = state
+      if (!showVisitors || !showStaff) {
+        return userList.filter(
+          (user) =>
+            (showVisitors ||
+              (user.auth.role !== 'visitor' && user.auth.role !== undefined)) &&
+            (showStaff ||
+              (user.auth.role !== 'staff' &&
+                user.auth.role !== 'admin' &&
+                user.auth.role !== 'director'))
+        )
+      }
+      return userList
+    },
   },
   mounted() {
     this.$store.dispatch('users/fetchUsers')
@@ -66,9 +83,20 @@ export default {
           </div>
         </b-collapse>
       </div>
+
+      <div :class="$style.tableControl">
+        <b-switch v-model="showVisitors">
+          Montrer les visiteur·rice·s
+        </b-switch>
+        <br />
+        <b-switch v-model="showStaff">
+          Montrer le staff
+        </b-switch>
+      </div>
+
       <UsersTable
         :class="$style.usersTable"
-        :users="userList"
+        :users="displayedUsers"
         :is-loading="fetchingUsers || creatingUser"
         @select="selectUser"
       />
@@ -114,6 +142,10 @@ export default {
         @extend %typography-large;
       }
     }
+  }
+
+  .tableControl {
+    margin: 0 1rem 1rem;
   }
 
   .title {

@@ -20,6 +20,7 @@ export default {
       admin: 'Admin',
       director: 'Mise en scène',
       staff: 'Staff',
+      visitor: 'Visiteur·rice',
     }
 
     return {
@@ -72,13 +73,13 @@ export default {
       } else if (user.auth && user.auth.role === role) {
         // If already user role -> dialog saying so
         this.$buefy.dialog.alert({
-          message: `"${this.roleTranslations[role]}" est déjà le rôle de cet utilisateur.`,
+          message: `"${this.roleTranslations[role]}" est déjà le rôle de cet·te utilisateur·rice.`,
           title: 'Changement de rôle',
         })
       } else {
         // Otherwise -> confirmation dialog
         this.$buefy.dialog.confirm({
-          message: `Êtes-vous sûr·e de vouloir donner à cet utilisateur le rôle "${this.roleTranslations[role]}" .`,
+          message: `Êtes-vous sûr·e de vouloir donner à cet·te utilisateur·rice le rôle "${this.roleTranslations[role]}" .`,
           title: 'Changement de rôle',
           confirmText: 'Oui',
           onConfirm: this.roleChangeSender(user.id, role),
@@ -185,7 +186,7 @@ export default {
           >
 
           <b-tag v-else rounded type="is-warning" size="is-medium"
-            >Pas de rôle</b-tag
+            >Visiteur·rice</b-tag
           >
         </div>
 
@@ -211,6 +212,11 @@ export default {
               <option :disabled="user.auth.role === 'staff'" value="staff">{{
                 roleTranslations.staff
               }}</option>
+              <option
+                :disabled="user.auth.role === 'visitor' || !user.auth.role"
+                value="visitor"
+                >Visiteur·rice</option
+              >
             </b-select>
             <p class="control">
               <b-button
