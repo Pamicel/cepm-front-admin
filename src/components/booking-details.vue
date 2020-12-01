@@ -8,12 +8,14 @@ export default {
   },
   data() {
     return {
-      closedInfos: true,
+      isClosedInfos: true,
+      isModifPanelOpen: false,
+      modifPanelBooking: null,
     }
   },
   computed: {
     isOpenInfos() {
-      return this.booking.match || !this.closedInfos
+      return this.booking.match || !this.isClosedInfos
     },
   },
   methods: {
@@ -24,6 +26,14 @@ export default {
           key,
           value,
         }))
+    },
+    openModifPanel(booking) {
+      this.isModifPanelOpen = true
+      this.modifPanelBooking = booking
+    },
+    closeModifPanel() {
+      this.isModifPanelOpen = false
+      this.modifPanelBooking = null
     },
   },
 }
@@ -50,7 +60,7 @@ export default {
         <button
           :class="$style.bookingIdActionsButton"
           :disabled="booking.match"
-          @click="() => (closedInfos = !closedInfos)"
+          @click="() => (isClosedInfos = !isClosedInfos)"
         >
           <span v-if="!isOpenInfos"
             ><BaseIcon name="eye" :class="$style.eye" /> Voir plus</span
@@ -59,7 +69,17 @@ export default {
             ><BaseIcon name="eye-slash" :class="$style.eye" /> Cacher</span
           >
         </button>
-        <button :class="$style.bookingIdActionsButton">Modifier</button>
+        <button
+          :class="$style.bookingIdActionsButton"
+          @click="openModifPanel(booking.id)"
+          >Modifier</button
+        >
+        <b-modal :active="isModifPanelOpen" @close="closeModifPanel">
+          <div :class="$style.modifPanel">
+            <h1>Modifier le passager {{ booking.id }}</h1>
+            Associer à un FIRM
+          </div>
+        </b-modal>
       </div>
     </div>
     <!--
@@ -68,8 +88,8 @@ export default {
       animation="slide"
       :open="isOpenInfos"
       :class="$style.panel"
-      @open="() => (closedInfos = false)"
-      @close="() => (closedInfos = true)"
+      @open="() => (isClosedInfos = false)"
+      @close="() => (isClosedInfos = true)"
     > -->
     <div v-if="isOpenInfos" :class="$style.panel">
       <div :class="$style.panelHeading">
@@ -139,6 +159,13 @@ export default {
     .panelHeading {
       @extend %typography-medium;
     }
+  }
+
+  .modifPanel {
+    position: relative;
+    width: 50rem;
+    height: 50rem;
+    background: #fff;
   }
 
   .bookingId {

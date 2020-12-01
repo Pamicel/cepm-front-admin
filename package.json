@@ -28,7 +28,7 @@
     "docker": "docker-compose exec dev yarn"
   },
   "gitHooks": {
-    "pre-commit": "cross-env PRE_COMMIT=true lint-staged"
+    "pre-commit": "API_BASE_URL=${URL_AUTH_TEST? Please provide variable URL_AUTH_TEST (run 'make env' then 'source .testing.env' in main repo)} cross-env PRE_COMMIT=true lint-staged"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
