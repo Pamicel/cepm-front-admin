@@ -1,6 +1,7 @@
 <script>
 import appConfig from '@src/app.config'
 import Layout from '@layouts/main.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   page: {
@@ -11,6 +12,21 @@ export default {
     },
   },
   components: { Layout },
+  computed: {
+    ...mapGetters({
+      loggedIn: 'auth/loggedIn',
+    }),
+  },
+  watch: {
+    loggedIn(newValue, oldValue) {
+      if (oldValue === true && newValue === false) {
+        this.$buefy.toast.open({
+          type: 'is-danger',
+          message: 'Vous avez été déconnecté·e',
+        })
+      }
+    },
+  },
 }
 </script>
 
