@@ -10,6 +10,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faCheck,
   faTimes,
+  faTrashAlt,
+  faHandsHelping,
   faCheckCircle,
   faInfoCircle,
   faExclamationTriangle,
@@ -129,6 +131,8 @@ library.add(
   faFan,
   faFile,
   faTimes,
+  faTrashAlt,
+  faHandsHelping,
   faReceipt,
   faCalendarTimes,
   faCalendarPlus,

@@ -1,5 +1,8 @@
 <script>
+import BookingActions from '@components/booking-actions.vue'
+
 export default {
+  components: { BookingActions },
   props: {
     booking: {
       type: Object,
@@ -8,14 +11,17 @@ export default {
   },
   data() {
     return {
-      isClosedInfos: true,
+      forceCloseInfo: true,
       isModifPanelOpen: false,
       modifPanelBooking: null,
     }
   },
   computed: {
     isOpenInfos() {
-      return this.booking.match || !this.isClosedInfos
+      return this.booking.match || !this.forceCloseInfo
+    },
+    fullDeathNumber() {
+      return `${this.booking.id}-${this.booking.crossingId}-${this.booking.deathNumber}`
     },
   },
   methods: {
@@ -52,32 +58,33 @@ export default {
         Décédé·e numéro
         <br />
         <b-tag type="is-dark" size="is-large" :class="$style.deathNumber">
-          {{ `${booking.id}-${booking.crossingId}-${booking.deathNumber}` }}
+          {{ fullDeathNumber }}
         </b-tag>
       </div>
 
       <div :class="$style.bookingIdActions">
-        <button
-          :class="$style.bookingIdActionsButton"
+        <BaseActionButton
+          v-if="!isOpenInfos"
           :disabled="booking.match"
-          @click="() => (isClosedInfos = !isClosedInfos)"
+          icon="eye"
+          @click="() => (forceCloseInfo = false)"
+          >Voir plus</BaseActionButton
         >
-          <span v-if="!isOpenInfos"
-            ><BaseIcon name="eye" :class="$style.eye" /> Voir plus</span
-          >
-          <span v-else
-            ><BaseIcon name="eye-slash" :class="$style.eye" /> Cacher</span
-          >
-        </button>
-        <button
-          :class="$style.bookingIdActionsButton"
-          @click="openModifPanel(booking.id)"
-          >Modifier</button
+        <BaseActionButton
+          v-else
+          icon="eye-slash"
+          @click="() => (forceCloseInfo = true)"
+          >Cacher</BaseActionButton
+        >
+        <BaseActionButton @click="openModifPanel(booking.id)"
+          >Modifier</BaseActionButton
         >
         <b-modal :active="isModifPanelOpen" @close="closeModifPanel">
           <div :class="$style.modifPanel">
-            <h1>Modifier le passager {{ booking.id }}</h1>
-            Associer à un FIRM
+            <BookingActions
+              :full-death-number="fullDeathNumber"
+              :booking-id="booking.id"
+            />
           </div>
         </b-modal>
       </div>
@@ -88,8 +95,8 @@ export default {
       animation="slide"
       :open="isOpenInfos"
       :class="$style.panel"
-      @open="() => (isClosedInfos = false)"
-      @close="() => (isClosedInfos = true)"
+      @open="() => (forceCloseInfo = false)"
+      @close="() => (forceCloseInfo = true)"
     > -->
     <div v-if="isOpenInfos" :class="$style.panel">
       <div :class="$style.panelHeading">
@@ -164,8 +171,11 @@ export default {
   .modifPanel {
     position: relative;
     width: 50rem;
-    height: 50rem;
+    max-width: 100%;
+    margin: auto;
+    overflow: hidden;
     background: #fff;
+    border-radius: 8px;
   }
 
   .bookingId {

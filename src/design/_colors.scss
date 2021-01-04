@@ -22,3 +22,6 @@ $color-input-border: lighten($color-heading-text, 50%);
 $color-button-bg: $color-b;
 $color-button-disabled-bg: darken(desaturate($color-button-bg, 20%), 10%);
 $color-button-text: $color-link-text;
+
+$color-danger: $color-d;
+$color-success: $color-c;

@@ -62,6 +62,7 @@ export default {
             aria-required="true"
             name="email"
             placeholder="Email"
+            type="email"
             @keyup.enter.native="
               incomplete ? $refs.passwordInput.focus() : tryToLogIn
             "

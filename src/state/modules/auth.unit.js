@@ -71,6 +71,7 @@ describe('@state/modules/auth', () => {
       expect(store.getters['auth/loggedIn']).toEqual(false)
     })
 
+    // REMOVE
     it('action.logIn resolves to a user', async () => {
       const { email, password } = validUserExample
 
