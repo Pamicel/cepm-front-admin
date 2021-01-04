@@ -8,6 +8,7 @@ export const state = {
   booking: {},
   creatingBookings: false,
   fetchingBookings: false,
+  modifyingBooking: false,
   sendingEmailToBookers: [],
   bookingCreationResponse: {},
 }
@@ -38,6 +39,13 @@ export const mutations = {
   END_FETCHING_BOOKINGS(state) {
     state.fetchingBookings = false
   },
+  START_MODIFYING_BOOKING(state) {
+    state.modifyingBooking = true
+  },
+  END_MODIFYING_BOOKING(state) {
+    state.modifyingBooking = false
+  },
+
   START_SENDING_EMAIL_TO_BOOKER(state, bookerEmail) {
     if (state.sendingEmailToBookers.includes(bookerEmail)) {
       return
@@ -94,6 +102,25 @@ export const actions = {
       return bookings
     } catch (error) {
       commit('END_FETCHING_BOOKINGS')
+      console.error(error)
+      return null
+    }
+  },
+  async modifyBooking(
+    { commit, rootGetters, dispatch },
+    { crossingId, bookingId, modifs }
+  ) {
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    commit('START_MODIFYING_BOOKING')
+    try {
+      await axios.patch(`${apiUrl}/bookings/${bookingId}`, modifs)
+
+      commit('END_MODIFYING_BOOKING')
+      return dispatch('fetchBookings', { crossingId: crossingId })
+    } catch (error) {
+      commit('END_MODIFYING_BOOKING')
       console.error(error)
       return null
     }

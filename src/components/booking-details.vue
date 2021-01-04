@@ -83,7 +83,8 @@ export default {
           <div :class="$style.modifPanel">
             <BookingActions
               :full-death-number="fullDeathNumber"
-              :booking-id="booking.id"
+              :booking="booking"
+              :is-present="booking.present"
             />
           </div>
         </b-modal>

@@ -1,12 +1,14 @@
 <script>
+import { mapState } from 'vuex'
+
 export default {
   props: {
     fullDeathNumber: {
       type: String,
       required: true,
     },
-    bookingId: {
-      type: [String, Number],
+    booking: {
+      type: Object,
       required: true,
     },
     isPresent: {
@@ -16,6 +18,28 @@ export default {
     hasFirm: {
       type: Boolean,
       default: false,
+    },
+  },
+  computed: {
+    ...mapState({
+      modifyingBooking: (state) => state.bookings.modifyingBooking,
+      fetchingBookings: (state) => state.bookings.fetchingBookings,
+    }),
+  },
+  methods: {
+    setPresent() {
+      this.$store.dispatch('bookings/modifyBooking', {
+        bookingId: this.booking.id,
+        crossingId: this.booking.crossingId,
+        modifs: { present: true },
+      })
+    },
+    setAbsent() {
+      this.$store.dispatch('bookings/modifyBooking', {
+        bookingId: this.booking.id,
+        crossingId: this.booking.crossingId,
+        modifs: { present: false },
+      })
     },
   },
 }
@@ -35,8 +59,18 @@ export default {
       </BaseState>
     </div>
     <div :class="$style.actions">
-      <BaseActionButton v-if="isPresent" icon="times">Exclure</BaseActionButton>
-      <BaseActionButton v-else icon="hands-helping"
+      <BaseActionButton
+        v-if="isPresent"
+        icon="times"
+        :loading="modifyingBooking || fetchingBookings"
+        @click="setAbsent"
+        >Exclure</BaseActionButton
+      >
+      <BaseActionButton
+        v-else
+        icon="hands-helping"
+        :loading="modifyingBooking || fetchingBookings"
+        @click="setPresent"
         >Accueillir</BaseActionButton
       >
       <BaseActionButton icon="clipboard-list">Lier un FIRM</BaseActionButton>

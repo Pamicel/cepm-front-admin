@@ -18,4 +18,12 @@ describe('@components/_base-action-button', () => {
     const button = wrapper.find('button').element
     expect(button.disabled).toBe(true)
   })
+
+  it('when :loading="true", button is disabled', () => {
+    const wrapper = shallowMount(BaseActionButton, {
+      propsData: { loading: true },
+    })
+    const button = wrapper.find('button').element
+    expect(button.disabled).toBe(true)
+  })
 })
