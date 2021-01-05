@@ -74,7 +74,9 @@ export default {
         >Accueillir</BaseActionButton
       >
       <BaseActionButton icon="clipboard-list">Lier un FIRM</BaseActionButton>
-      <BaseActionButton icon="trash-alt">Supprimer</BaseActionButton>
+      <BaseActionButton icon="trash-alt" @click="$emit('deleteBooking')"
+        >Supprimer</BaseActionButton
+      >
     </div>
   </div>
 </template>

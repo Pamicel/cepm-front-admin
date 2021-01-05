@@ -41,6 +41,26 @@ export default {
       this.isModifPanelOpen = false
       this.modifPanelBooking = null
     },
+    async deletePassenger(booking) {
+      await this.$store.dispatch('bookings/deleteBooking', {
+        bookingId: booking.id,
+        crossingId: booking.crossingId,
+      })
+      if (this.modifPanelBooking.id === booking.id) {
+        this.closeModifPanel()
+      }
+    },
+    deletePassengerDialog(booking) {
+      this.$buefy.dialog.confirm({
+        message:
+          'Êtes-vous sûr·e de vouloir supprimer ce·cette passager·ère ? Cette action est définitive.',
+        title: 'Supprimer le·a passager·ère',
+        confirmText: 'Supprimer',
+        onConfirm: () => this.deletePassenger(booking),
+        cancelText: 'Annuler',
+        type: 'is-danger',
+      })
+    },
   },
 }
 </script>
@@ -85,6 +105,7 @@ export default {
               :full-death-number="fullDeathNumber"
               :booking="booking"
               :is-present="booking.present"
+              @deleteBooking="() => deletePassengerDialog(booking)"
             />
           </div>
         </b-modal>

@@ -10,12 +10,16 @@ export const state = {
   fetchingBookings: false,
   modifyingBooking: false,
   sendingEmailToBookers: [],
+  bookingsBeingDeleted: [],
   bookingCreationResponse: {},
 }
 
 export const getters = {
   bookingCreationResponseIsEmpty(state) {
     return Object.keys(state.bookingCreationResponse).length === 0
+  },
+  deletingBooking(state) {
+    return state.bookingsBeingDeleted.length !== 0
   },
 }
 
@@ -44,6 +48,17 @@ export const mutations = {
   },
   END_MODIFYING_BOOKING(state) {
     state.modifyingBooking = false
+  },
+  START_DELETING_BOOKING(state, bookingId) {
+    if (state.bookingsBeingDeleted.includes(bookingId)) {
+      return
+    }
+    state.bookingsBeingDeleted = [...state.bookingsBeingDeleted, bookingId]
+  },
+  END_DELETING_BOOKING(state, bookingId) {
+    state.bookingsBeingDeleted = [
+      ...state.bookingsBeingDeleted.filter((id) => id !== bookingId),
+    ]
   },
 
   START_SENDING_EMAIL_TO_BOOKER(state, bookerEmail) {
@@ -147,6 +162,27 @@ export const actions = {
       // 400 -> no new passenger === email already sent for everyone
       // 404 booker does not exist in this crossing
       commit('END_SENDING_EMAIL_TO_BOOKER', bookerEmail)
+    }
+  },
+  async deleteBooking(
+    { commit, rootGetters, dispatch },
+    { bookingId, crossingId }
+  ) {
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    commit('START_DELETING_BOOKING', bookingId)
+    try {
+      await axios.delete(`${apiUrl}/bookings/${bookingId}`, {
+        bookingId,
+      })
+      await dispatch('fetchBookings', {
+        crossingId,
+      })
+      commit('END_DELETING_BOOKING', bookingId)
+    } catch (error) {
+      console.error(error)
+      commit('END_DELETING_BOOKING', bookingId)
     }
   },
 }

@@ -186,6 +186,47 @@ describe('@state/modules/bookings', () => {
     expect(store.state.bookings.sendingEmailToBookers).not.toContain(value1)
     expect(store.state.bookings.sendingEmailToBookers).toContain(value2)
   })
+
+  // Deleting booking
+  it('mutations["bookings/START_DELETING_BOOKING"] sets the values of bookingsBeingDeleted', async () => {
+    expect(store.state.bookings.bookingsBeingDeleted).toEqual([])
+    const value1 = 'abc'
+    const value2 = 123
+    store.commit('bookings/START_DELETING_BOOKING', value1)
+    store.commit('bookings/START_DELETING_BOOKING', value2)
+    expect(store.state.bookings.bookingsBeingDeleted).toContain(value1)
+    expect(store.state.bookings.bookingsBeingDeleted).toContain(value2)
+  })
+  it('mutations["bookings/START_DELETING_BOOKING"] sets the values of bookingsBeingDeleted only once', async () => {
+    expect(store.state.bookings.bookingsBeingDeleted).toEqual([])
+    const value = 'abc'
+    store.commit('bookings/START_DELETING_BOOKING', value)
+    store.commit('bookings/START_DELETING_BOOKING', value)
+    expect(store.state.bookings.bookingsBeingDeleted).toEqual([value])
+  })
+  it('mutations["bookings/END_DELETING_BOOKING"] removed the specific value from bookingsBeingDeleted', async () => {
+    const value1 = 'monsieur'
+    const value2 = 'madame'
+    store.commit('bookings/START_DELETING_BOOKING', value1)
+    store.commit('bookings/START_DELETING_BOOKING', value2)
+    expect(store.state.bookings.bookingsBeingDeleted).toContain(value1)
+    expect(store.state.bookings.bookingsBeingDeleted).toContain(value2)
+    store.commit('bookings/END_DELETING_BOOKING', value1)
+    expect(store.state.bookings.bookingsBeingDeleted).not.toContain(value1)
+    expect(store.state.bookings.bookingsBeingDeleted).toContain(value2)
+  })
+  it('getters.deletingBooking true iff bookingsBeingDeleted not empty', async () => {
+    const value1 = 'monsieur'
+    const value2 = 'madame'
+    expect(store.getters['bookings/deletingBooking']).toBe(false)
+    store.commit('bookings/START_DELETING_BOOKING', value1)
+    store.commit('bookings/START_DELETING_BOOKING', value2)
+    expect(store.getters['bookings/deletingBooking']).toBe(true)
+    store.commit('bookings/END_DELETING_BOOKING', value1)
+    expect(store.getters['bookings/deletingBooking']).toBe(true)
+    store.commit('bookings/END_DELETING_BOOKING', value2)
+    expect(store.getters['bookings/deletingBooking']).toBe(false)
+  })
 })
 
 const validCrossing = {
