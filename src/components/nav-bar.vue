@@ -6,16 +6,7 @@ export default {
   components: { NavBarRoutes },
   data() {
     return {
-      persistentRoutes: [
-        {
-          name: 'home',
-          title: 'Accueil',
-        },
-        {
-          name: 'histoire',
-          title: 'À propos',
-        },
-      ],
+      persistentRoutes: [],
       loggedInRoutes: {
         adminsOnly: [
           {
@@ -42,10 +33,19 @@ export default {
       },
       loggedOutRoutes: [
         {
+          name: 'home',
+          title: 'Accueil',
+        },
+        {
+          name: 'histoire',
+          title: 'À propos',
+        },
+        {
           name: 'login',
           title: 'Se connecter',
         },
       ],
+      scrollPosition: 0,
     }
   },
   computed: {
@@ -83,10 +83,13 @@ export default {
 .container {
   @extend %typography-medium;
 
+  z-index: $layer-page-z-index;
   height: $size-footer-height;
   padding: $size-grid-padding;
   margin: 0;
   text-align: right;
   list-style-type: none;
+  // background-color: transparentize(white, 0.5);
+  background: linear-gradient(white, transparentize(white, 1));
 }
 </style>

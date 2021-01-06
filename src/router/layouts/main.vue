@@ -53,6 +53,7 @@ export default {
     position: absolute;
     top: $size-grid-padding;
     left: $size-grid-padding;
+    z-index: $layer-page-z-index;
     .logoCalmes {
       height: 3rem;
     }
