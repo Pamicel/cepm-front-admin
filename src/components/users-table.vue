@@ -44,7 +44,7 @@ export default {
         case 'admin':
           return 'Admin'
         case 'director':
-          return 'Mise en scène'
+          return 'Direction'
         case 'staff':
           return 'Staff'
         default:

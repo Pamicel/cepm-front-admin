@@ -24,7 +24,7 @@ export default {
   data() {
     const roleTranslations = {
       admin: 'Admin',
-      director: 'Mise en scène',
+      director: 'Direction',
       staff: 'Staff',
     }
 
