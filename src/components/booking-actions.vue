@@ -1,7 +1,9 @@
 <script>
 import { mapState } from 'vuex'
+import FirmSearch from '@components/firm-search.vue'
 
 export default {
+  components: { FirmSearch },
   props: {
     fullDeathNumber: {
       type: String,
@@ -78,6 +80,7 @@ export default {
         >Supprimer</BaseActionButton
       >
     </div>
+    <FirmSearch />
   </div>
 </template>
 

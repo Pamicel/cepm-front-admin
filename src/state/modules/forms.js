@@ -10,6 +10,7 @@ export const state = {
   firmsPerPage: 50,
   fetchingFirms: false,
   fetchingFirmsDetails: [],
+  cancelTokenSource: null,
 }
 
 export const getters = {}
@@ -20,6 +21,9 @@ export const mutations = {
   },
   RESET_FIRMS(state) {
     state.firms = []
+  },
+  RESET_FETCH_SOURCE(state) {
+    state.cancelTokenSource = null
   },
   SET_FIRMS_PAGE(state, page = 0) {
     state.firmsPage = page
@@ -35,8 +39,9 @@ export const mutations = {
       state.firms = [...state.firms, { ...detailedFirm }]
     }
   },
-  START_FETCHING_FIRMS(state) {
+  START_FETCHING_FIRMS(state, { cancelTokenSource = null } = {}) {
     state.fetchingFirms = true
+    state.cancelTokenSource = cancelTokenSource
   },
   END_FETCHING_FIRMS(state) {
     state.fetchingFirms = false
@@ -56,19 +61,32 @@ export const mutations = {
 }
 
 export const actions = {
-  async fetchFirms({ rootGetters, state, commit }, { page }) {
+  cancelLastFetchFirms({ state, commit }) {
+    if (state.cancelTokenSource) {
+      state.cancelTokenSource.cancel()
+      commit('RESET_FETCH_SOURCE')
+    }
+  },
+  async fetchFirms(
+    { rootGetters, state, commit },
+    { page, search, noBackups }
+  ) {
     if (!rootGetters['auth/loggedIn']) {
       return null
     }
 
-    const filters = {
+    if (page === undefined) {
+      page = state.firmsPage
+    }
+
+    const filter = JSON.stringify({
       offset: page * state.firmsPerPage,
       limit: state.firmsPerPage,
       fields: {
         id: true,
         firstname: true,
         lastname: true,
-        // none of the others
+        // None of the rest
         gender: false,
         birthDate: false,
         birthPlace: false,
@@ -92,20 +110,33 @@ export const actions = {
         remorse: false,
         remorseDetails: false,
         imageRights: false,
+        isBackup: false,
+        bookingId: false,
         userId: false,
       },
-    }
-    const querystring = filters ? qs.stringify(filters) : ''
+    })
+    const querystring = qs.stringify({
+      filter,
+      search: JSON.stringify(search),
+      backup: false,
+    })
 
     try {
-      commit('START_FETCHING_FIRMS')
-      const { data } = await axios.get(`${apiUrl}/form-firms?${querystring}`)
+      const source = axios.CancelToken.source()
+      commit('START_FETCHING_FIRMS', { cancelTokenSource: source })
+      const { data } = await axios.get(`${apiUrl}/form-firms?${querystring}`, {
+        cancelToken: source.token,
+      })
       commit('SAVE_FIRMS', data)
-      commit('SAVE_FIRMS_PAGE', page)
+      commit('SET_FIRMS_PAGE', page)
       commit('END_FETCHING_FIRMS')
       return data
     } catch (error) {
       commit('END_FETCHING_FIRMS')
+      if (axios.isCancel(error)) {
+        // console.log('cancelled')
+        return null
+      }
       console.error(error)
       return null
     }
