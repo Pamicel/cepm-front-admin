@@ -82,6 +82,7 @@ export const actions = {
     const filter = JSON.stringify({
       offset: page * state.firmsPerPage,
       limit: state.firmsPerPage,
+      order: 'dateCreated DESC',
       fields: {
         id: true,
         firstname: true,
