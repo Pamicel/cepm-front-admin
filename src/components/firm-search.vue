@@ -1,7 +1,11 @@
 <script>
 import { mapActions, mapState } from 'vuex'
+import FirmSummary from '@components/firm-summary.vue'
 
 export default {
+  components: {
+    FirmSummary,
+  },
   data() {
     return {
       firstname: '',
@@ -20,10 +24,15 @@ export default {
     },
     ...mapState({
       firms: (state) => state.forms.firms,
+      fetchingFirms: (state) => state.forms.fetchingFirms,
     }),
+  },
+  mounted() {
+    this.fetchFirmsDebounced()
   },
   methods: {
     inputToRegex(input = '', strict) {
+      input = input.trim()
       if (input === '') {
         return ''
       }
@@ -44,7 +53,7 @@ export default {
         firstname: this.regexFirstname,
         lastname: this.regexLastname,
       }
-      const fn = () => this.fetchFirms({ search })
+      const fn = () => this.fetchFirms({ search, backups: false })
       this.cancelLastFetchFirms()
       // debounce by 500ms
       if (this.timeoutID) {
@@ -57,18 +66,64 @@ export default {
 </script>
 
 <template>
-  <div>
-    <label :class="$style.fieldTitle">Prénom</label>
-    <b-input v-model="firstname" @input="fetchFirmsDebounced" />
-    <b-switch v-model="firstnameStrict" @input="fetchFirmsDebounced" />
-    <label :class="$style.fieldTitle">Nom</label>
-    <b-input v-model="lastname" @input="fetchFirmsDebounced" />
-    <b-switch v-model="lastnameStrict" @input="fetchFirmsDebounced" />
-    {{ regexFirstname }} {{ regexLastname }}
-    {{ firms }}
+  <div :class="$style.container">
+    <h1 :class="$style.title">Trouver un FIRM</h1>
+
+    <div :class="$style.searchField">
+      <b-field label="Prénom" label-position="on-border">
+        <b-input v-model="firstname" @input="fetchFirmsDebounced" />
+      </b-field>
+      <!-- <b-checkbox v-model="firstnameStrict" @input="fetchFirmsDebounced">
+        <span>Strict</span>
+      </b-checkbox> -->
+    </div>
+    <div :class="$style.searchField">
+      <b-field label="Nom" label-position="on-border">
+        <b-input v-model="lastname" @input="fetchFirmsDebounced" />
+      </b-field>
+      <!-- <b-checkbox v-model="lastnameStrict" @input="fetchFirmsDebounced">
+        <span>Strict</span>
+      </b-checkbox> -->
+    </div>
+    <div :class="$style.searchResults">
+      <div v-if="fetchingFirms" :class="$style.loading"
+        ><BaseIcon :class="$style.loadingIcon" name="fan" spin
+      /></div>
+      <div v-for="firm in firms" :key="firm.id">
+        <hr :class="$style.summarySeparator" />
+        <FirmSummary v-bind="firm" />
+      </div>
+    </div>
   </div>
 </template>
 
 <style lang="scss" module>
 @import '@design';
+.container {
+  padding: 1rem;
+  text-align: left;
+}
+
+.title {
+  @extend %typography-large;
+
+  margin-bottom: 1rem;
+}
+
+.searchField {
+  margin: 0 0 1rem;
+}
+.summarySeparator {
+  padding: 0;
+  margin: 0;
+}
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  .loadingIcon {
+    @extend %typography-large;
+  }
+}
 </style>

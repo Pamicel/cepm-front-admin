@@ -22,6 +22,11 @@ export default {
       default: false,
     },
   },
+  data: function() {
+    return {
+      isFirmSearchOpen: false,
+    }
+  },
   computed: {
     ...mapState({
       modifyingBooking: (state) => state.bookings.modifyingBooking,
@@ -43,62 +48,64 @@ export default {
         modifs: { present: false },
       })
     },
+    openFirmSearch(booking) {
+      this.isFirmSearchOpen = true
+      this.firmSearchBooking = booking
+    },
+    closeFirmSearch() {
+      this.isFirmSearchOpen = false
+      this.firmSearchBooking = null
+    },
   },
 }
 </script>
 
 <template>
   <div :class="$style.container">
-    <h1 :class="$style.title">Passager {{ fullDeathNumber }}</h1>
-    <div :class="$style.description">
-      <BaseState :is-ok="hasFirm">
-        <span slot="ok">FIRM rempli</span>
-        <span slot="not-ok">Pas de FIRM</span>
-      </BaseState>
-      <BaseState :is-ok="isPresent">
-        <span slot="ok">Accueilli</span>
-        <span slot="not-ok">Absent</span>
-      </BaseState>
-    </div>
     <div :class="$style.actions">
       <BaseActionButton
         v-if="isPresent"
         icon="times"
         :loading="modifyingBooking || fetchingBookings"
         @click="setAbsent"
-        >Exclure</BaseActionButton
+        >Retirer</BaseActionButton
       >
       <BaseActionButton
         v-else
         icon="hands-helping"
         :loading="modifyingBooking || fetchingBookings"
         @click="setPresent"
-        >Accueillir</BaseActionButton
+        >Pointer</BaseActionButton
       >
-      <BaseActionButton icon="clipboard-list">Lier un FIRM</BaseActionButton>
+      <BaseActionButton icon="clipboard-list" @click="openFirmSearch"
+        >Lier un FIRM</BaseActionButton
+      >
       <BaseActionButton icon="trash-alt" @click="$emit('deleteBooking')"
         >Supprimer</BaseActionButton
       >
     </div>
-    <FirmSearch />
+    <b-modal :active="isFirmSearchOpen" @close="closeFirmSearch">
+      <div :class="$style.firmSearch">
+        <FirmSearch />
+      </div>
+    </b-modal>
   </div>
 </template>
 
 <style lang="scss" module>
 @import '@design';
 .container {
-  padding: 2rem;
-  text-align: left;
+  text-align: center;
   background-color: $color-body-bg;
-  .title {
-    @extend %typography-large;
-  }
-  .description {
-    margin-left: 0.5rem;
-  }
-  .actions {
-    margin-top: 1rem;
-    text-align: center;
+
+  .firmSearch {
+    position: relative;
+    width: 50rem;
+    max-width: 100%;
+    margin: auto;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 8px;
   }
 }
 </style>

@@ -67,10 +67,7 @@ export const actions = {
       commit('RESET_FETCH_SOURCE')
     }
   },
-  async fetchFirms(
-    { rootGetters, state, commit },
-    { page, search, noBackups }
-  ) {
+  async fetchFirms({ rootGetters, state, commit }, { page, search, backups }) {
     if (!rootGetters['auth/loggedIn']) {
       return null
     }
@@ -87,6 +84,8 @@ export const actions = {
         id: true,
         firstname: true,
         lastname: true,
+        dateCreated: true,
+        dateModified: true,
         // None of the rest
         gender: false,
         birthDate: false,
@@ -119,7 +118,7 @@ export const actions = {
     const querystring = qs.stringify({
       filter,
       search: JSON.stringify(search),
-      backup: false,
+      backups,
     })
 
     try {

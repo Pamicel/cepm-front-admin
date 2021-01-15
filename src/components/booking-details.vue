@@ -8,10 +8,15 @@ export default {
       type: Object,
       required: true,
     },
+    initialState: {
+      type: String,
+      enum: ['is-open', 'is-closed'],
+      default: 'is-closed',
+    },
   },
   data() {
     return {
-      forceCloseInfo: true,
+      forceCloseInfo: this.initialState === 'is-closed',
       isModifPanelOpen: false,
       modifPanelBooking: null,
     }
@@ -32,14 +37,6 @@ export default {
           key,
           value,
         }))
-    },
-    openModifPanel(booking) {
-      this.isModifPanelOpen = true
-      this.modifPanelBooking = booking
-    },
-    closeModifPanel() {
-      this.isModifPanelOpen = false
-      this.modifPanelBooking = null
     },
     async deletePassenger(booking) {
       await this.$store.dispatch('bookings/deleteBooking', {
@@ -88,81 +85,55 @@ export default {
           :disabled="booking.match"
           icon="eye"
           @click="() => (forceCloseInfo = false)"
-          >Voir plus</BaseActionButton
+          >Déplier</BaseActionButton
         >
         <BaseActionButton
           v-else
           icon="eye-slash"
           @click="() => (forceCloseInfo = true)"
-          >Cacher</BaseActionButton
+          >Plier</BaseActionButton
         >
-        <BaseActionButton @click="openModifPanel(booking.id)"
-          >Modifier</BaseActionButton
+      </div>
+
+      <div :class="$style.bookingIdStatus">
+        <BaseState
+          :class="$style.bookingStatusState"
+          :is-ok="!!booking.present"
         >
-        <b-modal :active="isModifPanelOpen" @close="closeModifPanel">
-          <div :class="$style.modifPanel">
-            <BookingActions
-              :full-death-number="fullDeathNumber"
-              :booking="booking"
-              :is-present="booking.present"
-              @deleteBooking="() => deletePassengerDialog(booking)"
-            />
-          </div>
-        </b-modal>
+          <span slot="ok">Pointé</span>
+          <span slot="not-ok">Non pointé</span>
+        </BaseState>
+        <BaseState :class="$style.bookingStatusState" :is-ok="false">
+          <span slot="ok">FIRM rempli</span>
+          <span slot="not-ok">Pas de FIRM</span>
+        </BaseState>
       </div>
     </div>
-    <!--
-    <b-collapse
-      class="panel"
-      animation="slide"
-      :open="isOpenInfos"
-      :class="$style.panel"
-      @open="() => (forceCloseInfo = false)"
-      @close="() => (forceCloseInfo = true)"
-    > -->
-    <div v-if="isOpenInfos" :class="$style.panel">
-      <div :class="$style.panelHeading">
-        <BaseIcon name="receipt" /> <strong>Infos brutes</strong>
+
+    <div v-if="isOpenInfos" :class="$style.infos">
+      <div :class="$style.panel">
+        <!-- <div :class="$style.panelHeading">
+          <strong>Actions</strong>
+        </div> -->
+        <BookingActions
+          :full-death-number="fullDeathNumber"
+          :booking="booking"
+          :is-present="booking.present"
+          @deleteBooking="() => deletePassengerDialog(booking)"
+        />
       </div>
-      <b-table :data="tableRaw(booking)">
-        <template slot-scope="table">
-          <b-table-column field="key">{{ table.row.key }}</b-table-column>
-          <b-table-column field="value">{{ table.row.value }}</b-table-column>
-        </template>
-      </b-table>
+      <div :class="$style.panel">
+        <div :class="$style.panelHeading">
+          <BaseIcon name="receipt" /> <strong>Infos brutes</strong>
+        </div>
+        <b-table :data="tableRaw(booking)">
+          <template slot-scope="table">
+            <b-table-column field="key">{{ table.row.key }}</b-table-column>
+            <b-table-column field="value">{{ table.row.value }}</b-table-column>
+          </template>
+        </b-table>
+      </div>
     </div>
-    <!-- </b-collapse> -->
-
-    <!-- <b-collapse
-      class="panel"
-      animation="slide"
-      :open="!closedActions"
-      @open="() => (closedActions = false)"
-      @close="() => (closedActions = true)"
-    > -->
-    <!-- <div :class="$style.panel">
-      <div slot="trigger" :class="$style.panelHeading">
-        <BaseIcon name="receipt" /> <strong>Actions</strong>
-      </div>
-      <div :class="$style.bookingActions">
-        <b-button
-          icon-left="clipboard-list"
-          :class="$style.bookingActionsButton"
-        >
-          Connecter à un FIRM
-        </b-button>
-        <br />
-        <b-button
-          type="is-danger"
-          icon-left="calendar-times"
-          :class="$style.bookingActionsButton"
-          >Annuler la réservation</b-button
-        >
-      </div>
-    </div> -->
-    <!-- </b-collapse> -->
-
-    <!--  -->
   </div>
 </template>
 
@@ -190,16 +161,6 @@ export default {
     }
   }
 
-  .modifPanel {
-    position: relative;
-    width: 50rem;
-    max-width: 100%;
-    margin: auto;
-    overflow: hidden;
-    background: #fff;
-    border-radius: 8px;
-  }
-
   .bookingId {
     display: flex;
     justify-content: space-between;
@@ -219,10 +180,35 @@ export default {
         margin-right: 0.5rem;
       }
     }
+
+    .bookingIdDeathNumber {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      justify-content: start;
+    }
+
+    .bookingIdStatus {
+      display: flex;
+      flex-direction: column;
+      align-items: left;
+      justify-content: center;
+    }
+
+    .bookingIdDeathNumber,
+    .bookingIdActions,
+    .bookingIdStatus {
+      width: 30%;
+    }
   }
 
   .bookingActionsButton {
     margin: 0.5rem 0;
+  }
+
+  .infos {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
   }
 
   // .bookingDetailsHeader {

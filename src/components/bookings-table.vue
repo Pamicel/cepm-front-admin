@@ -34,6 +34,13 @@ export default {
     },
   },
   methods: {
+    toggleDetails(row) {
+      if (this.opened.includes(row.groupNumber)) {
+        this.opened = this.opened.filter((gn) => gn !== row.groupNumber)
+      } else {
+        this.opened = [...this.opened, row.groupNumber]
+      }
+    },
     searchResult() {
       if (this.searchString === '') {
         return this.groups
@@ -94,17 +101,26 @@ export default {
       :opened-detailed="opened"
       detailed
       detail-key="groupNumber"
-      show-detail-icon
     >
       <template slot-scope="props">
         <b-table-column field="numberOfBookings" label="Nombre" sortable>
-          <span :class="$style.numberOfBookings">
+          <span
+            :class="[$style.numberOfBookings, $style.clickableText]"
+            aria-role="button"
+            role="button"
+            @click="toggleDetails(props.row)"
+          >
             {{ props.row.numberOfBookings }}
           </span>
         </b-table-column>
 
         <b-table-column field="groupNumber" label="Dossier Mortem" sortable>
-          <span :class="$style.groupNumber">
+          <span
+            :class="[$style.groupNumber, $style.clickableText]"
+            aria-role="button"
+            role="button"
+            @click="toggleDetails(props.row)"
+          >
             {{ props.row.groupNumber }}
           </span>
         </b-table-column>
@@ -114,7 +130,14 @@ export default {
           label="Email de réservation"
           sortable
         >
-          {{ props.row.bookerEmail }}
+          <span
+            :class="$style.clickableText"
+            aria-role="button"
+            role="button"
+            @click="toggleDetails(props.row)"
+          >
+            {{ props.row.bookerEmail }}
+          </span>
         </b-table-column>
 
         <b-table-column field="emailed" label="Email envoyé" boolean sortable>
@@ -146,6 +169,9 @@ export default {
           v-for="booking of props.row.bookings"
           :key="booking.deathNumber"
           :booking="booking"
+          :initial-state="
+            props.row.bookings.length === 1 ? 'is-open' : 'is-closed'
+          "
         />
       </template>
 
@@ -179,5 +205,9 @@ export default {
 .searchField {
   width: 80%;
   margin: 1rem auto 2rem;
+}
+
+.clickableText {
+  cursor: pointer;
 }
 </style>
