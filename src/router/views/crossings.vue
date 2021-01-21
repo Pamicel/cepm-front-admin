@@ -91,6 +91,8 @@ export default {
 .container {
   @extend %narrow-content;
 
+  padding: $size-grid-padding;
+
   .creation {
     // width: fit-content;
     width: 100%;

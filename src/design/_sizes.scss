@@ -1,6 +1,10 @@
 // GRID
 $size-grid-padding: 1.3rem;
 
+// RESPONSIVENESS
+$size-breakpoint-small: 800px;
+$size-breakpoint-medium: 800px;
+
 // CONTENT
 $size-header-height: 4rem;
 $size-footer-height: 5.8rem;
@@ -10,6 +14,9 @@ $size-content-width-min: 25rem;
   min-width: $size-content-width-min;
   max-width: $size-content-width-max;
   margin: auto;
+  @media screen and (max-width: $size-breakpoint-small) {
+    padding: $size-grid-padding;
+  }
 }
 
 // INPUTS

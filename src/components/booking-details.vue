@@ -112,9 +112,6 @@ export default {
 
     <div v-if="isOpenInfos" :class="$style.infos">
       <div :class="$style.panel">
-        <!-- <div :class="$style.panelHeading">
-          <strong>Actions</strong>
-        </div> -->
         <BookingActions
           :full-death-number="fullDeathNumber"
           :booking="booking"
@@ -163,6 +160,11 @@ export default {
 
   .bookingId {
     display: flex;
+    @media screen and (max-width: $size-breakpoint-small) {
+      flex-direction: column;
+      align-items: center;
+    }
+
     justify-content: space-between;
     margin: 0.5rem 0;
     text-align: center;

@@ -65,6 +65,7 @@ export default {
     <div :class="$style.actions">
       <BaseActionButton
         v-if="isPresent"
+        :class="$style.button"
         icon="times"
         :loading="modifyingBooking || fetchingBookings"
         @click="setAbsent"
@@ -72,15 +73,22 @@ export default {
       >
       <BaseActionButton
         v-else
+        :class="$style.button"
         icon="hands-helping"
         :loading="modifyingBooking || fetchingBookings"
         @click="setPresent"
         >Pointer</BaseActionButton
       >
-      <BaseActionButton icon="clipboard-list" @click="openFirmSearch"
+      <BaseActionButton
+        :class="$style.button"
+        icon="clipboard-list"
+        @click="openFirmSearch"
         >Lier un FIRM</BaseActionButton
       >
-      <BaseActionButton icon="trash-alt" @click="$emit('deleteBooking')"
+      <BaseActionButton
+        :class="$style.button"
+        icon="trash-alt"
+        @click="$emit('deleteBooking')"
         >Supprimer</BaseActionButton
       >
     </div>
