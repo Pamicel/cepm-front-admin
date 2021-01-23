@@ -98,4 +98,49 @@ describe('@state/modules/forms', () => {
     expect(store.state.forms.fetchingFirmsDetails).not.toContain(value1)
     expect(store.state.forms.fetchingFirmsDetails).toContain(value2)
   })
+
+  it('mutation START_BACKING_FIRM_UP sets backingFirmUp[bookingId] to firmId', () => {
+    const bookingId = 123
+    const firmId = 321
+    store.commit('forms/START_BACKING_FIRM_UP', { bookingId, firmId })
+    expect(store.state.forms.backingFirmUp[bookingId]).toEqual(firmId)
+  })
+  it('mutation END_BACKING_FIRM_UP unsets backingFirmUp[bookingId] iff its value is firmId', () => {
+    const bookingId1 = 123
+    const bookingId2 = 654
+    const firmId1 = 321
+    const firmId2 = 2345
+    // Just to be sure
+    expect(firmId1).not.toEqual(firmId2)
+    expect(bookingId1).not.toEqual(bookingId2)
+
+    // Set up
+    store.commit('forms/START_BACKING_FIRM_UP', {
+      bookingId: bookingId1,
+      firmId: firmId1,
+    })
+    store.commit('forms/START_BACKING_FIRM_UP', {
+      bookingId: bookingId2,
+      firmId: firmId1,
+    })
+    expect(store.state.forms.backingFirmUp[bookingId1]).toEqual(
+      store.state.forms.backingFirmUp[bookingId2]
+    )
+
+    // Try to end backing up using the wrong firmId
+    store.commit('forms/END_BACKING_FIRM_UP', {
+      bookingId: bookingId1,
+      firmId: firmId2,
+    })
+    expect(store.state.forms.backingFirmUp[bookingId1]).toEqual(firmId1)
+
+    // End with the correct firmId
+    store.commit('forms/END_BACKING_FIRM_UP', {
+      bookingId: bookingId1,
+      firmId: firmId1,
+    })
+    // Only the correct booking has firmId removed
+    expect(store.state.forms.backingFirmUp[bookingId1]).toBeUndefined()
+    expect(store.state.forms.backingFirmUp[bookingId2]).toEqual(firmId1)
+  })
 })

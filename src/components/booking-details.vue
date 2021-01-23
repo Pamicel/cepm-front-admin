@@ -103,7 +103,10 @@ export default {
           <span slot="ok">Pointé</span>
           <span slot="not-ok">Non pointé</span>
         </BaseState>
-        <BaseState :class="$style.bookingStatusState" :is-ok="false">
+        <BaseState
+          :class="$style.bookingStatusState"
+          :is-ok="!!booking.users && booking.users.length > 0"
+        >
           <span slot="ok">FIRM rempli</span>
           <span slot="not-ok">Pas de FIRM</span>
         </BaseState>

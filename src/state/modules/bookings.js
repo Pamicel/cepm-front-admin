@@ -1,4 +1,5 @@
 import axios from 'axios'
+import qs from 'qs'
 const apiUrl = process.env.API_BASE_URL
   ? `${process.env.API_BASE_URL}/api`
   : '/api'
@@ -10,6 +11,7 @@ export const state = {
   fetchingBookings: false,
   modifyingBooking: false,
   sendingEmailToBookers: [],
+  bookingsBeingRefreshed: [],
   bookingsBeingDeleted: [],
   bookingCreationResponse: {},
 }
@@ -20,6 +22,9 @@ export const getters = {
   },
   deletingBooking(state) {
     return state.bookingsBeingDeleted.length !== 0
+  },
+  refreshingBooking(state) {
+    return state.bookingsBeingRefreshed.length !== 0
   },
 }
 
@@ -49,6 +54,14 @@ export const mutations = {
   END_MODIFYING_BOOKING(state) {
     state.modifyingBooking = false
   },
+
+  REFRESH_BOOKING(state, booking) {
+    const index = state.bookingList.findIndex((b) => b.id === booking.id)
+    if (index !== -1) {
+      state.bookingList[index] = { ...booking }
+    }
+  },
+
   START_DELETING_BOOKING(state, bookingId) {
     if (state.bookingsBeingDeleted.includes(bookingId)) {
       return
@@ -58,6 +71,18 @@ export const mutations = {
   END_DELETING_BOOKING(state, bookingId) {
     state.bookingsBeingDeleted = [
       ...state.bookingsBeingDeleted.filter((id) => id !== bookingId),
+    ]
+  },
+
+  START_REFRESHING_BOOKING(state, bookingId) {
+    if (state.bookingsBeingRefreshed.includes(bookingId)) {
+      return
+    }
+    state.bookingsBeingRefreshed = [...state.bookingsBeingRefreshed, bookingId]
+  },
+  END_REFRESHING_BOOKING(state, bookingId) {
+    state.bookingsBeingRefreshed = [
+      ...state.bookingsBeingRefreshed.filter((id) => id !== bookingId),
     ]
   },
 
@@ -107,9 +132,13 @@ export const actions = {
     }
     commit('START_FETCHING_BOOKINGS')
     try {
-      const response = await axios.get(
-        `${apiUrl}/crossings/${crossingId}/bookings`
-      )
+      const query = qs.stringify({
+        filter: {
+          where: { crossingId: parseInt(crossingId) },
+          include: [{ relation: 'users' }],
+        },
+      })
+      const response = await axios.get(`${apiUrl}/bookings?${query}`)
       const { data: bookings } = response
 
       commit('REPLACE_BOOKING_LIST', bookings)
@@ -117,6 +146,31 @@ export const actions = {
       return bookings
     } catch (error) {
       commit('END_FETCHING_BOOKINGS')
+      console.error(error)
+      return null
+    }
+  },
+  async refreshBooking({ commit, rootGetters }, { bookingId }) {
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    commit('START_REFRESHING_BOOKING', bookingId)
+    try {
+      const query = qs.stringify({
+        filter: {
+          include: [{ relation: 'users' }],
+        },
+      })
+      const response = await axios.get(
+        `${apiUrl}/bookings/${bookingId}?${query}`
+      )
+      const { data: booking } = response
+
+      commit('REFRESH_BOOKING', booking)
+      commit('END_REFRESHING_BOOKING', bookingId)
+      return booking
+    } catch (error) {
+      commit('END_REFRESHING_BOOKING', bookingId)
       console.error(error)
       return null
     }

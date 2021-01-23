@@ -94,7 +94,7 @@ export default {
     </div>
     <b-modal :active="isFirmSearchOpen" @close="closeFirmSearch">
       <div :class="$style.firmSearch">
-        <FirmSearch />
+        <FirmSearch :booking-id="booking.id" />
       </div>
     </b-modal>
   </div>
@@ -108,8 +108,10 @@ export default {
 
   .firmSearch {
     position: relative;
+    box-sizing: border-box;
     width: 50rem;
-    max-width: 100%;
+    max-width: 90%;
+    height: 100%;
     margin: auto;
     overflow: hidden;
     background: #fff;

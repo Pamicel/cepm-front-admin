@@ -227,6 +227,61 @@ describe('@state/modules/bookings', () => {
     store.commit('bookings/END_DELETING_BOOKING', value2)
     expect(store.getters['bookings/deletingBooking']).toBe(false)
   })
+
+  // Refreshing booking
+  it('mutations["bookings/START_REFRESHING_BOOKING"] sets the values of bookingsBeingRefreshed', async () => {
+    expect(store.state.bookings.bookingsBeingRefreshed).toEqual([])
+    const value1 = 'abc'
+    const value2 = 123
+    store.commit('bookings/START_REFRESHING_BOOKING', value1)
+    store.commit('bookings/START_REFRESHING_BOOKING', value2)
+    expect(store.state.bookings.bookingsBeingRefreshed).toContain(value1)
+    expect(store.state.bookings.bookingsBeingRefreshed).toContain(value2)
+  })
+  it('mutations["bookings/START_REFRESHING_BOOKING"] sets the values of bookingsBeingRefreshed only once', async () => {
+    expect(store.state.bookings.bookingsBeingRefreshed).toEqual([])
+    const value = 'abc'
+    store.commit('bookings/START_REFRESHING_BOOKING', value)
+    store.commit('bookings/START_REFRESHING_BOOKING', value)
+    expect(store.state.bookings.bookingsBeingRefreshed).toEqual([value])
+  })
+  it('mutations["bookings/END_REFRESHING_BOOKING"] removed the specific value from bookingsBeingRefreshed', async () => {
+    const value1 = 'monsieur'
+    const value2 = 'madame'
+    store.commit('bookings/START_REFRESHING_BOOKING', value1)
+    store.commit('bookings/START_REFRESHING_BOOKING', value2)
+    expect(store.state.bookings.bookingsBeingRefreshed).toContain(value1)
+    expect(store.state.bookings.bookingsBeingRefreshed).toContain(value2)
+    store.commit('bookings/END_REFRESHING_BOOKING', value1)
+    expect(store.state.bookings.bookingsBeingRefreshed).not.toContain(value1)
+    expect(store.state.bookings.bookingsBeingRefreshed).toContain(value2)
+  })
+  it('getters.refreshingBooking true iff bookingsBeingRefreshed not empty', async () => {
+    const value1 = 'monsieur'
+    const value2 = 'madame'
+    expect(store.getters['bookings/refreshingBooking']).toBe(false)
+    store.commit('bookings/START_REFRESHING_BOOKING', value1)
+    store.commit('bookings/START_REFRESHING_BOOKING', value2)
+    expect(store.getters['bookings/refreshingBooking']).toBe(true)
+    store.commit('bookings/END_REFRESHING_BOOKING', value1)
+    expect(store.getters['bookings/refreshingBooking']).toBe(true)
+    store.commit('bookings/END_REFRESHING_BOOKING', value2)
+    expect(store.getters['bookings/refreshingBooking']).toBe(false)
+  })
+
+  it('mutation REFRESH_BOOKING replaces the booking in bookingList with the correct id', () => {
+    const initialValue = 'initial Value'
+    const modifiedValue = 'modified Value'
+    const bookingList = []
+    bookingList[0] = { id: 1, value: 'value1' }
+    bookingList[1] = { id: 2, value: initialValue }
+    const modifiedBooking = { ...bookingList[1], value: modifiedValue }
+    store.commit('bookings/REPLACE_BOOKING_LIST', bookingList)
+    expect(store.state.bookings.bookingList).toEqual(bookingList)
+    store.commit('bookings/REFRESH_BOOKING', modifiedBooking)
+    expect(store.state.bookings.bookingList).not.toEqual(bookingList)
+    expect(store.state.bookings.bookingList[1]).toEqual({ ...modifiedBooking })
+  })
 })
 
 const validCrossing = {

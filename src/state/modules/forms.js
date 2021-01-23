@@ -9,6 +9,7 @@ export const state = {
   firmsPage: 0,
   firmsPerPage: 50,
   fetchingFirms: false,
+  backingFirmUp: {},
   fetchingFirmsDetails: [],
   cancelTokenSource: null,
 }
@@ -39,6 +40,7 @@ export const mutations = {
       state.firms = [...state.firms, { ...detailedFirm }]
     }
   },
+
   START_FETCHING_FIRMS(state, { cancelTokenSource = null } = {}) {
     state.fetchingFirms = true
     state.cancelTokenSource = cancelTokenSource
@@ -57,6 +59,17 @@ export const mutations = {
     state.fetchingFirmsDetails = state.fetchingFirmsDetails.filter(
       (id) => id !== firmId
     )
+  },
+  START_BACKING_FIRM_UP(state, { firmId, bookingId }) {
+    if (state.backingFirmUp[bookingId] === firmId) {
+      return
+    }
+    state.backingFirmUp[bookingId] = firmId
+  },
+  END_BACKING_FIRM_UP(state, { firmId, bookingId }) {
+    if (state.backingFirmUp[bookingId] === firmId) {
+      delete state.backingFirmUp[bookingId]
+    }
   },
 }
 
@@ -153,6 +166,26 @@ export const actions = {
       return data
     } catch (error) {
       commit('END_FETCHING_FIRM_DETAILS', id)
+      console.error(error)
+      return null
+    }
+  },
+  async backupFirm({ rootGetters, commit, dispatch }, { firmId, bookingId }) {
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    try {
+      commit('START_BACKING_FIRM_UP', { firmId, bookingId })
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const query = qs.stringify({ bookingId })
+      const { data } = await axios.post(
+        `${apiUrl}/form-firms/${firmId}/backup?${query}`
+      )
+      dispatch('bookings/refreshBooking', bookingId, { root: true })
+      commit('END_BACKING_FIRM_UP', { firmId, bookingId })
+      return data
+    } catch (error) {
+      commit('END_BACKING_FIRM_UP', { firmId, bookingId })
       console.error(error)
       return null
     }
