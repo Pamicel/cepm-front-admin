@@ -5,10 +5,6 @@ import FirmSearch from '@components/firm-search.vue'
 export default {
   components: { FirmSearch },
   props: {
-    fullDeathNumber: {
-      type: String,
-      required: true,
-    },
     booking: {
       type: Object,
       required: true,
@@ -74,7 +70,7 @@ export default {
       <BaseActionButton
         v-else
         :class="$style.button"
-        icon="hands-helping"
+        icon="check"
         :loading="modifyingBooking || fetchingBookings"
         @click="setPresent"
         >Pointer</BaseActionButton

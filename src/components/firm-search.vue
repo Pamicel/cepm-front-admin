@@ -95,7 +95,6 @@ export default {
 
 <template>
   <div :class="$style.container">
-    {{ backingFirmUp }} {{ bookingsBeingRefreshed }}
     <div :class="$style.searchTool">
       <h1 :class="$style.title">Trouver un FIRM</h1>
 

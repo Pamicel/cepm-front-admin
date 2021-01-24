@@ -37,10 +37,6 @@ export default {
           title: 'Accueil',
         },
         {
-          name: 'histoire',
-          title: 'À propos',
-        },
-        {
           name: 'login',
           title: 'Se connecter',
         },

@@ -4,7 +4,7 @@ import BookingDetails from '@components/booking-details.vue'
 export default {
   components: { BookingDetails },
   props: {
-    groups: {
+    bookings: {
       type: Array,
       default: () => [],
     },
@@ -20,64 +20,32 @@ export default {
     }
   },
   computed: {
-    isEmpty() {
-      return this.groups.length === 0
-    },
-    data() {
-      if (this.isEmpty) {
-        return []
-      } else if (this.searchString) {
-        return this.searchResult()
-      }
-
-      return this.groups
-    },
-  },
-  methods: {
-    toggleDetails(row) {
-      if (this.opened.includes(row.groupNumber)) {
-        this.opened = this.opened.filter((gn) => gn !== row.groupNumber)
-      } else {
-        this.opened = [...this.opened, row.groupNumber]
-      }
-    },
-    searchResult() {
-      if (this.searchString === '') {
-        return this.groups
+    searchResult(state) {
+      if (state.searchString === '') {
+        return state.bookings
       }
 
       const removeDiatrics = (str) =>
         str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       const simplified = (str) => removeDiatrics(str.toLowerCase())
 
-      const searchString = removeDiatrics(this.searchString)
+      const searchString = removeDiatrics(state.searchString)
 
-      const match = []
+      return state.bookings.filter((booking) => {
+        const rawValues = Object.values(booking.parsedRaw).join(' ')
+        const toSearch = `${rawValues} ${booking.groupNumber} ${booking.fullDeathNumber}`
 
-      for (const group of this.groups) {
-        const bookings = group.bookings.map((booking) => {
-          const rawValues = Object.values(booking.parsedRaw).join(' ')
-          const toSearch = `${rawValues} ${booking.groupNumber}`
-
-          if (simplified(toSearch).includes(simplified(searchString))) {
-            return {
-              ...booking,
-              match: true,
-            }
-          }
-
-          return booking
-        })
-
-        if (bookings.filter((booking) => booking.match).length !== 0) {
-          match.push({
-            ...group,
-            bookings,
-          })
-        }
+        return simplified(toSearch).includes(simplified(searchString))
+      })
+    },
+  },
+  methods: {
+    toggleDetails(row) {
+      if (this.opened.includes(row.id)) {
+        this.opened = this.opened.filter((gn) => gn !== row.id)
+      } else {
+        this.opened = [...this.opened, row.id]
       }
-
-      return match
     },
   },
 }
@@ -85,7 +53,6 @@ export default {
 
 <template>
   <div>
-    <h1 :class="$style.title">Réservations</h1>
     <b-input
       v-model="searchString"
       :class="$style.searchField"
@@ -93,35 +60,68 @@ export default {
       type="text"
     />
     <b-table
-      :data="data"
+      :data="searchResult"
       :loading="isLoading"
       striped
       mobile-cards
       sort-icon="arrow-up"
+      sort-icon-size="is-small"
       :opened-detailed="opened"
       detailed
-      detail-key="groupNumber"
+      narrowed
+      detail-key="id"
     >
       <template slot-scope="props">
-        <b-table-column field="numberOfBookings" label="Nombre" sortable>
+        <b-table-column
+          field="present"
+          label="Présence"
+          sortable
+          boolean
+          centered
+        >
           <span
-            :class="[$style.numberOfBookings, $style.clickableText]"
+            :class="[$style.present, $style.clickableText]"
             aria-role="button"
             role="button"
             @click="toggleDetails(props.row)"
           >
-            {{ props.row.numberOfBookings }}
+            <span v-if="props.row.present" class="tag is-small is-success"
+              ><BaseIcon name="check"
+            /></span>
+            <span v-else class="tag is-small"
+              ><BaseIcon :class="$style.notOk" name="times"
+            /></span>
           </span>
         </b-table-column>
 
-        <b-table-column field="groupNumber" label="Dossier Mortem" sortable>
+        <b-table-column
+          field="fullDeathNumber"
+          label="Décédé·e numéro"
+          sortable
+        >
           <span
-            :class="[$style.groupNumber, $style.clickableText]"
+            :class="$style.clickableText"
             aria-role="button"
             role="button"
             @click="toggleDetails(props.row)"
           >
-            {{ props.row.groupNumber }}
+            <b-tag type="is-dark" :class="$style.deathNumber">
+              {{ props.row.fullDeathNumber }}
+            </b-tag>
+          </span>
+        </b-table-column>
+
+        <b-table-column field="hasFirm" label="FIRM" sortable boolean>
+          <span
+            :class="[$style.present, $style.clickableText]"
+            aria-role="button"
+            role="button"
+            @click="toggleDetails(props.row)"
+          >
+            <span v-if="props.row.hasFirm" class="tag is-small is-success"
+              >FIRM rempli</span
+            >
+            <span v-else class="tag is-small is-danger">Pas de FIRM</span>
           </span>
         </b-table-column>
 
@@ -131,30 +131,13 @@ export default {
           sortable
         >
           <span
-            :class="$style.clickableText"
+            :class="[$style.bookerEmail, $style.clickableText]"
             aria-role="button"
             role="button"
             @click="toggleDetails(props.row)"
           >
             {{ props.row.bookerEmail }}
           </span>
-        </b-table-column>
-
-        <b-table-column field="emailed" label="Email envoyé" boolean sortable>
-          <span v-if="props.row.emailed" class="tag is-success">
-            Oui
-          </span>
-          <span v-else-if="props.row.emailing">
-            <BaseIcon :class="$style.loadingIcon" name="fan" spin />
-          </span>
-          <b-button
-            v-else
-            type="is-warning"
-            size="is-small"
-            @click="$emit('sendEmail', props.row.bookerEmail)"
-          >
-            Non
-          </b-button>
         </b-table-column>
       </template>
 
@@ -165,14 +148,7 @@ export default {
         mobile-cards
         sort-icon="arrow-up"
       >
-        <BookingDetails
-          v-for="booking of props.row.bookings"
-          :key="booking.deathNumber"
-          :booking="booking"
-          :initial-state="
-            props.row.bookings.length === 1 ? 'is-open' : 'is-closed'
-          "
-        />
+        <BookingDetails :key="props.row.deathNumber" :booking="props.row" />
       </template>
 
       <template slot="empty">
@@ -191,16 +167,14 @@ export default {
 
 <style lang="scss" module>
 @import '@design';
-.title {
-  text-align: center;
-}
-
 .groupNumber {
   opacity: 0.7;
 }
 .deathNumber {
   font-family: monospace;
-  font-weight: bold;
+}
+.notOk {
+  color: $color-danger;
 }
 .searchField {
   width: 80%;

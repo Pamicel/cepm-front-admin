@@ -4,9 +4,16 @@ const apiUrl = process.env.API_BASE_URL
   ? `${process.env.API_BASE_URL}/api`
   : '/api'
 
+export const completeBooking = (booking) => ({
+  ...booking,
+  parsedRaw: JSON.parse(booking.raw),
+  fullDeathNumber: `${booking.id}-${booking.crossingId}-${booking.deathNumber}`,
+  hasFirm: !!booking.users && booking.users.length > 0,
+  present: !!booking.present,
+})
+
 export const state = {
   bookingList: [],
-  booking: {},
   creatingBookings: false,
   fetchingBookings: false,
   modifyingBooking: false,
@@ -58,7 +65,9 @@ export const mutations = {
   REFRESH_BOOKING(state, booking) {
     const index = state.bookingList.findIndex((b) => b.id === booking.id)
     if (index !== -1) {
-      state.bookingList[index] = { ...booking }
+      const newBookingList = [...state.bookingList]
+      newBookingList[index] = { ...booking }
+      state.bookingList = newBookingList
     }
   },
 
@@ -126,24 +135,30 @@ export const actions = {
       return null
     }
   },
-  async fetchBookings({ commit, rootGetters }, { crossingId }) {
+  async fetchBookings({ commit, rootGetters }, { crossingId, groupNumber }) {
     if (!rootGetters['auth/loggedIn']) {
       return null
     }
     commit('START_FETCHING_BOOKINGS')
     try {
+      const include = [{ relation: 'users' }]
+
+      const where = groupNumber
+        ? { crossingId: parseInt(crossingId), groupNumber }
+        : { crossingId: parseInt(crossingId) }
+
       const query = qs.stringify({
         filter: {
-          where: { crossingId: parseInt(crossingId) },
-          include: [{ relation: 'users' }],
+          where,
+          include,
         },
       })
       const response = await axios.get(`${apiUrl}/bookings?${query}`)
       const { data: bookings } = response
-
-      commit('REPLACE_BOOKING_LIST', bookings)
+      const parsedBookings = bookings.map(completeBooking)
+      commit('REPLACE_BOOKING_LIST', parsedBookings)
       commit('END_FETCHING_BOOKINGS')
-      return bookings
+      return parsedBookings
     } catch (error) {
       commit('END_FETCHING_BOOKINGS')
       console.error(error)
@@ -165,10 +180,11 @@ export const actions = {
         `${apiUrl}/bookings/${bookingId}?${query}`
       )
       const { data: booking } = response
+      const completedBooking = completeBooking(booking)
 
-      commit('REFRESH_BOOKING', booking)
+      commit('REFRESH_BOOKING', completedBooking)
       commit('END_REFRESHING_BOOKING', bookingId)
-      return booking
+      return completedBooking
     } catch (error) {
       commit('END_REFRESHING_BOOKING', bookingId)
       console.error(error)

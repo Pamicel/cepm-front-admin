@@ -181,7 +181,7 @@ export const actions = {
       const { data } = await axios.post(
         `${apiUrl}/form-firms/${firmId}/backup?${query}`
       )
-      dispatch('bookings/refreshBooking', bookingId, { root: true })
+      dispatch('bookings/refreshBooking', { bookingId }, { root: true })
       commit('END_BACKING_FIRM_UP', { firmId, bookingId })
       return data
     } catch (error) {

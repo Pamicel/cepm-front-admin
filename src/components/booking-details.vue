@@ -8,25 +8,22 @@ export default {
       type: Object,
       required: true,
     },
-    initialState: {
-      type: String,
-      enum: ['is-open', 'is-closed'],
-      default: 'is-closed',
-    },
+    // initialState: {
+    //   type: String,
+    //   enum: ['is-open', 'is-closed'],
+    //   default: 'is-closed',
+    // },
   },
   data() {
     return {
-      forceCloseInfo: this.initialState === 'is-closed',
-      isModifPanelOpen: false,
+      // forceCloseInfo: this.initialState === 'is-closed',
+      // isModifPanelOpen: false,
       modifPanelBooking: null,
     }
   },
   computed: {
     isOpenInfos() {
       return this.booking.match || !this.forceCloseInfo
-    },
-    fullDeathNumber() {
-      return `${this.booking.id}-${this.booking.crossingId}-${this.booking.deathNumber}`
     },
   },
   methods: {
@@ -75,24 +72,8 @@ export default {
         Décédé·e numéro
         <br />
         <b-tag type="is-dark" size="is-large" :class="$style.deathNumber">
-          {{ fullDeathNumber }}
+          {{ booking.fullDeathNumber }}
         </b-tag>
-      </div>
-
-      <div :class="$style.bookingIdActions">
-        <BaseActionButton
-          v-if="!isOpenInfos"
-          :disabled="booking.match"
-          icon="eye"
-          @click="() => (forceCloseInfo = false)"
-          >Déplier</BaseActionButton
-        >
-        <BaseActionButton
-          v-else
-          icon="eye-slash"
-          @click="() => (forceCloseInfo = true)"
-          >Plier</BaseActionButton
-        >
       </div>
 
       <div :class="$style.bookingIdStatus">
@@ -113,10 +94,10 @@ export default {
       </div>
     </div>
 
-    <div v-if="isOpenInfos" :class="$style.infos">
+    <div :class="$style.infos">
       <div :class="$style.panel">
         <BookingActions
-          :full-death-number="fullDeathNumber"
+          :full-death-number="booking.fullDeathNumber"
           :booking="booking"
           :is-present="booking.present"
           @deleteBooking="() => deletePassengerDialog(booking)"
@@ -143,16 +124,12 @@ export default {
 .container {
   // @include debossed_paper_shadow();
 
-  padding: 1rem 3rem 0.5rem;
+  padding: 1.5rem 3rem 2rem;
   margin: 1rem 0;
   background-color: $color-body-bg;
   border-radius: 8px;
-  transition: padding 200ms ease-in;
   &.isMatch {
     border: 1px solid red;
-  }
-  &.isOpen {
-    padding: 1.5rem 3rem 2rem;
   }
 
   .panel {
@@ -163,11 +140,6 @@ export default {
 
   .bookingId {
     display: flex;
-    @media screen and (max-width: $size-breakpoint-small) {
-      flex-direction: column;
-      align-items: center;
-    }
-
     justify-content: space-between;
     margin: 0.5rem 0;
     text-align: center;
@@ -196,7 +168,7 @@ export default {
     .bookingIdStatus {
       display: flex;
       flex-direction: column;
-      align-items: left;
+      align-items: flex-end;
       justify-content: center;
     }
 
@@ -213,7 +185,6 @@ export default {
 
   .infos {
     padding-top: 1rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.2);
   }
 
   // .bookingDetailsHeader {

@@ -1,7 +1,9 @@
 <script>
 import Layout from '@layouts/local.vue'
+import BookingGroupsTable from '@components/booking-groups-table.vue'
 import BookingsTable from '@components/bookings-table.vue'
 import CrossingInfos from '@components/crossing-infos.vue'
+import BookingsUpload from '@components/bookings-upload.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -9,7 +11,17 @@ export default {
     title: 'Panneau de traversée',
     meta: [{ name: 'description', content: 'The Crossing Details page.' }],
   },
-  components: { Layout, BookingsTable, CrossingInfos },
+
+  components: {
+    Layout,
+    BookingsTable,
+    BookingGroupsTable,
+    CrossingInfos,
+    BookingsUpload,
+  },
+  data() {
+    return { isBookingUploadOpen: false }
+  },
   computed: {
     ...mapState({
       fetchingBookings: (state) => state.crossings.fetchingBookings,
@@ -21,17 +33,12 @@ export default {
     groups() {
       const bookingGroupObject = {}
       for (const booking of this.bookingList) {
-        const { groupNumber } = booking
-        const parsedRaw = JSON.parse(booking.raw)
-        const parsedBooking = {
-          ...booking,
-          parsedRaw,
-        }
+        const { groupNumber, id } = booking
 
         if (bookingGroupObject[groupNumber]) {
           // If the booking group exists
           // Add the booking to it
-          bookingGroupObject[groupNumber].bookings.push(parsedBooking)
+          bookingGroupObject[groupNumber].bookings.push(id)
         } else {
           // If it doesn't
           // Create it and add the booking to it
@@ -40,7 +47,7 @@ export default {
             groupNumber: booking.groupNumber,
             importDate: booking.importDate,
             emailed: booking.emailed,
-            bookings: [parsedBooking],
+            bookings: [id],
           }
         }
       }
@@ -83,12 +90,23 @@ export default {
   },
   methods: {
     async goToUploadPage(file) {
-      this.$router.push({ name: 'bookings-upload' })
+      // this.$router.push({ name: 'bookings-upload' })
+      this.isBookingUploadOpen = true
     },
     async sendEmail(bookerEmail) {
       const crossingId = this.$route.params.id
       this.$store.dispatch('bookings/sendEmailToBooker', {
         bookerEmail,
+        crossingId,
+      })
+    },
+    closeModal() {
+      this.isBookingUploadOpen = false
+    },
+    uploadDone() {
+      this.closeModal()
+      const crossingId = this.$route.params.id
+      this.$store.dispatch('bookings/fetchBookings', {
         crossingId,
       })
     },
@@ -108,11 +126,33 @@ export default {
       <div :class="$style.upload">
         <button :class="$style.uploadButton" @click="goToUploadPage">+</button>
       </div>
-      <BookingsTable
-        :groups="groups"
-        :is-loading="fetchingBookings"
-        @sendEmail="sendEmail"
-      />
+
+      <h1 :class="$style.title">Réservations</h1>
+
+      <b-tabs>
+        <b-tab-item label="Passagers">
+          <BookingsTable
+            :bookings="bookingList"
+            :is-loading="fetchingBookings"
+          />
+        </b-tab-item>
+        <b-tab-item label="Emails d'accueil">
+          <BookingGroupsTable
+            :groups="groups"
+            :is-loading="fetchingBookings"
+            @sendEmail="sendEmail"
+          />
+        </b-tab-item>
+      </b-tabs>
+
+      <b-modal :active="isBookingUploadOpen" @close="closeModal">
+        <div :class="$style.uploadModal">
+          <BookingsUpload
+            :crossing-id="crossing && crossing.id"
+            @done="uploadDone"
+          />
+        </div>
+      </b-modal>
     </div>
   </Layout>
 </template>
@@ -122,6 +162,10 @@ export default {
 
 .container {
   @extend %narrow-content;
+  .title {
+    margin: 0 auto 2rem;
+    text-align: center;
+  }
   .upload {
     text-align: center;
     .uploadButton {
@@ -139,6 +183,17 @@ export default {
         @include embossed_paper_shadow(1);
       }
     }
+  }
+  .uploadModal {
+    position: relative;
+    box-sizing: border-box;
+    width: 50rem;
+    max-width: 90%;
+    height: 100%;
+    margin: auto;
+    overflow: auto;
+    background: #fff;
+    border-radius: 8px;
   }
 }
 </style>
