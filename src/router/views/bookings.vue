@@ -192,7 +192,7 @@ export default {
     height: 100%;
     margin: auto;
     overflow: auto;
-    background: #fff;
+    background: $color-body-bg;
     border-radius: 8px;
   }
 }

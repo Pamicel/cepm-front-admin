@@ -53,9 +53,8 @@ export default {
 <template>
   <Layout narrow>
     <div :class="$style.loginBox">
-      <div :class="$style.illustration"></div>
       <form :class="$style.form" @submit.prevent="tryToLogIn">
-        <h1 :class="$style.title">Se connecter</h1>
+        <!-- <h1 :class="$style.title">Se connecter</h1> -->
         <b-field label="Email">
           <b-input
             v-model="email"
@@ -112,14 +111,6 @@ export default {
 
 .loginBox {
   @media screen and (min-width: $size-content-width-min) {
-    // .illustration {
-    //   width: 100%;
-    //   height: 10rem;
-    //   background-image: url('~@assets/images/background-2.png');
-    //   background-position: center;
-    //   background-size: cover;
-    // }
-
     @include embossed_paper_shadow(3);
 
     display: flex;
@@ -128,19 +119,18 @@ export default {
     justify-content: center;
     max-width: $size-content-width-min;
     // padding: 2rem;
-    margin: auto;
+    margin: 0 auto 2rem;
     overflow: hidden;
     border-radius: 8px;
   }
 
   .form {
     width: 100%;
+    padding: 3rem;
     .title {
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
       text-align: center;
     }
-
-    padding: 4rem;
     .input {
       color: black;
     }

@@ -64,8 +64,8 @@ export default {
   justify-content: center;
   height: 100%;
   min-height: 100%;
-  padding-top: 5rem;
-  margin: 4rem 0;
+  padding-top: 2rem;
+  // margin: 4rem 0;
   text-align: center;
 
   .helloLogo {
