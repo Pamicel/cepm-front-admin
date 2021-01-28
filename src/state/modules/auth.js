@@ -62,7 +62,7 @@ export const actions = {
 
       const token = response.headers['x-renewed-jwt-token']
       const user = {
-        ...response.data,
+        ...response.data.user,
         token,
       }
       commit('SET_CURRENT_USER', user)
@@ -93,9 +93,10 @@ export const actions = {
       const newToken = response.headers['x-renewed-jwt-token']
       const token = newToken || state.currentUser.token
       const user = {
-        ...response.data,
+        ...response.data.user,
         token,
       }
+
       commit('SET_CURRENT_USER', user)
       return user
     } catch (error) {

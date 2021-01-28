@@ -94,16 +94,16 @@ describe('@state/modules/auth', () => {
     })
 
     it('action.verify resolves to null when not logged in', async () => {
-      const user = await store.dispatch('auth/verify')
-      expect(user).toEqual(null)
+      const result = await store.dispatch('auth/verify')
+      expect(result).toEqual(null)
     })
 
     it('action.verify resolves to null when user has no token', async () => {
       store.commit('auth/SET_CURRENT_USER', {
         email: validUserExample.email,
       })
-      const user = await store.dispatch('auth/verify')
-      expect(user).toEqual(null)
+      const result = await store.dispatch('auth/verify')
+      expect(result).toEqual(null)
     })
 
     it('action.verify resolves to null when user has a bad token', async () => {
@@ -111,8 +111,8 @@ describe('@state/modules/auth', () => {
         email: validUserExample.email,
         token: 'bla-bla-bla',
       })
-      const user = await store.dispatch('auth/verify')
-      expect(user).toEqual(null)
+      const result = await store.dispatch('auth/verify')
+      expect(result).toEqual(null)
     })
 
     it('action.verify removes the current user when the user has no token', async () => {
@@ -144,8 +144,8 @@ describe('@state/modules/auth', () => {
         token: response.data.token,
       })
 
-      const user = await store.dispatch('auth/verify')
-      expect(user).toEqual(null)
+      const result = await store.dispatch('auth/verify')
+      expect(result).toEqual(null)
     })
 
     it('action.verify removes the currentUser when token is expired', async () => {
