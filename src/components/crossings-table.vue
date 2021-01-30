@@ -1,5 +1,7 @@
 <script>
 import formatHour from '@utils/format-hour.js'
+import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 export default {
   props: {
@@ -39,6 +41,9 @@ export default {
       const endDate = new Date(startDate.getTime() + duration * 60 * 1000)
       return endDate
     },
+    formatDate(date) {
+      return format(new Date(date), "d MMM yyyy, H'h'mm", { locale: fr })
+    },
   },
 }
 </script>
@@ -47,6 +52,7 @@ export default {
   <b-table
     :data="isEmpty ? [] : performances"
     :loading="isLoading"
+    :default-sort="['startDate', 'DESC']"
     striped
     hoverable
     mobile-cards
@@ -63,9 +69,15 @@ export default {
         {{ new Intl.NumberFormat('fr-FR').format(props.row.crossingNumber) }}
       </b-table-column>
 
-      <b-table-column :class="$style.col" field="date" label="Date" centered>
+      <b-table-column
+        :class="$style.col"
+        field="startDate"
+        label="Date"
+        centered
+        sortable
+      >
         <span>
-          {{ new Date(props.row.startDate).toLocaleDateString() }}
+          {{ formatDate(props.row.startDate) }}
         </span>
       </b-table-column>
 

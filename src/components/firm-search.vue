@@ -138,8 +138,9 @@ export default {
 @import '@design';
 .container {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
   height: 100%;
+  min-height: 60vh;
   max-height: 90vh;
   padding: 1rem;
   text-align: left;
@@ -169,6 +170,7 @@ export default {
     background-color: $color-body-bg;
     // height: 100%;
     border-radius: 8px;
+    transition: all 200ms;
     .summarySeparator {
       padding: 0;
       margin: 0;
