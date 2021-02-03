@@ -99,6 +99,34 @@ describe('@state/modules/forms', () => {
     expect(store.state.forms.fetchingFirmsDetails).toContain(value2)
   })
 
+  it('mutation START_DELETING_FIRM sets the values of firmsBeingDeleted', async () => {
+    expect(store.state.forms.firmsBeingDeleted).toEqual([])
+    const value1 = 'abc'
+    const value2 = 123
+    store.commit('forms/START_DELETING_FIRM', { firmId: value1 })
+    store.commit('forms/START_DELETING_FIRM', { firmId: value2 })
+    expect(store.state.forms.firmsBeingDeleted).toContain(value1)
+    expect(store.state.forms.firmsBeingDeleted).toContain(value2)
+  })
+  it('mutation START_DELETING_FIRM sets the values of firmsBeingDeleted only once', async () => {
+    expect(store.state.forms.firmsBeingDeleted).toEqual([])
+    const value = 'abc'
+    store.commit('forms/START_DELETING_FIRM', { firmId: value })
+    store.commit('forms/START_DELETING_FIRM', { firmId: value })
+    expect(store.state.forms.firmsBeingDeleted).toEqual([value])
+  })
+  it('mutation END_DELETING_FIRM removed the specific value from firmsBeingDeleted', async () => {
+    const value1 = 'monsieur'
+    const value2 = 'madame'
+    store.commit('forms/START_DELETING_FIRM', { firmId: value1 })
+    store.commit('forms/START_DELETING_FIRM', { firmId: value2 })
+    expect(store.state.forms.firmsBeingDeleted).toContain(value1)
+    expect(store.state.forms.firmsBeingDeleted).toContain(value2)
+    store.commit('forms/END_DELETING_FIRM', { firmId: value1 })
+    expect(store.state.forms.firmsBeingDeleted).not.toContain(value1)
+    expect(store.state.forms.firmsBeingDeleted).toContain(value2)
+  })
+
   it('mutation START_BACKING_FIRM_UP sets backingFirmUp[bookingId] to firmId', () => {
     const bookingId = 123
     const firmId = 321

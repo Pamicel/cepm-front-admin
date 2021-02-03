@@ -8,7 +8,7 @@ export const completeBooking = (booking) => ({
   ...booking,
   parsedRaw: JSON.parse(booking.raw),
   fullDeathNumber: `${booking.id}-${booking.crossingId}-${booking.deathNumber}`,
-  hasFirm: !!booking.users && booking.users.length > 0,
+  hasFirm: !!booking.formFirm,
   present: !!booking.present,
 })
 
@@ -113,6 +113,18 @@ export const mutations = {
       (email) => email !== bookerEmail
     )
   },
+
+  REMOVE_FIRM_FROM_BOOKINGS(state, firmId) {
+    state.bookingList = state.bookingList.map((booking) => {
+      if (booking.formFirm && booking.formFirm.id === firmId) {
+        const newBooking = { ...booking }
+        delete newBooking.formFirm
+        newBooking.hasFirm = false
+        return newBooking
+      }
+      return booking
+    })
+  },
 }
 
 export const actions = {
@@ -182,7 +194,7 @@ export const actions = {
     }
     commit('START_FETCHING_BOOKINGS')
     try {
-      const include = [{ relation: 'users' }]
+      const include = [{ relation: 'users' }, { relation: 'formFirm' }]
 
       const where = groupNumber
         ? { crossingId: parseInt(crossingId), groupNumber }
@@ -214,7 +226,7 @@ export const actions = {
     try {
       const query = qs.stringify({
         filter: {
-          include: [{ relation: 'users' }],
+          include: [{ relation: 'users' }, { relation: 'formFirm' }],
         },
       })
       const response = await axios.get(
@@ -295,5 +307,8 @@ export const actions = {
       console.error(error)
       commit('END_DELETING_BOOKING', bookingId)
     }
+  },
+  removeFirmFromBookings({ commit }, { firmId }) {
+    commit('REMOVE_FIRM_FROM_BOOKINGS', firmId)
   },
 }

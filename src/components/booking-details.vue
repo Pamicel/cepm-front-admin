@@ -8,16 +8,9 @@ export default {
       type: Object,
       required: true,
     },
-    // initialState: {
-    //   type: String,
-    //   enum: ['is-open', 'is-closed'],
-    //   default: 'is-closed',
-    // },
   },
   data() {
     return {
-      // forceCloseInfo: this.initialState === 'is-closed',
-      // isModifPanelOpen: false,
       modifPanelBooking: null,
     }
   },
@@ -75,23 +68,6 @@ export default {
           {{ booking.fullDeathNumber }}
         </b-tag>
       </div>
-
-      <div :class="$style.bookingIdStatus">
-        <BaseState
-          :class="$style.bookingStatusState"
-          :is-ok="!!booking.present"
-        >
-          <span slot="ok">Pointé</span>
-          <span slot="not-ok">Non pointé</span>
-        </BaseState>
-        <BaseState
-          :class="$style.bookingStatusState"
-          :is-ok="!!booking.users && booking.users.length > 0"
-        >
-          <span slot="ok">FIRM rempli</span>
-          <span slot="not-ok">Pas de FIRM</span>
-        </BaseState>
-      </div>
     </div>
 
     <div :class="$style.infos">
@@ -122,8 +98,6 @@ export default {
 @import '@design';
 
 .container {
-  // @include debossed_paper_shadow();
-
   padding: 1.5rem 3rem 2rem;
   margin: 1rem 0;
   background-color: $color-body-bg;
@@ -186,8 +160,5 @@ export default {
   .infos {
     padding-top: 1rem;
   }
-
-  // .bookingDetailsHeader {
-  // }
 }
 </style>

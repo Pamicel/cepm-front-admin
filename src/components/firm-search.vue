@@ -23,24 +23,35 @@ export default {
     }
   },
   computed: {
-    regexFirstname() {
-      return this.inputToRegex(this.firstname, this.firstnameStrict)
+    regexFirstname(state) {
+      return state.inputToRegex(state.firstname, state.firstnameStrict)
     },
-    regexLastname() {
-      return this.inputToRegex(this.lastname, this.lastnameStrict)
+    regexLastname(state) {
+      return state.inputToRegex(state.lastname, state.lastnameStrict)
     },
     ...mapState({
       firms: (state) => state.forms.firms,
       fetchingFirms: (state) => state.forms.fetchingFirms,
       bookingsBeingRefreshed: (state) => state.bookings.bookingsBeingRefreshed,
-      backingFirmUp: (state) => state.bookings.backingFirmUp,
+      backingFirmUp: (state) => state.forms.backingFirmUp,
     }),
-    loading() {
+    loading(state) {
       return (
-        this.fetchingFirms ||
-        !this.initialised ||
-        this.bookingsBeingRefreshed.includes(this.bookingId)
+        state.fetchingFirms ||
+        !state.initialised ||
+        state.bookingsBeingRefreshed.includes(state.bookingId)
       )
+    },
+    firmBeingSent(state) {
+      return state.backingFirmUp[state.bookingId]
+    },
+    displayedFirmList(state) {
+      // If no firm is being sent for this booking
+      if (state.firmBeingSent === undefined) {
+        return state.firms
+      }
+      // Otherwise
+      return state.firms.filter((firm) => firm.id === state.firmBeingSent)
     },
   },
   async mounted() {
@@ -89,6 +100,13 @@ export default {
       }
       this.timeoutID = setTimeout(fn, 500)
     },
+    async chooseFirm({ firmId, bookingId }) {
+      await this.backupFirm({ firmId, bookingId })
+      this.$emit('done')
+    },
+    isLoading({ bookingId, firmId }) {
+      return this.backingFirmUp[bookingId] === firmId
+    },
   },
 }
 </script>
@@ -100,13 +118,23 @@ export default {
 
       <div :class="$style.searchField">
         <b-field label="Nom" label-position="on-border">
-          <b-input v-model="lastname" @input="fetchFirmsDebounced" />
+          <b-input
+            v-model="lastname"
+            :disabled="firmBeingSent !== undefined"
+            :loading="firmBeingSent !== undefined"
+            @input="fetchFirmsDebounced"
+          />
         </b-field>
       </div>
 
       <div :class="$style.searchField">
         <b-field label="Prénom" label-position="on-border">
-          <b-input v-model="firstname" @input="fetchFirmsDebounced" />
+          <b-input
+            v-model="firstname"
+            :disabled="firmBeingSent !== undefined"
+            :loading="firmBeingSent !== undefined"
+            @input="fetchFirmsDebounced"
+          />
         </b-field>
       </div>
     </div>
@@ -119,16 +147,20 @@ export default {
       <div v-if="loading"
         ><div v-for="index in [0, 1, 2, 3]" :key="index">
           <hr :class="$style.summarySeparator" />
-          <FirmSummary loading /> </div
+          <FirmSummary skeleton /> </div
       ></div>
       <div v-else>
-        <div v-for="firm in firms" :key="firm.id">
-          <hr :class="$style.summarySeparator" />
-          <FirmSummary
-            v-bind="firm"
-            @choose="() => backupFirm({ firmId: firm.id, bookingId })"
-          />
-        </div>
+        <transition-group name="slide-fade" mode="out-in">
+          <div v-for="firm in displayedFirmList" :key="firm.id">
+            <hr :class="$style.summarySeparator" />
+            <FirmSummary
+              v-bind="firm"
+              :loading="isLoading({ firmId: firm.id, bookingId })"
+              action-name="Utiliser ce FIRM"
+              @action="() => chooseFirm({ firmId: firm.id, bookingId })"
+            />
+          </div>
+        </transition-group>
       </div>
     </div>
   </div>

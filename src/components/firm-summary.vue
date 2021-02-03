@@ -20,6 +20,14 @@ export default {
       type: String,
       default: null,
     },
+    skeleton: {
+      type: Boolean,
+      default: false,
+    },
+    actionName: {
+      type: String,
+      default: '',
+    },
     loading: {
       type: Boolean,
       default: false,
@@ -32,15 +40,15 @@ export default {
     formatDate(date) {
       return format(new Date(date), 'd MMM yyyy, H:mm O', { locale: fr })
     },
-    choose() {
-      this.$emit('choose')
+    action() {
+      this.$emit('action')
     },
   },
 }
 </script>
 
 <template>
-  <div :data-loading="loading" :class="$style.container">
+  <div :data-skeleton="skeleton" :class="$style.container">
     <div :class="$style.icon">
       <b-icon icon="clipboard-list" />
     </div>
@@ -75,10 +83,12 @@ export default {
     </div>
     <div :class="$style.buttonContainer">
       <BaseActionButton
+        v-if="actionName"
         :class="$style.button"
-        :disabled="loading"
-        @click="choose"
-        >Utiliser ce FIRM</BaseActionButton
+        :disabled="skeleton || loading"
+        :loading="loading"
+        @click="action"
+        >{{ actionName }}</BaseActionButton
       >
     </div>
   </div>
@@ -98,6 +108,7 @@ export default {
   }
   .infos {
     flex-grow: 1;
+    text-align: left;
   }
 
   .field {
@@ -113,7 +124,7 @@ export default {
     }
   }
   // Loading skeleton animation
-  &[data-loading='true'] .fieldContent {
+  &[data-skeleton='true'] .fieldContent {
     color: transparent;
     background: white;
     animation: pulse 2s infinite;

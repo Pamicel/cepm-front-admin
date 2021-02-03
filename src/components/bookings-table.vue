@@ -157,7 +157,7 @@ export default {
             <p>
               <b-icon icon="ticket-alt" size="is-large"> </b-icon>
             </p>
-            <p>Aucune reservation.</p>
+            <p>Aucune réservation.</p>
           </div>
         </section>
       </template>

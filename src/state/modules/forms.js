@@ -11,6 +11,7 @@ export const state = {
   fetchingFirms: false,
   backingFirmUp: {},
   fetchingFirmsDetails: [],
+  firmsBeingDeleted: [],
   cancelTokenSource: null,
 }
 
@@ -60,11 +61,24 @@ export const mutations = {
       (id) => id !== firmId
     )
   },
+
+  START_DELETING_FIRM(state, { firmId }) {
+    if (state.firmsBeingDeleted.includes(firmId)) {
+      return
+    }
+    state.firmsBeingDeleted = [...state.firmsBeingDeleted, firmId]
+  },
+  END_DELETING_FIRM(state, { firmId }) {
+    state.firmsBeingDeleted = state.firmsBeingDeleted.filter(
+      (id) => id !== firmId
+    )
+  },
+
   START_BACKING_FIRM_UP(state, { firmId, bookingId }) {
     if (state.backingFirmUp[bookingId] === firmId) {
       return
     }
-    state.backingFirmUp[bookingId] = firmId
+    state.backingFirmUp = { ...state.backingFirmUp, [bookingId]: firmId }
   },
   END_BACKING_FIRM_UP(state, { firmId, bookingId }) {
     if (state.backingFirmUp[bookingId] === firmId) {
@@ -176,16 +190,31 @@ export const actions = {
     }
     try {
       commit('START_BACKING_FIRM_UP', { firmId, bookingId })
-      await new Promise((resolve) => setTimeout(resolve, 1000))
       const query = qs.stringify({ bookingId })
       const { data } = await axios.post(
         `${apiUrl}/form-firms/${firmId}/backup?${query}`
       )
-      dispatch('bookings/refreshBooking', { bookingId }, { root: true })
+      await dispatch('bookings/refreshBooking', { bookingId }, { root: true })
       commit('END_BACKING_FIRM_UP', { firmId, bookingId })
       return data
     } catch (error) {
       commit('END_BACKING_FIRM_UP', { firmId, bookingId })
+      console.error(error)
+      return null
+    }
+  },
+  async deleteFirm({ rootGetters, commit, dispatch }, { firmId }) {
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    try {
+      commit('START_DELETING_FIRM', { firmId })
+      await axios.delete(`${apiUrl}/form-firms/${firmId}`)
+      dispatch('bookings/removeFirmFromBookings', { firmId }, { root: true })
+      commit('END_DELETING_FIRM', { firmId })
+      return true
+    } catch (error) {
+      commit('END_DELETING_FIRM', { firmId })
       console.error(error)
       return null
     }
