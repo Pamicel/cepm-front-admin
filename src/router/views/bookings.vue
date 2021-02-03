@@ -4,6 +4,8 @@ import BookingGroupsTable from '@components/booking-groups-table.vue'
 import BookingsTable from '@components/bookings-table.vue'
 import CrossingInfos from '@components/crossing-infos.vue'
 import BookingsUpload from '@components/bookings-upload.vue'
+import BookingForm from '@components/booking-form.vue'
+import CollapseForm from '@components/collapse-form.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -11,16 +13,21 @@ export default {
     title: 'Panneau de traversée',
     meta: [{ name: 'description', content: 'The Crossing Details page.' }],
   },
-
   components: {
     Layout,
     BookingsTable,
     BookingGroupsTable,
     CrossingInfos,
     BookingsUpload,
+    CollapseForm,
+    BookingForm,
   },
   data() {
-    return { isBookingUploadOpen: false }
+    return {
+      formOpen: false,
+      isSingleFormOpen: false,
+      isBookingUploadOpen: false,
+    }
   },
   computed: {
     ...mapState({
@@ -75,6 +82,7 @@ export default {
   },
   async mounted() {
     const crossingId = this.$route.params.id
+
     if (!this.crossing || this.crossing.id !== crossingId) {
       const crossing = await this.$store.dispatch(
         'crossings/fetchSingleCrossing',
@@ -89,10 +97,6 @@ export default {
     })
   },
   methods: {
-    async goToUploadPage(file) {
-      // this.$router.push({ name: 'bookings-upload' })
-      this.isBookingUploadOpen = true
-    },
     async sendEmail(bookerEmail) {
       const crossingId = this.$route.params.id
       this.$store.dispatch('bookings/sendEmailToBooker', {
@@ -100,15 +104,18 @@ export default {
         crossingId,
       })
     },
-    closeModal() {
+    closeUploadForm() {
       this.isBookingUploadOpen = false
     },
     uploadDone() {
-      this.closeModal()
       const crossingId = this.$route.params.id
+      this.closeUploadForm()
       this.$store.dispatch('bookings/fetchBookings', {
         crossingId,
       })
+    },
+    newBookingDone() {
+      this.isSingleFormOpen = false
     },
   },
 }
@@ -122,12 +129,29 @@ export default {
         :crossing="crossing"
       />
       <BaseIcon v-else :class="$style.loadingIcon" name="fan" spin />
+      <hr />
+      <CollapseForm
+        v-if="crossing"
+        :form-open.sync="isBookingUploadOpen"
+        title="+ Ajouter une liste de personnes"
+      >
+        <BookingsUpload
+          :crossing-id="crossing && crossing.id"
+          @done="uploadDone"
+        />
+      </CollapseForm>
 
-      <div :class="$style.upload">
-        <button :class="$style.uploadButton" @click="goToUploadPage">+</button>
-      </div>
-
-      <h1 :class="$style.title">Réservations</h1>
+      <CollapseForm
+        v-if="crossing"
+        :form-open.sync="isSingleFormOpen"
+        title="+ Ajouter une personne"
+      >
+        <BookingForm
+          :crossing-id="crossing && crossing.id"
+          @done="newBookingDone"
+        />
+      </CollapseForm>
+      <hr />
 
       <b-tabs>
         <b-tab-item label="Passagers">
@@ -144,15 +168,6 @@ export default {
           />
         </b-tab-item>
       </b-tabs>
-
-      <b-modal :active="isBookingUploadOpen" @close="closeModal">
-        <div :class="$style.uploadModal">
-          <BookingsUpload
-            :crossing-id="crossing && crossing.id"
-            @done="uploadDone"
-          />
-        </div>
-      </b-modal>
     </div>
   </Layout>
 </template>

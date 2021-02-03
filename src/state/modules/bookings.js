@@ -17,9 +17,10 @@ export const state = {
   creatingBookings: false,
   fetchingBookings: false,
   modifyingBooking: false,
+  creatingSingleBooking: false,
+  bookingsBeingDeleted: [],
   sendingEmailToBookers: [],
   bookingsBeingRefreshed: [],
-  bookingsBeingDeleted: [],
   bookingCreationResponse: {},
 }
 
@@ -48,6 +49,12 @@ export const mutations = {
   },
   END_CREATING_BOOKINGS(state) {
     state.creatingBookings = false
+  },
+  START_CREATING_SINGLE_BOOKING(state) {
+    state.creatingSingleBooking = true
+  },
+  END_CREATING_SINGLE_BOOKING(state) {
+    state.creatingSingleBooking = false
   },
   START_FETCHING_BOOKINGS(state) {
     state.fetchingBookings = true
@@ -131,6 +138,40 @@ export const actions = {
       return true
     } catch (error) {
       commit('END_CREATING_BOOKINGS')
+      console.error(error)
+      return null
+    }
+  },
+  async createSingleBooking(
+    { commit, rootGetters },
+    { crossingId, bookerEmail, firstname, lastname }
+  ) {
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    commit('START_CREATING_SINGLE_BOOKING')
+    try {
+      const { data: bookingCreationResponse } = await axios.post(
+        `${apiUrl}/booking-imports`,
+        {
+          crossingId,
+          data: [
+            {
+              bookerEmail,
+              raw: JSON.stringify({ email: bookerEmail, firstname, lastname }),
+            },
+          ],
+          fieldMap: { email: 'email' },
+        }
+      )
+      const { rowsSkipped, numberOfRowsSkipped } = bookingCreationResponse
+      if (numberOfRowsSkipped === 1) {
+        throw new Error(rowsSkipped[0].reason)
+      }
+      commit('END_CREATING_SINGLE_BOOKING')
+      return bookingCreationResponse
+    } catch (error) {
+      commit('END_CREATING_SINGLE_BOOKING')
       console.error(error)
       return null
     }

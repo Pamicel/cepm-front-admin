@@ -2,6 +2,7 @@
 import Layout from '@layouts/local.vue'
 import CrossingsTable from '@components/crossings-table.vue'
 import CrossingCreationForm from '@components/crossing-creation-form.vue'
+import CollapseForm from '@components/collapse-form.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -9,7 +10,7 @@ export default {
     title: 'Traversées',
     meta: [{ name: 'description', content: 'Toutes les traversées.' }],
   },
-  components: { Layout, CrossingsTable, CrossingCreationForm },
+  components: { Layout, CrossingsTable, CrossingCreationForm, CollapseForm },
   data() {
     return {
       formOpen: false,
@@ -35,7 +36,7 @@ export default {
         await this.$store.dispatch('crossings/fetchCrossings')
       }
     },
-    toggleModal() {
+    toggleForm() {
       this.formOpen = !this.formOpen
     },
     selectCrossing(crossingId) {
@@ -56,25 +57,10 @@ export default {
         Traversées
       </h1>
 
-      <div :class="[$style.creation, formOpen ? $style.creationOpen : '']">
-        <b-collapse :open.sync="formOpen">
-          <BaseButton
-            slot="trigger"
-            :class="[
-              $style.createButton,
-              formOpen ? $style.createButtonOpen : '',
-            ]"
-          >
-            + Créer une traversée
-          </BaseButton>
-          <div :class="$style.creationFormContainer">
-            <CrossingCreationForm
-              @send="createCrossing"
-              @cancel="toggleModal"
-            />
-          </div>
-        </b-collapse>
-      </div>
+      <CollapseForm :form-open.sync="formOpen" title="+ Créer une traversée">
+        <CrossingCreationForm @send="createCrossing" @cancel="toggleForm" />
+      </CollapseForm>
+
       <CrossingsTable
         :class="$style.crossingsTable"
         :performances="crossingList"
@@ -92,40 +78,6 @@ export default {
   @extend %narrow-content;
 
   padding: $size-grid-padding;
-
-  .creation {
-    // width: fit-content;
-    width: 100%;
-    transition: all 200ms;
-    .creationForm {
-      width: fit-content;
-    }
-    &.creationOpen {
-      @include box_shadow(1);
-
-      padding: 1rem;
-      margin: 0 0 1rem 0;
-      background-color: #fff;
-      border: 1px solid lightgrey;
-      border-radius: 4px;
-    }
-
-    .createButton {
-      @extend %typography-medium;
-
-      padding: 0;
-      margin: 0 0 1rem;
-      background-color: transparent;
-      border-bottom: 0.1em solid transparent;
-      transition: all 100ms;
-      &:hover {
-        border-color: black;
-      }
-      &.createButtonOpen {
-        @extend %typography-large;
-      }
-    }
-  }
 
   .title {
     margin-bottom: 1rem;
