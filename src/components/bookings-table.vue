@@ -122,7 +122,7 @@ export default {
               >Pas de FIRM</span
             >
             <span
-              v-else-if="props.row.hasFirm && props.row.filled"
+              v-else-if="props.row.hasFirm && props.row.formFirm.filled"
               class="tag is-small is-success"
               >FIRM complet</span
             >

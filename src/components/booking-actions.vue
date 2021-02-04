@@ -135,7 +135,7 @@ export default {
         <FirmSummary
           :loading="firmsBeingDeleted.includes(booking.formFirm.id)"
           v-bind="booking.formFirm"
-          action-name="Changer"
+          action-name="Désassocier"
           @action="() => deleteFirm(booking.formFirm.id)"
         />
       </div>
