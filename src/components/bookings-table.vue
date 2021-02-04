@@ -118,10 +118,15 @@ export default {
             role="button"
             @click="toggleDetails(props.row)"
           >
-            <span v-if="props.row.hasFirm" class="tag is-small is-success"
-              >FIRM rempli</span
+            <span v-if="!props.row.hasFirm" class="tag is-small is-danger"
+              >Pas de FIRM</span
             >
-            <span v-else class="tag is-small is-danger">Pas de FIRM</span>
+            <span
+              v-else-if="props.row.hasFirm && props.row.filled"
+              class="tag is-small is-success"
+              >FIRM complet</span
+            >
+            <span v-else class="tag is-small is-info">Firm associé</span>
           </span>
         </b-table-column>
 
