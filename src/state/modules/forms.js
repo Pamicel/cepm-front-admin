@@ -113,6 +113,8 @@ export const actions = {
         lastname: true,
         dateCreated: true,
         dateModified: true,
+        filled: true,
+        isBackup: true,
         // None of the rest
         gender: false,
         birthDate: false,
@@ -137,7 +139,6 @@ export const actions = {
         remorse: false,
         remorseDetails: false,
         imageRights: false,
-        isBackup: false,
         bookingId: false,
         userId: false,
       },
