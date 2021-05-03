@@ -1,6 +1,7 @@
 <script>
 import Layout from '@layouts/local.vue'
 import SqdaTable from '@/src/components/sqda-table.vue'
+import { mapState } from 'vuex'
 
 export default {
   page: {
@@ -8,6 +9,14 @@ export default {
     meta: [{ name: 'description', content: 'The Sqda Questions page.' }],
   },
   components: { Layout, SqdaTable },
+  computed: {
+    ...mapState('sqda', {
+      questions: (state) => state.questions,
+    }),
+  },
+  beforeMount() {
+    this.$store.dispatch('sqda/fetchQuestions')
+  },
 }
 </script>
 
@@ -17,7 +26,7 @@ export default {
       <h1 :class="$style.title">
         SQDA
       </h1>
-      <SqdaTable />
+      <SqdaTable :questions="questions" />
     </div>
   </Layout>
 </template>

@@ -36,6 +36,8 @@ import {
   faCalendarTimes,
   faCalendarPlus,
   faSearch,
+  faPencilAlt,
+  faEllipsisV,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -137,7 +139,9 @@ library.add(
   faCalendarTimes,
   faCalendarPlus,
   faClipboardList,
-  faSearch
+  faSearch,
+  faPencilAlt,
+  faEllipsisV
 )
 Vue.component('vue-fontawesome', FontAwesomeIcon)
 

@@ -145,4 +145,21 @@ h6 {
   opacity: 0;
   transform: translateY(10px);
 }
+
+.rotate-fade-enter-active {
+  transition: all 0.1s ease;
+}
+.rotate-fade-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.rotate-fade-enter
+/* .rotate-fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: rotate(45deg);
+}
+.rotate-fade-leave-to
+/* .rotate-fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: rotate(-45deg);
+}
 </style>
