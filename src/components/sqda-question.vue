@@ -59,28 +59,25 @@ export default {
         </Transition>
       </button>
       <div :class="$style.infos">
-        <Transition name="slide-fade" mode="out-in">
-          <div v-if="showMenu" :class="$style.menu">
-            <!-- Created -->
-            <div
-              :class="$style.date"
-              :title="dateCreated ? formatDate(dateCreated) : '(date inconnue)'"
-            >
-              Date de création:
-              {{
-                dateCreated ? formatRelative(dateCreated) : '(date inconnue)'
-              }}
-            </div>
-            <!-- Delete -->
-            <b-button type="is-dark is-small" :class="$style.menuButton">
-              <BaseIcon name="trash-alt" /> Supprimer
-            </b-button>
-            <!-- Modify -->
-            <b-button type="is-dark is-small" :class="$style.menuButton">
-              <BaseIcon name="pencil-alt" /> Modifier
-            </b-button>
-            <!-- History -->
-            <!-- <b-button
+        <div :class="{ [$style.menu]: true, [$style.menuHidden]: !showMenu }">
+          <!-- Created -->
+          <div
+            :class="$style.date"
+            :title="dateCreated ? formatDate(dateCreated) : '(date inconnue)'"
+          >
+            Date de création/modification:
+            {{ dateCreated ? formatRelative(dateCreated) : '(date inconnue)' }}
+          </div>
+          <!-- Delete -->
+          <b-button type="is-dark is-small" :class="$style.menuButton">
+            <BaseIcon name="trash-alt" /> Supprimer
+          </b-button>
+          <!-- Modify -->
+          <b-button type="is-dark is-small" :class="$style.menuButton">
+            <BaseIcon name="pencil-alt" /> Modifier
+          </b-button>
+          <!-- History -->
+          <!-- <b-button
               type="is-dark"
               :class="$style.menuButton"
               @click="toggleVersions"
@@ -89,8 +86,7 @@ export default {
             <div v-if="showVersions">
               {{ versions }}
             </div> -->
-          </div>
-        </Transition>
+        </div>
         <h2 :class="$style.question">
           {{ question }}
         </h2>
@@ -141,13 +137,24 @@ export default {
       line-height: 1.4em;
     }
     .menu {
+      max-height: 5rem;
+      margin-right: 1rem;
       margin-bottom: 1rem;
+      overflow: hidden;
+      text-align: right;
+      transition: all 200ms;
+      &.menuHidden {
+        max-height: 0;
+        margin-bottom: 0;
+      }
       .date {
+        @extend %typography-xsmall;
+
         margin-bottom: 0.5rem;
         opacity: 0.4;
       }
       .menuButton {
-        margin-right: 0.4rem;
+        margin-left: 0.4rem;
       }
     }
 
