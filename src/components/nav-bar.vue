@@ -19,6 +19,10 @@ export default {
             name: 'crossings',
             title: 'Traversées',
           },
+          {
+            name: 'sqda',
+            title: 'SQDA',
+          },
         ],
         account: [
           {

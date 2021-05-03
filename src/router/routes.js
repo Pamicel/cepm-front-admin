@@ -46,6 +46,15 @@ export default [
     },
   },
   {
+    path: '/sqda',
+    name: 'sqda',
+    component: () => lazyLoadView(import('@views/sqda-questions.vue')),
+    meta: {
+      authRequired: true,
+      authRoles: ['director'],
+    },
+  },
+  {
     path: '/traversees/:id',
     redirect: { name: 'bookings' },
     name: 'crossing-details',
