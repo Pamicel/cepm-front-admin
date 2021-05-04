@@ -8,6 +8,7 @@ export const state = {
   questions: [],
   fetchingQuestions: false,
   creatingQuestion: false,
+  questionsBeingModified: new Set(),
 }
 
 export const getters = {}
@@ -24,6 +25,16 @@ export const mutations = {
   },
   END_CREATING_QUESTION(state) {
     state.creatingQuestion = false
+  },
+  START_MODIFYING_QUESTION(state, id) {
+    const currentSet = state.questionsBeingModified
+    currentSet.add(id)
+    state.questionsBeingModified = new Set([...currentSet])
+  },
+  END_MODIFYING_QUESTION(state, id) {
+    const currentSet = state.questionsBeingModified
+    currentSet.delete(id)
+    state.questionsBeingModified = new Set([...currentSet])
   },
   REPLACE_QUESTION_LIST(state, questions) {
     state.questions = questions
@@ -56,11 +67,13 @@ export const actions = {
     try {
       commit('START_CREATING_QUESTION')
       // send question
-      await axios.post(`${apiUrl}/sqda-questions`, { question })
+      const { data } = await axios.post(`${apiUrl}/sqda-questions`, {
+        question,
+      })
       commit('END_CREATING_QUESTION')
       // reset question list
       await dispatch('fetchQuestions')
-      return true
+      return data.id
     } catch (error) {
       // console.error(error)
       commit('END_CREATING_QUESTION')
@@ -78,6 +91,35 @@ export const actions = {
           },
         }
       }
+
+      // handle bad request
+      return null
+    }
+  },
+  async changeQuestionVisibility(
+    { commit, rootGetters, dispatch, state },
+    { id, hide }
+  ) {
+    // check logged in
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    if (state.questionsBeingModified.has(id)) {
+      return null
+    }
+
+    try {
+      commit('START_MODIFYING_QUESTION', id)
+      // send question
+      const { data } = await axios.patch(`${apiUrl}/sqda-questions/${id}`, {
+        hide,
+      })
+      commit('END_MODIFYING_QUESTION', id)
+      // reset question list
+      await dispatch('fetchQuestions')
+      return data.id
+    } catch (error) {
+      commit('END_MODIFYING_QUESTION', id)
 
       // handle bad request
       return null

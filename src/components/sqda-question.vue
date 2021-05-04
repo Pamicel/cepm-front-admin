@@ -1,9 +1,14 @@
 <script>
 import { formatRelative, format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { mapState } from 'vuex'
 
 export default {
   props: {
+    id: {
+      type: Number,
+      required: true,
+    },
     question: {
       type: String,
       required: true,
@@ -16,9 +21,9 @@ export default {
       type: Array,
       default: () => [],
     },
-    dateCreated: {
-      type: String,
-      default: '',
+    hide: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -27,6 +32,11 @@ export default {
       showVersions: false,
       showMenu: false,
     }
+  },
+  computed: {
+    ...mapState('sqda', {
+      questionsBeingModified: (state) => state.questionsBeingModified,
+    }),
   },
   methods: {
     formatDate(date) {
@@ -44,6 +54,19 @@ export default {
     toggleMenu() {
       this.showMenu = !this.showMenu
     },
+    async toggleQuestionVisibility() {
+      const response = await this.$store.dispatch(
+        'sqda/changeQuestionVisibility',
+        { id: this.id, hide: !this.hide }
+      )
+      if (response === null) {
+        this.$buefy.toast.open({
+          type: 'is-danger',
+          message: 'Erreur: impossible de cacher la question',
+          duration: 3000,
+        })
+      }
+    },
   },
 }
 </script>
@@ -52,7 +75,11 @@ export default {
   <div :class="$style.container">
     <!-- Question -->
     <div :class="$style.questionInfos">
-      <button :class="$style.menuToggleButton" @click="toggleMenu">
+      <button
+        :class="$style.menuToggleButton"
+        :disabled="questionsBeingModified.has(id)"
+        @click="toggleMenu"
+      >
         <Transition name="rotate-fade" mode="out-in">
           <BaseIcon v-if="showMenu" key="on" name="times" />
           <BaseIcon v-else key="off" name="ellipsis-v" />
@@ -60,17 +87,16 @@ export default {
       </button>
       <div :class="$style.infos">
         <div :class="{ [$style.menu]: true, [$style.menuHidden]: !showMenu }">
-          <!-- Created -->
-          <div
-            :class="$style.date"
-            :title="dateCreated ? formatDate(dateCreated) : '(date inconnue)'"
-          >
-            Date de création/modification:
-            {{ dateCreated ? formatRelative(dateCreated) : '(date inconnue)' }}
-          </div>
           <!-- Delete -->
-          <b-button type="is-dark is-small" :class="$style.menuButton">
-            <BaseIcon name="trash-alt" /> Supprimer
+          <b-button
+            type="is-dark is-small"
+            :class="$style.menuButton"
+            :disabled="questionsBeingModified.has(id)"
+            :loading="questionsBeingModified.has(id)"
+            @click="toggleQuestionVisibility"
+          >
+            <span v-if="hide"> <BaseIcon name="eye" /> Montrer </span>
+            <span v-else> <BaseIcon name="eye-slash" /> Cacher </span>
           </b-button>
           <!-- Modify -->
           <b-button type="is-dark is-small" :class="$style.menuButton">

@@ -64,27 +64,63 @@ describe('@state/modules/sqda', () => {
   const questionA = 'questionA'
   const questionB = 'questionB'
   const questionC = 'questionC'
-  it('action sqda/createQuestion resolves to true with correct question', async () => {
+  const questionD = 'questionD'
+  const questionE = 'questionE'
+
+  it('action sqda/createQuestion does not resolve to null with correct question', async () => {
     await logInAsDirector(store)
     const question = questionA
-    expect(await store.dispatch('sqda/createQuestion', { question })).toBe(true)
+    expect(
+      await store.dispatch('sqda/createQuestion', { question })
+    ).not.toBeNull()
   })
 
   it('action sqda/createQuestion updates the question list after success', async () => {
     await logInAsDirector(store)
     const question = questionB
     const questionsBefore = [...store.state.sqda.questions]
-    expect(await store.dispatch('sqda/createQuestion', { question })).toBe(true)
+    expect(
+      await store.dispatch('sqda/createQuestion', { question })
+    ).not.toBeNull()
     expect(await store.state.sqda.questions).not.toEqual(questionsBefore)
   })
 
   it('action sqda/createQuestion resolves to error description on conflict', async () => {
     await logInAsDirector(store)
     const question = questionC
-    expect(await store.dispatch('sqda/createQuestion', { question })).toBe(true)
+    expect(
+      await store.dispatch('sqda/createQuestion', { question })
+    ).not.toBeNull()
     expect(
       (await store.dispatch('sqda/createQuestion', { question })).error.status
     ).toEqual(409)
+  })
+
+  it('action sqda/changeQuestionVisibility resolves to null when question already being modified', async () => {
+    await logInAsDirector(store)
+    const question = questionD
+    const questionId = await store.dispatch('sqda/createQuestion', { question })
+    store.commit('sqda/START_MODIFYING_QUESTION', questionId)
+    expect(
+      await store.dispatch('sqda/changeQuestionVisibility', {
+        id: questionId,
+        hide: true,
+      })
+    ).toBeNull()
+  })
+
+  it('action sqda/changeQuestionVisibility does not resolve to null when question not being modified', async () => {
+    await logInAsDirector(store)
+    const question = questionE
+    const questionId = await store.dispatch('sqda/createQuestion', { question })
+    store.commit('sqda/START_MODIFYING_QUESTION', questionId)
+    store.commit('sqda/END_MODIFYING_QUESTION', questionId)
+    expect(
+      await store.dispatch('sqda/changeQuestionVisibility', {
+        id: questionId,
+        hide: true,
+      })
+    ).not.toBeNull()
   })
 })
 

@@ -12,7 +12,7 @@ export default {
     },
   },
   computed: {
-    displayedQuestions() {
+    groupedQuestions() {
       const qList = []
 
       for (const sqdaQuestion of this.questions) {
@@ -38,6 +38,12 @@ export default {
 
       return qList.filter((q) => !q.disabled)
     },
+    displayedQuestions() {
+      return this.groupedQuestions.filter((q) => !q.hide)
+    },
+    hiddenQuestions() {
+      return this.groupedQuestions.filter((q) => q.hide)
+    },
   },
 }
 </script>
@@ -45,11 +51,21 @@ export default {
 <template>
   <div :class="$style.container">
     <SqdaQuestion
-      v-for="question in displayedQuestions"
+      v-for="question in displayedQuestions.filter((q) => !q.hide)"
       :key="question.question"
       :class="$style.cell"
       v-bind="question"
     />
+    <div v-if="hiddenQuestions.length > 0">
+      <hr />
+      <h2>Questions cachées</h2>
+      <SqdaQuestion
+        v-for="question in hiddenQuestions.filter((q) => q.hide)"
+        :key="question.question"
+        :class="$style.cell"
+        v-bind="question"
+      />
+    </div>
   </div>
 </template>
 
