@@ -1,6 +1,9 @@
 <script>
 import Layout from '@layouts/local.vue'
 import SqdaTable from '@/src/components/sqda-table.vue'
+import SqdaQuestionForm from '@components/sqda-question-form.vue'
+import CollapseForm from '@components/collapse-form.vue'
+
 import { mapState } from 'vuex'
 
 export default {
@@ -8,7 +11,12 @@ export default {
     title: 'Sqda Questions',
     meta: [{ name: 'description', content: 'The Sqda Questions page.' }],
   },
-  components: { Layout, SqdaTable },
+  components: { Layout, SqdaTable, CollapseForm, SqdaQuestionForm },
+  data() {
+    return {
+      isFormOpen: false,
+    }
+  },
   computed: {
     ...mapState('sqda', {
       questions: (state) => state.questions,
@@ -26,6 +34,9 @@ export default {
       <h1 :class="$style.title">
         SQDA
       </h1>
+      <CollapseForm :form-open.sync="isFormOpen" title="+ Créer une question">
+        <SqdaQuestionForm @done="isFormOpen = false" />
+      </CollapseForm>
       <SqdaTable :questions="questions" />
     </div>
   </Layout>
