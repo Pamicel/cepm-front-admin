@@ -125,4 +125,51 @@ export const actions = {
       return null
     }
   },
+  async updateQuestion(
+    { commit, rootGetters, dispatch, state },
+    { id, question }
+  ) {
+    // check logged in
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    if (state.questionsBeingModified.has(id)) {
+      return null
+    }
+    if (question === '') {
+      return null
+    }
+
+    try {
+      commit('START_MODIFYING_QUESTION', id)
+      // send question
+      const { data } = await axios.patch(`${apiUrl}/sqda-questions/${id}`, {
+        question,
+      })
+      commit('END_MODIFYING_QUESTION', id)
+      // reset question list
+      await dispatch('fetchQuestions')
+      return data.id
+    } catch (error) {
+      commit('END_MODIFYING_QUESTION', id)
+
+      // handle no op
+      if (
+        error &&
+        error.response &&
+        (error.response.statusText === 'Not Acceptable' ||
+          error.response.status === 406)
+      ) {
+        return {
+          error: {
+            statusText: 'Not Acceptable',
+            status: 406,
+          },
+        }
+      }
+
+      // handle bad request
+      return null
+    }
+  },
 }

@@ -66,6 +66,9 @@ describe('@state/modules/sqda', () => {
   const questionC = 'questionC'
   const questionD = 'questionD'
   const questionE = 'questionE'
+  const questionF = 'questionF'
+  const questionG = 'questionG'
+  const questionH = 'questionH'
 
   it('action sqda/createQuestion does not resolve to null with correct question', async () => {
     await logInAsDirector(store)
@@ -121,6 +124,45 @@ describe('@state/modules/sqda', () => {
         hide: true,
       })
     ).not.toBeNull()
+  })
+
+  it('action sqda/updateQuestion resolves to null when question already being modified', async () => {
+    await logInAsDirector(store)
+    const question = questionF
+    const questionId = await store.dispatch('sqda/createQuestion', { question })
+    store.commit('sqda/START_MODIFYING_QUESTION', questionId)
+    expect(
+      await store.dispatch('sqda/updateQuestion', {
+        id: questionId,
+        question: question + 'wrliwjemfsdgoij',
+      })
+    ).toBeNull()
+  })
+
+  it('action sqda/updateQuestion does not resolve to null when question not being modified', async () => {
+    await logInAsDirector(store)
+    const question = questionG
+    const questionId = await store.dispatch('sqda/createQuestion', { question })
+    store.commit('sqda/START_MODIFYING_QUESTION', questionId)
+    store.commit('sqda/END_MODIFYING_QUESTION', questionId)
+    expect(
+      await store.dispatch('sqda/updateQuestion', {
+        id: questionId,
+        question: question + 'riewljfkn,leiwfjd',
+      })
+    ).not.toBeNull()
+  })
+
+  it('action sqda/updateQuestion resolves to error when question is not modified', async () => {
+    await logInAsDirector(store)
+    const question = questionH
+    const questionId = await store.dispatch('sqda/createQuestion', { question })
+    const response = await store.dispatch('sqda/updateQuestion', {
+      id: questionId,
+      question,
+    })
+
+    expect(response.error.status).toBe(406)
   })
 })
 

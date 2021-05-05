@@ -31,6 +31,8 @@ export default {
       showAnswers: false,
       showVersions: false,
       showMenu: false,
+      modify: false,
+      modifiedQuestion: this.question,
     }
   },
   computed: {
@@ -38,6 +40,11 @@ export default {
       questionsBeingModified: (state) => state.questionsBeingModified,
       fetchingQuestions: (state) => state.fetchingQuestions,
     }),
+  },
+  watch: {
+    modify(newVal) {
+      this.modifiedQuestion = this.question
+    },
   },
   methods: {
     formatDate(date) {
@@ -55,6 +62,19 @@ export default {
     toggleMenu() {
       this.showMenu = !this.showMenu
     },
+    async updateQuestion() {
+      const response = await this.$store.dispatch('sqda/updateQuestion', {
+        id: this.id,
+        question: this.modifiedQuestion,
+      })
+      if (response === null) {
+        this.$buefy.toast.open({
+          type: 'is-danger',
+          message: 'Erreur: impossible de modifier la question',
+          duration: 3000,
+        })
+      }
+    },
     async toggleQuestionVisibility() {
       const response = await this.$store.dispatch(
         'sqda/changeQuestionVisibility',
@@ -63,7 +83,7 @@ export default {
       if (response === null) {
         this.$buefy.toast.open({
           type: 'is-danger',
-          message: 'Erreur: impossible de cacher la question',
+          message: "Erreur: impossible d'activer/désactiver la question",
           duration: 3000,
         })
       }
@@ -96,21 +116,49 @@ export default {
           />
           <!-- Delete -->
           <b-button
+            v-if="!modify"
             type="is-dark is-small"
             :class="$style.menuButton"
             :disabled="questionsBeingModified.has(id) || fetchingQuestions"
             @click="toggleQuestionVisibility"
           >
-            <span v-if="hide"> <BaseIcon name="eye" /> Montrer </span>
-            <span v-else> <BaseIcon name="eye-slash" /> Cacher </span>
+            <span v-if="hide"> <BaseIcon name="eye" /> Réactiver </span>
+            <span v-else> <BaseIcon name="eye-slash" /> Désactiver </span>
           </b-button>
           <!-- Modify -->
-          <b-button type="is-dark is-small" :class="$style.menuButton">
-            <BaseIcon
-              :disabled="questionsBeingModified.has(id) || fetchingQuestions"
-              name="pencil-alt"
-            />
+          <b-button
+            v-if="!modify"
+            type="is-dark is-small"
+            :class="$style.menuButton"
+            :disabled="questionsBeingModified.has(id) || fetchingQuestions"
+            @click="modify = true"
+          >
+            <BaseIcon name="pencil-alt" />
             Modifier
+          </b-button>
+          <b-button
+            v-if="modify"
+            type="is-success is-small"
+            :class="$style.menuButton"
+            :disabled="
+              question === modifiedQuestion ||
+                modifiedQuestion === '' ||
+                questionsBeingModified.has(id) ||
+                fetchingQuestions
+            "
+            @click="updateQuestion"
+          >
+            Confirmer
+          </b-button>
+          <b-button
+            v-if="modify"
+            type="is-warning is-small"
+            :disabled="questionsBeingModified.has(id) || fetchingQuestions"
+            :class="$style.menuButton"
+            @click="modify = false"
+          >
+            <BaseIcon name="pencil-alt" />
+            Annuler
           </b-button>
           <!-- History -->
           <!-- <b-button
@@ -125,9 +173,20 @@ export default {
         </div>
 
         <BaseIcon v-if="hide" name="eye-slash" />
-        <h2 :class="{ [$style.question]: true, [$style.questionHidden]: hide }">
+        <h2
+          v-if="!modify"
+          :class="{ [$style.question]: true, [$style.questionHidden]: hide }"
+        >
           {{ question }}
         </h2>
+        <!-- <h2 :class="$style.question"> -->
+        <b-input
+          v-else
+          v-model="modifiedQuestion"
+          :class="$style.question"
+          type="text-area"
+        ></b-input>
+        <!-- </h2> -->
       </div>
       <div :class="$style.answersInfos">
         {{ answers.length || 'Pas de' }} réponse{{
