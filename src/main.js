@@ -38,6 +38,7 @@ import {
   faSearch,
   faPencilAlt,
   faEllipsisV,
+  faHourglassHalf,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -141,7 +142,8 @@ library.add(
   faClipboardList,
   faSearch,
   faPencilAlt,
-  faEllipsisV
+  faEllipsisV,
+  faHourglassHalf
 )
 Vue.component('vue-fontawesome', FontAwesomeIcon)
 

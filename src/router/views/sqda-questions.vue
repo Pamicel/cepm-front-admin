@@ -20,6 +20,7 @@ export default {
   computed: {
     ...mapState('sqda', {
       questions: (state) => state.questions,
+      fetchingQuestions: (state) => state.fetchingQuestions,
     }),
   },
   beforeMount() {
@@ -33,6 +34,12 @@ export default {
     <div :class="$style.container">
       <h1 :class="$style.title">
         SQDA
+        <BaseIcon
+          v-show="fetchingQuestions"
+          :class="$style.loader"
+          name="hourglass-half"
+          spin
+        />
       </h1>
       <CollapseForm :form-open.sync="isFormOpen" title="+ Créer une question">
         <SqdaQuestionForm @done="isFormOpen = false" />
@@ -50,7 +57,14 @@ export default {
   padding: $size-grid-padding;
 
   .title {
+    display: flex;
+    align-items: center;
     margin-bottom: 1rem;
+    .loader {
+      margin-left: 0.8em;
+      font-size: 0.6em;
+      opacity: 0.3;
+    }
   }
 }
 </style>

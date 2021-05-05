@@ -36,6 +36,7 @@ export default {
   computed: {
     ...mapState('sqda', {
       questionsBeingModified: (state) => state.questionsBeingModified,
+      fetchingQuestions: (state) => state.fetchingQuestions,
     }),
   },
   methods: {
@@ -87,12 +88,17 @@ export default {
       </button>
       <div :class="$style.infos">
         <div :class="{ [$style.menu]: true, [$style.menuHidden]: !showMenu }">
+          <BaseIcon
+            v-show="questionsBeingModified.has(id) || fetchingQuestions"
+            name="hourglass-half"
+            :class="$style.loader"
+            spin
+          />
           <!-- Delete -->
           <b-button
             type="is-dark is-small"
             :class="$style.menuButton"
-            :disabled="questionsBeingModified.has(id)"
-            :loading="questionsBeingModified.has(id)"
+            :disabled="questionsBeingModified.has(id) || fetchingQuestions"
             @click="toggleQuestionVisibility"
           >
             <span v-if="hide"> <BaseIcon name="eye" /> Montrer </span>
@@ -100,7 +106,11 @@ export default {
           </b-button>
           <!-- Modify -->
           <b-button type="is-dark is-small" :class="$style.menuButton">
-            <BaseIcon name="pencil-alt" /> Modifier
+            <BaseIcon
+              :disabled="questionsBeingModified.has(id) || fetchingQuestions"
+              name="pencil-alt"
+            />
+            Modifier
           </b-button>
           <!-- History -->
           <!-- <b-button
@@ -163,12 +173,19 @@ export default {
       line-height: 1.4em;
     }
     .menu {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
       max-height: 5rem;
       margin-right: 1rem;
       margin-bottom: 1rem;
       overflow: hidden;
       text-align: right;
       transition: all 200ms;
+
+      .loader {
+        opacity: 0.5;
+      }
       &.menuHidden {
         max-height: 0;
         margin-bottom: 0;
