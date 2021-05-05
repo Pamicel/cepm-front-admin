@@ -123,7 +123,9 @@ export default {
               {{ versions }}
             </div> -->
         </div>
-        <h2 :class="$style.question">
+
+        <BaseIcon v-if="hide" name="eye-slash" />
+        <h2 :class="{ [$style.question]: true, [$style.questionHidden]: hide }">
           {{ question }}
         </h2>
       </div>
@@ -169,6 +171,9 @@ export default {
   .questionInfos {
     .question {
       @extend %typography-medium;
+      &.questionHidden {
+        text-decoration: line-through;
+      }
 
       line-height: 1.4em;
     }

@@ -33,16 +33,13 @@ export default {
         qList.push({
           ...sqdaQuestion,
           versions,
+          familyIds,
         })
       }
 
-      return qList.filter((q) => !q.disabled)
-    },
-    displayedQuestions() {
-      return this.groupedQuestions.filter((q) => !q.hide)
-    },
-    hiddenQuestions() {
-      return this.groupedQuestions.filter((q) => q.hide)
+      return qList
+        .filter((q) => !q.disabled)
+        .sort((qa, qb) => Math.min(...qb.familyIds) - Math.min(...qa.familyIds))
     },
   },
 }
@@ -51,21 +48,11 @@ export default {
 <template>
   <div :class="$style.container">
     <SqdaQuestion
-      v-for="question in displayedQuestions.filter((q) => !q.hide)"
+      v-for="question in groupedQuestions"
       :key="question.question"
       :class="$style.cell"
       v-bind="question"
     />
-    <div v-if="hiddenQuestions.length > 0">
-      <hr />
-      <h2>Questions cachées</h2>
-      <SqdaQuestion
-        v-for="question in hiddenQuestions.filter((q) => q.hide)"
-        :key="question.question"
-        :class="$style.cell"
-        v-bind="question"
-      />
-    </div>
   </div>
 </template>
 
