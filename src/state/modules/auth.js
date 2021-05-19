@@ -1,3 +1,4 @@
+import decodeJWT from 'jwt-decode'
 import axios from 'axios'
 const apiUrl = process.env.API_BASE_URL
   ? `${process.env.API_BASE_URL}/api`
@@ -36,10 +37,35 @@ export const mutations = {
   },
 }
 
+export const PERMISSION_LEVELS = {
+  ADMIN: 4,
+  DIRECTOR: 3,
+  STAFF: 2,
+  USER: 1,
+}
+
 export const getters = {
   // Whether the user is currently logged in.
   loggedIn(state) {
     return !!state.currentUser
+  },
+  isAdmin(state) {
+    return (
+      state.currentUser &&
+      state.currentUser.permissionLevel === PERMISSION_LEVELS.ADMIN
+    )
+  },
+  isDirector(state) {
+    return (
+      state.currentUser &&
+      state.currentUser.permissionLevel === PERMISSION_LEVELS.DIRECTOR
+    )
+  },
+  isStaff(state) {
+    return (
+      state.currentUser &&
+      state.currentUser.permissionLevel >= PERMISSION_LEVELS.STAFF
+    )
   },
 }
 
@@ -55,14 +81,14 @@ export const actions = {
   async logIn({ commit }, { email, password } = {}) {
     commit('START_LOGGING_IN')
     try {
-      const response = await axios.post(`${apiUrl}/login`, {
+      const response = await axios.post(`${apiUrl}/auth/login`, {
         email,
         password,
       })
 
-      const token = response.headers['x-renewed-jwt-token']
+      const token = response.data.token
       const user = {
-        ...response.data.user,
+        ...decodeJWT(token),
         token,
       }
       commit('SET_CURRENT_USER', user)
@@ -88,24 +114,22 @@ export const actions = {
     }
 
     try {
-      const response = await axios.get(`${apiUrl}/verify`) // Auth header is implicit
+      const response = await axios.get(`${apiUrl}/auth/verify`) // Auth header is implicit
 
-      const newToken = response.headers['x-renewed-jwt-token']
-      const token = newToken || state.currentUser.token
+      const token = response.data.token
+
       const user = {
-        ...response.data.user,
+        ...decodeJWT(token),
         token,
       }
 
       commit('SET_CURRENT_USER', user)
       return user
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        await dispatch('logOut')
-        return null
-      } else {
+      if (error.response && error.response.status !== 401) {
         console.warn(error)
       }
+      await dispatch('logOut')
       return null
     }
   },
@@ -168,7 +192,7 @@ function saveState(key, state) {
 }
 
 function setDefaultAuthHeaders(state) {
-  axios.defaults.headers.common.Bearer = state.currentUser
-    ? state.currentUser.token
+  axios.defaults.headers.common.Authorization = state.currentUser
+    ? `Bearer ${state.currentUser.token}`
     : ''
 }

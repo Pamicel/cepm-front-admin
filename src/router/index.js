@@ -43,7 +43,7 @@ router.beforeEach(async (routeTo, routeFrom, next) => {
   // (including nested routes).
   const [route] = routeTo.matched
   const authRequired = route.meta.authRequired
-  const authRoles = route.meta.authRoles
+  const requiredPermissions = route.meta.requiredPermissions
 
   // If auth isn't required for the route, just continue.
   if (!authRequired) return next()
@@ -58,8 +58,11 @@ router.beforeEach(async (routeTo, routeFrom, next) => {
       return redirectToLogin()
     }
 
-    // Check authRoles (absence of authRoles means all roles are allowed)
-    if (authRoles && !authRoles.includes(validUser.auth.role)) {
+    // Check requiredPermissions (absence of requiredPermissions means all roles are allowed)
+    if (
+      requiredPermissions &&
+      !requiredPermissions.includes(validUser.permissionLevel)
+    ) {
       return next({
         name: '404',
         query: { redirectFrom: routeTo.fullPath },

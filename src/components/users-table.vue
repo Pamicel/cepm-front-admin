@@ -1,4 +1,6 @@
 <script>
+import { PERMISSION_LEVELS } from '@state/modules/auth'
+
 export default {
   props: {
     users: {
@@ -31,21 +33,21 @@ export default {
     },
     sortTranslatedRoles(rowA, rowB, isAsc) {
       try {
-        const roleA = this.translateRole(rowA.auth.role)
-        const roleB = this.translateRole(rowB.auth.role)
+        const roleA = this.translateRole(rowA.permissionLevel)
+        const roleB = this.translateRole(rowB.permissionLevel)
 
         return isAsc ? roleB < roleA || -1 : roleA < roleB || -1
       } catch (error) {
         return 1
       }
     },
-    translateRole(role) {
-      switch (role) {
-        case 'admin':
+    translateRole(level) {
+      switch (level) {
+        case PERMISSION_LEVELS.ADMIN:
           return 'Admin'
-        case 'director':
+        case PERMISSION_LEVELS.DIRECTOR:
           return 'Direction'
-        case 'staff':
+        case PERMISSION_LEVELS.STAFF:
           return 'Staff'
         default:
           return 'Visiteur·rice'
@@ -92,13 +94,13 @@ export default {
 
       <b-table-column
         :class="$style.row"
-        field="role"
+        field="permissionLevel"
         label="Role"
         centered
         sortable
         :custom-sort="sortTranslatedRoles"
       >
-        {{ translateRole(props.row.auth.role) }}
+        {{ translateRole(props.row.permissionLevel) }}
       </b-table-column>
 
       <b-table-column

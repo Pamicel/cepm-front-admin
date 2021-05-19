@@ -39,6 +39,7 @@
     "buefy": "^0.8.20",
     "core-js": "3.6.4",
     "date-fns": "2.10.0",
+    "jwt-decode": "^3.1.2",
     "lodash": "4.17.15",
     "normalize.css": "8.0.1",
     "nprogress": "0.2.0",

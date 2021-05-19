@@ -42,7 +42,7 @@ export default [
     component: () => lazyLoadView(import('@views/crossings.vue')),
     meta: {
       authRequired: true,
-      authRoles: ['director'],
+      requiredPermissions: ['director'],
     },
   },
   {
@@ -51,7 +51,7 @@ export default [
     component: () => lazyLoadView(import('@views/sqda-questions.vue')),
     meta: {
       authRequired: true,
-      authRoles: ['director'],
+      requiredPermissions: ['director'],
     },
   },
   {
@@ -61,7 +61,7 @@ export default [
     // component: () => lazyLoadView(import('@views/crossing-details.vue')),
     // meta: {
     //   authRequired: true,
-    //   authRoles: ['director'],
+    //   requiredPermissions: ['director'],
     // },
   },
   {
@@ -70,7 +70,7 @@ export default [
     component: () => lazyLoadView(import('@views/bookings.vue')),
     meta: {
       authRequired: true,
-      authRoles: ['director'],
+      requiredPermissions: ['director'],
     },
   },
   {
@@ -78,7 +78,7 @@ export default [
     name: 'bookings-upload',
     meta: {
       authRequired: true,
-      authRoles: ['director'],
+      requiredPermissions: ['director'],
     },
     component: () => lazyLoadView(import('@views/bookings-upload.vue')),
   },
@@ -88,7 +88,7 @@ export default [
     component: () => lazyLoadView(import('@views/user-admin-panel.vue')),
     meta: {
       authRequired: true,
-      authRoles: ['admin'],
+      requiredPermissions: ['admin'],
       // HACK: In order to share data between the `beforeResolve` hook
       // and the `props` function, we must create an object for temporary
       // data only used during route resolution.
@@ -128,7 +128,7 @@ export default [
     component: () => lazyLoadView(import('@views/users.vue')),
     meta: {
       authRequired: true,
-      authRoles: ['admin'],
+      requiredPermissions: ['admin'],
     },
   },
   {

@@ -33,15 +33,17 @@ describe('@state/modules/auth', () => {
     })
 
     it('mutations.SET_CURRENT_USER correctly sets axios default authorization header', () => {
-      axios.defaults.headers.common.Bearer = ''
+      axios.defaults.headers.common.Authorization = ''
 
       store.commit('auth/SET_CURRENT_USER', {
         token: 'some-token',
       })
-      expect(axios.defaults.headers.common.Bearer).toEqual('some-token')
+      expect(axios.defaults.headers.common.Authorization).toEqual(
+        'Bearer ' + 'some-token'
+      )
 
       store.commit('auth/SET_CURRENT_USER', null)
-      expect(axios.defaults.headers.common.Bearer).toEqual('')
+      expect(axios.defaults.headers.common.Authorization).toEqual('')
     })
 
     it('mutations.SET_CURRENT_USER correctly saves currentUser in localStorage', () => {

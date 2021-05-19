@@ -4,6 +4,7 @@ import UsersTable from '@components/users-table.vue'
 import UserCreationForm from '@components/user-creation-form.vue'
 import CollapseForm from '@components/collapse-form.vue'
 import { mapState } from 'vuex'
+import { PERMISSION_LEVELS } from '@state/modules/auth'
 
 export default {
   page: {
@@ -29,12 +30,11 @@ export default {
       if (!showVisitors || !showStaff) {
         return userList.filter(
           (user) =>
-            (showVisitors ||
-              (user.auth.role !== 'visitor' && user.auth.role !== undefined)) &&
+            (showVisitors || user.permissionLevel === PERMISSION_LEVELS.USER) &&
             (showStaff ||
-              (user.auth.role !== 'staff' &&
-                user.auth.role !== 'admin' &&
-                user.auth.role !== 'director'))
+              (user.permissionLevel === PERMISSION_LEVELS.STAFF &&
+                user.permissionLevel === PERMISSION_LEVELS.ADMIN &&
+                user.permissionLevel === PERMISSION_LEVELS.DIRECTOR))
         )
       }
       return userList

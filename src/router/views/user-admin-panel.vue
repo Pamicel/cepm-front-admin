@@ -1,7 +1,7 @@
 <script>
 import Layout from '@layouts/local.vue'
 import { mapState } from 'vuex'
-
+import { PERMISSION_LEVELS } from '@state/modules/auth'
 export default {
   page() {
     return {
@@ -17,10 +17,10 @@ export default {
   components: { Layout },
   data() {
     const roleTranslations = {
-      admin: 'Admin',
-      director: 'Direction',
-      staff: 'Staff',
-      visitor: 'Visiteur·rice',
+      [PERMISSION_LEVELS.ADMIN]: 'Admin',
+      [PERMISSION_LEVELS.DIRECTOR]: 'Direction',
+      [PERMISSION_LEVELS.STAFF]: 'Staff',
+      [PERMISSION_LEVELS.USER]: 'Visiteur·rice',
     }
 
     return {
@@ -29,6 +29,7 @@ export default {
       oldPwd: '',
       newPwd: '',
       newPwdRepeat: '',
+      PERMISSION_LEVELS,
     }
   },
   computed: {
@@ -39,6 +40,18 @@ export default {
       user: (state) => state.users.selectedUser,
       deletingUser: (state) => state.users.deletingUser,
     }),
+    isAdmin() {
+      return this.user.permissionLevel === PERMISSION_LEVELS.ADMIN
+    },
+    isDirector() {
+      return this.user.permissionLevel === PERMISSION_LEVELS.DIRECTOR
+    },
+    isStaff() {
+      return this.user.permissionLevel === PERMISSION_LEVELS.STAFF
+    },
+    isUser() {
+      return this.user.permissionLevel === PERMISSION_LEVELS.USER
+    },
   },
   methods: {
     roleChangeSender(userId, role) {
@@ -70,7 +83,7 @@ export default {
           message: 'Veuillez selectionner un rôle',
           title: 'Changement de rôle',
         })
-      } else if (user.auth && user.auth.role === role) {
+      } else if (user.permissionLevel === role) {
         // If already user role -> dialog saying so
         this.$buefy.dialog.alert({
           message: `"${this.roleTranslations[role]}" est déjà le rôle de cet·te utilisateur·rice.`,
@@ -163,31 +176,23 @@ export default {
       <div :class="$style.role" role="button">
         <div :class="$style.roleCurrent">
           <h3>Rôle:</h3>
+          <b-tag v-if="isDirector" type="is-success" rounded size="is-medium">{{
+            roleTranslations[PERMISSION_LEVELS.DIRECTOR]
+          }}</b-tag>
           <b-tag
-            v-if="user.auth.role === 'director'"
-            type="is-success"
-            rounded
-            size="is-medium"
-            >{{ roleTranslations.director }}</b-tag
-          >
-          <b-tag
-            v-else-if="user.auth.role === 'admin'"
+            v-else-if="isAdmin"
             type="is-danger"
             rounded
             size="is-medium"
-            >{{ roleTranslations.admin }}</b-tag
+            >{{ roleTranslations[PERMISSION_LEVELS.ADMIN] }}</b-tag
           >
-          <b-tag
-            v-else-if="user.auth.role === 'staff'"
-            rounded
-            type="is-info"
-            size="is-medium"
-            >{{ roleTranslations.staff }}</b-tag
-          >
+          <b-tag v-else-if="isStaff" rounded type="is-info" size="is-medium">{{
+            roleTranslations[PERMISSION_LEVELS.STAFF]
+          }}</b-tag>
 
-          <b-tag v-else rounded type="is-warning" size="is-medium"
-            >Visiteur·rice</b-tag
-          >
+          <b-tag v-else rounded type="is-warning" size="is-medium">{{
+            roleTranslations[PERMISSION_LEVELS.USER]
+          }}</b-tag>
         </div>
 
         <br />
@@ -197,26 +202,24 @@ export default {
           <b-field>
             <b-select
               v-model="roleChangeSelection"
-              :placeholder="roleTranslations[user.auth.role]"
+              :placeholder="roleTranslations[user.permissionLevel]"
               rounded
               :disabled="isUpdatingRole"
             >
-              <option :disabled="user.auth.role === 'admin'" value="admin">{{
-                roleTranslations.admin
+              <option :disabled="isAdmin" :value="PERMISSION_LEVELS.ADMIN">{{
+                roleTranslations[PERMISSION_LEVELS.ADMIN]
               }}</option>
               <option
-                :disabled="user.auth.role === 'director'"
-                value="director"
-                >{{ roleTranslations.director }}</option
+                :disabled="isDirector"
+                :value="PERMISSION_LEVELS.DIRECTOR"
+                >{{ roleTranslations[PERMISSION_LEVELS.DIRECTOR] }}</option
               >
-              <option :disabled="user.auth.role === 'staff'" value="staff">{{
-                roleTranslations.staff
+              <option :disabled="isStaff" :value="PERMISSION_LEVELS.STAFF">{{
+                roleTranslations[PERMISSION_LEVELS.STAFF]
               }}</option>
-              <option
-                :disabled="user.auth.role === 'visitor' || !user.auth.role"
-                value="visitor"
-                >Visiteur·rice</option
-              >
+              <option :disabled="isUser" :value="PERMISSION_LEVELS.USER">{{
+                roleTranslations[PERMISSION_LEVELS.USER]
+              }}</option>
             </b-select>
             <p class="control">
               <b-button
@@ -237,7 +240,7 @@ export default {
         <b-button
           type="is-danger"
           rounded
-          :disabled="deletingUser || (user.auth && user.auth.role === 'admin')"
+          :disabled="deletingUser || isAdmin"
           :loading="deletingUser"
           @click="deleteUserConfirm"
           >Supprimer l'utilisateur</b-button

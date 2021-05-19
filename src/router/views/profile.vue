@@ -1,6 +1,6 @@
 <script>
 import Layout from '@layouts/local.vue'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   page() {
@@ -38,6 +38,11 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      isAdmin: 'auth/isAdmin',
+      isDirector: 'auth/isDirector',
+      isStaff: 'auth/isStaff',
+    }),
     ...mapState({
       changingPassword: (state) => state.auth.changingPassword,
       deletingAccount: (state) => state.auth.deletingAccount,
@@ -171,15 +176,11 @@ export default {
 
       <div :class="$style.role" role="button">
         <div :class="$style.roleDisplay">
+          <b-tag v-if="isDirector" type="is-success" rounded size="is-medium">{{
+            roleTranslations.director
+          }}</b-tag>
           <b-tag
-            v-if="user.auth && user.auth.role === 'director'"
-            type="is-success"
-            rounded
-            size="is-medium"
-            >{{ roleTranslations.director }}</b-tag
-          >
-          <b-tag
-            v-else-if="user.auth && user.auth.role === 'admin'"
+            v-else-if="isAdmin"
             type="is-danger"
             rounded
             size="is-medium"
@@ -248,9 +249,7 @@ export default {
         <b-button
           type="is-danger"
           rounded
-          :disabled="
-            deletingAccount || (user.auth && user.auth.role === 'admin')
-          "
+          :disabled="deletingAccount || isAdmin"
           :loading="deletingAccount"
           @click="deleteAccountConfirm"
           >Supprimer mon compte</b-button

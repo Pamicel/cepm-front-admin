@@ -51,16 +51,12 @@ export default {
   computed: {
     ...mapGetters({
       loggedIn: 'auth/loggedIn',
+      isAdmin: 'auth/isAdmin',
+      isDirector: 'auth/isDirector',
     }),
     ...mapState({
       currentUser: (state) => state.auth.currentUser,
     }),
-    isAdmin() {
-      return this.currentUser.auth && this.currentUser.auth.role === 'admin'
-    },
-    isDirector() {
-      return this.currentUser.auth && this.currentUser.auth.role === 'director'
-    },
   },
 }
 </script>
