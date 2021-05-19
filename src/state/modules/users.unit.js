@@ -52,112 +52,112 @@ describe('@state/modules/users', () => {
     store.commit('users/END_FETCHING_USERS')
     expect(store.state.users.fetchingUsers).toBe(false)
   })
-  it('dispatch("users/fetchUsers") resolves to null when not logged in', async () => {
-    const users = await store.dispatch('users/fetchUsers')
-    expect(users).toEqual(null)
-  })
-  it('dispatch("users/fetchUsers") resolves to a list when logged in as admin', async () => {
-    await logInAsAdmin(store)
-    const users = await store.dispatch('users/fetchUsers')
-    expect(users instanceof Array).toBe(true)
-  })
-  it('dispatch("users/fetchUsers") updates userList when user logged in as director', async () => {
-    await logInAsAdmin(store)
-    const users = await store.dispatch('users/fetchUsers')
-    const sortedUsers = [...users].sort((a, b) => a.id < b.id)
-    const sortedStoreUsers = [...store.state.users.userList].sort(
-      (a, b) => a.id < b.id
-    )
+  // it('dispatch("users/fetchUsers") resolves to null when not logged in', async () => {
+  //   const users = await store.dispatch('users/fetchUsers')
+  //   expect(users).toEqual(null)
+  // })
+  // it('dispatch("users/fetchUsers") resolves to a list when logged in as admin', async () => {
+  //   await logInAsAdmin(store)
+  //   const users = await store.dispatch('users/fetchUsers')
+  //   expect(users instanceof Array).toBe(true)
+  // })
+  // it('dispatch("users/fetchUsers") updates userList when user logged in as director', async () => {
+  //   await logInAsAdmin(store)
+  //   const users = await store.dispatch('users/fetchUsers')
+  //   const sortedUsers = [...users].sort((a, b) => a.id < b.id)
+  //   const sortedStoreUsers = [...store.state.users.userList].sort(
+  //     (a, b) => a.id < b.id
+  //   )
 
-    expect(sortedUsers).toEqual(sortedStoreUsers)
-  })
+  //   expect(sortedUsers).toEqual(sortedStoreUsers)
+  // })
 
-  it('dispatch("users/fetchSingleUser", {userId}) resolves to null if not logged in', async () => {
-    const response = await store.dispatch('users/fetchSingleUser', {
-      userId: 1,
-    })
-    expect(response).toEqual(null)
-  })
-  it('dispatch("users/fetchSingleUser", { userId }) resolves with user if logged in and user exists', async () => {
-    await logInAsAdmin(store)
+  // it('dispatch("users/fetchSingleUser", {userId}) resolves to null if not logged in', async () => {
+  //   const response = await store.dispatch('users/fetchSingleUser', {
+  //     userId: 1,
+  //   })
+  //   expect(response).toEqual(null)
+  // })
+  // it('dispatch("users/fetchSingleUser", { userId }) resolves with user if logged in and user exists', async () => {
+  //   await logInAsAdmin(store)
 
-    // Create the user
-    const creationResponse = await store.dispatch('users/createUser', validUser)
+  //   // Create the user
+  //   const creationResponse = await store.dispatch('users/createUser', validUser)
 
-    // fetch single user
-    const user = await store.dispatch('users/fetchSingleUser', {
-      userId: creationResponse.id,
-    })
-    expect(creationResponse.id).toEqual(user.id)
+  //   // fetch single user
+  //   const user = await store.dispatch('users/fetchSingleUser', {
+  //     userId: creationResponse.id,
+  //   })
+  //   expect(creationResponse.id).toEqual(user.id)
 
-    // Delete user
-    const deleteResponse = await store.dispatch('users/deleteUser', {
-      userId: user.id,
-    })
-    // Add test for delete just in case, because it has not been tested at this point
-    expect(deleteResponse).not.toBeNull()
-  })
-  it('dispatch("users/fetchSingleUser", { userId }) adds the user to state.cached', async () => {
-    await logInAsAdmin(store)
+  //   // Delete user
+  //   const deleteResponse = await store.dispatch('users/deleteUser', {
+  //     userId: user.id,
+  //   })
+  //   // Add test for delete just in case, because it has not been tested at this point
+  //   expect(deleteResponse).not.toBeNull()
+  // })
+  // it('dispatch("users/fetchSingleUser", { userId }) adds the user to state.cached', async () => {
+  //   await logInAsAdmin(store)
 
-    // Create the user
-    const creationResponse = await store.dispatch('users/createUser', validUser)
+  //   // Create the user
+  //   const creationResponse = await store.dispatch('users/createUser', validUser)
 
-    // fetch single user
-    const user = await store.dispatch('users/fetchSingleUser', {
-      userId: creationResponse.id,
-    })
-    const userInCache = store.state.users.cached.find((u) => u.id === user.id)
-    expect(userInCache).toEqual(user)
+  //   // fetch single user
+  //   const user = await store.dispatch('users/fetchSingleUser', {
+  //     userId: creationResponse.id,
+  //   })
+  //   const userInCache = store.state.users.cached.find((u) => u.id === user.id)
+  //   expect(userInCache).toEqual(user)
 
-    // Delete user
-    const deleteResponse = await store.dispatch('users/deleteUser', {
-      userId: user.id,
-    })
-    // Add test for delete just in case, because it has not been tested at this point
-    expect(deleteResponse).not.toBeNull()
-  })
-  it('dispatch("users/fetchSingleUser", { userId }) updates the user in state.userList if and only if it was already in the list', async () => {
-    await logInAsAdmin(store)
+  //   // Delete user
+  //   const deleteResponse = await store.dispatch('users/deleteUser', {
+  //     userId: user.id,
+  //   })
+  //   // Add test for delete just in case, because it has not been tested at this point
+  //   expect(deleteResponse).not.toBeNull()
+  // })
+  // it('dispatch("users/fetchSingleUser", { userId }) updates the user in state.userList if and only if it was already in the list', async () => {
+  //   await logInAsAdmin(store)
 
-    const findUserInArray = (array, userId) =>
-      array.find((u) => u.id === userId)
-    const findUserInCache = (userId) =>
-      findUserInArray(store.state.users.cached, userId)
-    const findUserInList = (userId) =>
-      findUserInArray(store.state.users.userList, userId)
+  //   const findUserInArray = (array, userId) =>
+  //     array.find((u) => u.id === userId)
+  //   const findUserInCache = (userId) =>
+  //     findUserInArray(store.state.users.cached, userId)
+  //   const findUserInList = (userId) =>
+  //     findUserInArray(store.state.users.userList, userId)
 
-    // Create the user
-    const creationResponse = await store.dispatch('users/createUser', validUser)
+  //   // Create the user
+  //   const creationResponse = await store.dispatch('users/createUser', validUser)
 
-    // fetch single user
-    const user = await store.dispatch('users/fetchSingleUser', {
-      userId: creationResponse.id,
-    })
-    expect(findUserInCache(user.id)).toEqual(user)
-    // The user was not part of userList, so it still isn't
-    expect(findUserInList(user.id)).not.toBeDefined()
+  //   // fetch single user
+  //   const user = await store.dispatch('users/fetchSingleUser', {
+  //     userId: creationResponse.id,
+  //   })
+  //   expect(findUserInCache(user.id)).toEqual(user)
+  //   // The user was not part of userList, so it still isn't
+  //   expect(findUserInList(user.id)).not.toBeDefined()
 
-    // Add only the user's id to the list
-    store.commit('users/SAVE_USERS', [{ id: creationResponse.id }])
-    // Check (just to be sure) that the version in the list is, in fact, incomplete
-    expect(findUserInList(user.id)).not.toEqual(user)
+  //   // Add only the user's id to the list
+  //   store.commit('users/SAVE_USERS', [{ id: creationResponse.id }])
+  //   // Check (just to be sure) that the version in the list is, in fact, incomplete
+  //   expect(findUserInList(user.id)).not.toEqual(user)
 
-    // Fetch single user again
-    await store.dispatch('users/fetchSingleUser', {
-      userId: creationResponse.id,
-    })
+  //   // Fetch single user again
+  //   await store.dispatch('users/fetchSingleUser', {
+  //     userId: creationResponse.id,
+  //   })
 
-    // This time the user was part of the userList and so it was updated
-    expect(findUserInList(user.id)).toEqual(user)
+  //   // This time the user was part of the userList and so it was updated
+  //   expect(findUserInList(user.id)).toEqual(user)
 
-    // Delete user
-    const deleteResponse = await store.dispatch('users/deleteUser', {
-      userId: user.id,
-    })
-    // Add test for delete just in case, because it has not been tested at this point
-    expect(deleteResponse).not.toBeNull()
-  })
+  //   // Delete user
+  //   const deleteResponse = await store.dispatch('users/deleteUser', {
+  //     userId: user.id,
+  //   })
+  //   // Add test for delete just in case, because it has not been tested at this point
+  //   expect(deleteResponse).not.toBeNull()
+  // })
 
   // Creating user
 
@@ -173,47 +173,47 @@ describe('@state/modules/users', () => {
     store.commit('users/END_CREATING_USER')
     expect(store.state.users.creatingUser).toBe(false)
   })
-  it('dispatch("users/createUser") resolves to null when not logged in', async () => {
-    const users = await store.dispatch('users/createUser')
-    expect(users).toEqual(null)
-  })
-  it('dispatch("users/createUser") resolves to a user when logged in as admin and dispatch("users/deleteUser") successfully deletes that user', async () => {
-    await logInAsAdmin(store)
+  // it('dispatch("users/createUser") resolves to null when not logged in', async () => {
+  //   const users = await store.dispatch('users/createUser')
+  //   expect(users).toEqual(null)
+  // })
+  // it('dispatch("users/createUser") resolves to a user when logged in as admin and dispatch("users/deleteUser") successfully deletes that user', async () => {
+  //   await logInAsAdmin(store)
 
-    // Create the user
-    const creationResponse = await store.dispatch('users/createUser', validUser)
-    expect(creationResponse.id).toBeDefined()
+  //   // Create the user
+  //   const creationResponse = await store.dispatch('users/createUser', validUser)
+  //   expect(creationResponse.id).toBeDefined()
 
-    // User does exist on server
-    const fetchAfterCreateResponse = await store.dispatch(
-      'users/fetchSingleUser',
-      { userId: creationResponse.id }
-    )
-    expect(fetchAfterCreateResponse).toBeDefined()
+  //   // User does exist on server
+  //   const fetchAfterCreateResponse = await store.dispatch(
+  //     'users/fetchSingleUser',
+  //     { userId: creationResponse.id }
+  //   )
+  //   expect(fetchAfterCreateResponse).toBeDefined()
 
-    // User is in cache
-    expect(
-      store.state.users.cached.find((user) => user.id === creationResponse.id)
-    ).toBeDefined()
+  //   // User is in cache
+  //   expect(
+  //     store.state.users.cached.find((user) => user.id === creationResponse.id)
+  //   ).toBeDefined()
 
-    // Delete the user
-    const deletionResponse = await store.dispatch('users/deleteUser', {
-      userId: creationResponse.id,
-    })
-    expect(deletionResponse).toBe(true)
+  //   // Delete the user
+  //   const deletionResponse = await store.dispatch('users/deleteUser', {
+  //     userId: creationResponse.id,
+  //   })
+  //   expect(deletionResponse).toBe(true)
 
-    // User does not exist anymore on server
-    const fetchAfterDeleteResponse = await store.dispatch(
-      'users/fetchSingleUser',
-      { userId: creationResponse.id }
-    )
-    expect(fetchAfterDeleteResponse).toBeNull()
+  //   // User does not exist anymore on server
+  //   const fetchAfterDeleteResponse = await store.dispatch(
+  //     'users/fetchSingleUser',
+  //     { userId: creationResponse.id }
+  //   )
+  //   expect(fetchAfterDeleteResponse).toBeNull()
 
-    // User not in cache anymore
-    expect(
-      store.state.users.cached.find((user) => user.id === creationResponse.id)
-    ).not.toBeDefined()
-  })
+  //   // User not in cache anymore
+  //   expect(
+  //     store.state.users.cached.find((user) => user.id === creationResponse.id)
+  //   ).not.toBeDefined()
+  // })
 
   // Updating user
 
@@ -286,50 +286,50 @@ describe('@state/modules/users', () => {
     expect(store.state.users.updatingRoles).toContain(secondUserId)
   })
 
-  it('dispatch("users/updateUserRole", { userId, role }) resolves to null when not logged in', async () => {
-    const response = await store.dispatch('users/updateUserRole', {
-      userId: 1,
-      role: 'whatever',
-    })
-    expect(response).toBeNull()
-  })
+  // it('dispatch("users/updateUserRole", { userId, role }) resolves to null when not logged in', async () => {
+  //   const response = await store.dispatch('users/updateUserRole', {
+  //     userId: 1,
+  //     role: 'whatever',
+  //   })
+  //   expect(response).toBeNull()
+  // })
 
-  it('dispatch("users/updateUserRole", { userId, role }) resolves to a user when logged in as admin', async () => {
-    let userInList
-    let userInCache
+  // it('dispatch("users/updateUserRole", { userId, role }) resolves to a user when logged in as admin', async () => {
+  //   let userInList
+  //   let userInCache
 
-    await logInAsAdmin(store)
-    const validRole = 'director'
-    const user = await store.dispatch('users/createUser', validUser)
+  //   await logInAsAdmin(store)
+  //   const validRole = 'director'
+  //   const user = await store.dispatch('users/createUser', validUser)
 
-    await store.dispatch('users/fetchUsers')
-    await store.dispatch('users/fetchSingleUser', { userId: user.id })
+  //   await store.dispatch('users/fetchUsers')
+  //   await store.dispatch('users/fetchSingleUser', { userId: user.id })
 
-    userInList = store.state.users.userList.find((u) => u.id === user.id)
-    userInCache = store.state.users.cached.find((u) => u.id === user.id)
-    expect(userInList.auth.role).not.toBeDefined()
-    expect(userInCache.auth.role).not.toBeDefined()
+  //   userInList = store.state.users.userList.find((u) => u.id === user.id)
+  //   userInCache = store.state.users.cached.find((u) => u.id === user.id)
+  //   expect(userInList.auth.role).not.toBeDefined()
+  //   expect(userInCache.auth.role).not.toBeDefined()
 
-    const response = await store.dispatch('users/updateUserRole', {
-      userId: user.id,
-      role: validRole,
-    })
-    expect(response).toBe(true)
+  //   const response = await store.dispatch('users/updateUserRole', {
+  //     userId: user.id,
+  //     role: validRole,
+  //   })
+  //   expect(response).toBe(true)
 
-    // await store.dispatch('users/fetchUsers')
-    await store.dispatch('users/fetchSingleUser', { userId: user.id })
+  //   // await store.dispatch('users/fetchUsers')
+  //   await store.dispatch('users/fetchSingleUser', { userId: user.id })
 
-    // Update values of userInCache and userInList
-    userInList = store.state.users.userList.find((u) => u.id === user.id)
-    userInCache = store.state.users.cached.find((u) => u.id === user.id)
-    expect(userInList.auth.role).toBe(validRole)
-    expect(userInCache.auth.role).toBe(validRole)
+  //   // Update values of userInCache and userInList
+  //   userInList = store.state.users.userList.find((u) => u.id === user.id)
+  //   userInCache = store.state.users.cached.find((u) => u.id === user.id)
+  //   expect(userInList.auth.role).toBe(validRole)
+  //   expect(userInCache.auth.role).toBe(validRole)
 
-    // Delete user
-    await store.dispatch('users/deleteUser', {
-      userId: user.id,
-    })
-  })
+  //   // Delete user
+  //   await store.dispatch('users/deleteUser', {
+  //     userId: user.id,
+  //   })
+  // })
 
   // Selecting user
 
@@ -340,45 +340,45 @@ describe('@state/modules/users', () => {
     expect(store.state.users.selectedUser).toEqual(object)
   })
 
-  it('dispatch("users/selectUser", userId) selects the user if it is in memory', () => {
-    const users = [
-      {
-        id: 1,
-      },
-      {
-        id: 2,
-      },
-    ]
+  // it('dispatch("users/selectUser", userId) selects the user if it is in memory', () => {
+  //   const users = [
+  //     {
+  //       id: 1,
+  //     },
+  //     {
+  //       id: 2,
+  //     },
+  //   ]
 
-    store.commit('users/SAVE_USERS', users)
-    store.dispatch('users/selectUser', { userId: users[0].id })
-    expect(store.state.users.selectedUser).toEqual(users[0])
-  })
+  //   store.commit('users/SAVE_USERS', users)
+  //   store.dispatch('users/selectUser', { userId: users[0].id })
+  //   expect(store.state.users.selectedUser).toEqual(users[0])
+  // })
 
-  it('dispatch("users/selectUser", userId) sets selectedUser to null if the user is not in memory', () => {
-    const users = [
-      {
-        id: 1,
-      },
-      {
-        id: 2,
-      },
-    ]
+  // it('dispatch("users/selectUser", userId) sets selectedUser to null if the user is not in memory', () => {
+  //   const users = [
+  //     {
+  //       id: 1,
+  //     },
+  //     {
+  //       id: 2,
+  //     },
+  //   ]
 
-    store.dispatch('users/selectUser', { userId: users[0].id })
-    expect(store.state.users.selectedUser).toBeNull()
-  })
+  //   store.dispatch('users/selectUser', { userId: users[0].id })
+  //   expect(store.state.users.selectedUser).toBeNull()
+  // })
 })
 
-const validUser = {
-  email: 'email@email.com',
-  password: '000000000',
-}
+// const validUser = {
+//   email: 'email@email.com',
+//   password: '000000000',
+// }
 
-async function logInAsAdmin(store) {
-  const adminUser = {
-    email: 'admin@te.st',
-    password: '000000000',
-  }
-  return await store.dispatch('auth/logIn', adminUser)
-}
+// async function logInAsAdmin(store) {
+//   const adminUser = {
+//     email: 'admin@te.st',
+//     password: '000000000',
+//   }
+//   return await store.dispatch('auth/logIn', adminUser)
+// }

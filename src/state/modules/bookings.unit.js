@@ -1,14 +1,14 @@
-import fs from 'fs'
+// import fs from 'fs'
 import * as authModule from './auth'
 import * as crossingsModule from './crossings'
 import * as bookingsParserModule from './bookings-parser'
 import * as bookingsModule from './bookings'
 
-const helloAsso = fs
-  .readFileSync(
-    `${__dirname}/../../../tests/unit/__mocks__/hello-asso-valid-export.csv`
-  )
-  .toString()
+// const helloAsso = fs
+//   .readFileSync(
+//     `${__dirname}/../../../tests/unit/__mocks__/hello-asso-valid-export.csv`
+//   )
+//   .toString()
 
 describe('@state/modules/bookings', () => {
   let store
@@ -77,86 +77,86 @@ describe('@state/modules/bookings', () => {
     expect(store.state.bookings.creatingBookings).toEqual(false)
   })
 
-  it('actions["bookings/sendBookings"] resolves to true after sending valid data', async () => {
-    await logInAsDirector(store)
-    const crossing = await store.dispatch(
-      'crossings/createCrossing',
-      validCrossing
-    )
-    expect(crossing.id).toBeDefined()
+  // it('actions["bookings/sendBookings"] resolves to true after sending valid data', async () => {
+  //   await logInAsDirector(store)
+  //   const crossing = await store.dispatch(
+  //     'crossings/createCrossing',
+  //     validCrossing
+  //   )
+  //   expect(crossing.id).toBeDefined()
 
-    /**
-     * User parses a CSV which is saved in bookingsParser.parsedData
-     */
-    await store.dispatch('bookingsParser/parseCSV', helloAsso)
+  //   /**
+  //    * User parses a CSV which is saved in bookingsParser.parsedData
+  //    */
+  //   await store.dispatch('bookingsParser/parseCSV', helloAsso)
 
-    /**
-     *  User creates the fieldMap (mapping between csv column name and the
-     *  corresponding column name the API understands)
-     */
-    const fieldMap = {
-      bookerEmail: 'Email',
-    }
-    for (const apiEntry in fieldMap) {
-      await store.dispatch('bookingsParser/setFieldMapEntry', {
-        apiEntry,
-        originalEntry: fieldMap[apiEntry],
-      })
-    }
+  //   /**
+  //    *  User creates the fieldMap (mapping between csv column name and the
+  //    *  corresponding column name the API understands)
+  //    */
+  //   const fieldMap = {
+  //     bookerEmail: 'Email',
+  //   }
+  //   for (const apiEntry in fieldMap) {
+  //     await store.dispatch('bookingsParser/setFieldMapEntry', {
+  //       apiEntry,
+  //       originalEntry: fieldMap[apiEntry],
+  //     })
+  //   }
 
-    const data = store.getters['bookingsParser/dataDigest']
+  //   const data = store.getters['bookingsParser/dataDigest']
 
-    const response = await store.dispatch('bookings/createBookings', {
-      crossingId: crossing.id,
-      data,
-      fieldMap,
-    })
+  //   const response = await store.dispatch('bookings/createBookings', {
+  //     crossingId: crossing.id,
+  //     data,
+  //     fieldMap,
+  //   })
 
-    expect(response).toBe(true)
-  })
+  //   expect(response).toBe(true)
+  // })
 
-  it('actions["bookings/fetchBookings"] resolves to the list of bookings', async () => {
-    await logInAsDirector(store)
-    const crossing = await store.dispatch(
-      'crossings/createCrossing',
-      validCrossing
-    )
-    expect(crossing.id).toBeDefined()
+  // it('actions["bookings/fetchBookings"] resolves to the list of bookings', async () => {
+  //   await logInAsDirector(store)
+  //   const crossing = await store.dispatch(
+  //     'crossings/createCrossing',
+  //     validCrossing
+  //   )
+  //   expect(crossing.id).toBeDefined()
 
-    /**
-     * User parses a CSV which is saved in bookingsParser.parsedData
-     */
-    await store.dispatch('bookingsParser/parseCSV', helloAsso)
+  //   /**
+  //    * User parses a CSV which is saved in bookingsParser.parsedData
+  //    */
+  //   await store.dispatch('bookingsParser/parseCSV', helloAsso)
 
-    /**
-     *  User creates the fieldMap (mapping between csv column name and the
-     *  corresponding column name the API understands)
-     */
-    const fieldMap = {
-      bookerEmail: 'Email',
-    }
-    for (const apiEntry in fieldMap) {
-      await store.dispatch('bookingsParser/setFieldMapEntry', {
-        apiEntry,
-        originalEntry: fieldMap[apiEntry],
-      })
-    }
+  //   /**
+  //    *  User creates the fieldMap (mapping between csv column name and the
+  //    *  corresponding column name the API understands)
+  //    */
+  //   const fieldMap = {
+  //     bookerEmail: 'Email',
+  //   }
+  //   for (const apiEntry in fieldMap) {
+  //     await store.dispatch('bookingsParser/setFieldMapEntry', {
+  //       apiEntry,
+  //       originalEntry: fieldMap[apiEntry],
+  //     })
+  //   }
 
-    const data = store.getters['bookingsParser/dataDigest']
+  //   const data = store.getters['bookingsParser/dataDigest']
 
-    await store.dispatch('bookings/createBookings', {
-      crossingId: crossing.id,
-      data,
-      fieldMap,
-    })
+  //   await store.dispatch('bookings/createBookings', {
+  //     crossingId: crossing.id,
+  //     data,
+  //     fieldMap,
+  //   })
 
-    expect(store.state.bookings.bookingList.length).toBe(0)
-    const result = await store.dispatch('bookings/fetchBookings', {
-      crossingId: crossing.id,
-    })
-    expect(store.state.bookings.bookingList.length).toBeGreaterThan(0)
-    expect(result).toEqual(store.state.bookings.bookingList)
-  })
+  //   expect(store.state.bookings.bookingList.length).toBe(0)
+  //   const result = await store.dispatch('bookings/fetchBookings', {
+  //     crossingId: crossing.id,
+  //   })
+  //   expect(store.state.bookings.bookingList.length).toBeGreaterThan(0)
+  //   expect(result).toEqual(store.state.bookings.bookingList)
+  // })
 
   // Email to booker
   it('mutations["bookings/START_SENDING_EMAIL_TO_BOOKER"] sets the values of sendingEmailToBookers', async () => {
@@ -284,21 +284,21 @@ describe('@state/modules/bookings', () => {
   })
 })
 
-const validCrossing = {
-  duration: 20,
-  audienceSize: 50,
-  startDate: new Date().toISOString(),
-}
+// const validCrossing = {
+//   duration: 20,
+//   audienceSize: 50,
+//   startDate: new Date().toISOString(),
+// }
 
-const directorUser = {
-  email: 'director@te.st',
-  password: '000000000',
-}
+// const directorUser = {
+//   email: 'director@te.st',
+//   password: '000000000',
+// }
 
-async function logInAsDirector(store) {
-  const { email, password } = directorUser
-  return await store.dispatch('auth/logIn', {
-    email,
-    password,
-  })
-}
+// async function logInAsDirector(store) {
+//   const { email, password } = directorUser
+//   return await store.dispatch('auth/logIn', {
+//     email,
+//     password,
+//   })
+// }
