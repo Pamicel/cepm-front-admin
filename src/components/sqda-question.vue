@@ -172,12 +172,12 @@ export default {
             </div> -->
         </div>
 
-        <BaseIcon v-if="hide" name="eye-slash" />
         <h2
           v-if="!modify"
           :class="{ [$style.question]: true, [$style.questionHidden]: hide }"
         >
-          {{ question }}
+          <BaseIcon v-if="hide" name="eye-slash" />&nbsp;
+          <span :class="$style.questionText">{{ question }}</span>
         </h2>
         <!-- <h2 :class="$style.question"> -->
         <b-input
@@ -230,7 +230,7 @@ export default {
   .questionInfos {
     .question {
       @extend %typography-medium;
-      &.questionHidden {
+      &.questionHidden .questionText {
         text-decoration: line-through;
       }
 
