@@ -184,7 +184,7 @@ export const actions = {
     try {
       commit('START_DELETING_USER')
       await axios.delete(`${apiUrl}/users/${userId}`)
-      const users = state.userList.filter((cross) => cross.id !== userId)
+      const users = state.userList.filter((user) => user.id !== userId)
       commit('SAVE_USERS', users)
       commit('UNCACHE_USER', userId)
       commit('END_DELETING_USER')
