@@ -196,15 +196,18 @@ export const actions = {
     }
   },
 
-  async updateUserRole({ commit, rootGetters, getters }, { userId, role }) {
+  async updateUserRole(
+    { commit, rootGetters, getters },
+    { userId, permissionLevel }
+  ) {
     if (!rootGetters['auth/loggedIn']) {
       return null
     }
 
     try {
       commit('START_UPDATING_USER_ROLE', userId)
-      await axios.patch(`${apiUrl}/users/${userId}/update-role`, {
-        name: role,
+      await axios.patch(`${apiUrl}/users/${userId}/permission`, {
+        permissionLevel,
       })
       commit('END_UPDATING_USER_ROLE', userId)
 
@@ -215,10 +218,7 @@ export const actions = {
       if (user) {
         const updatedUser = {
           ...user,
-          auth: {
-            ...user.auth,
-            role,
-          },
+          permissionLevel,
         }
         commit('UPDATE_USER', updatedUser)
       }

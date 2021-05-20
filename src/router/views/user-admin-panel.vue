@@ -54,11 +54,11 @@ export default {
     },
   },
   methods: {
-    roleChangeSender(userId, role) {
+    roleChangeSender(userId, permissionLevel) {
       return async () => {
         const response = await this.$store.dispatch('users/updateUserRole', {
           userId,
-          role,
+          permissionLevel,
         })
         if (response) {
           this.$buefy.toast.open({
@@ -76,26 +76,26 @@ export default {
       }
     },
     updateRole() {
-      const { roleChangeSelection: role, user } = this
+      const { roleChangeSelection: permissionLevel, user } = this
 
-      if (!role) {
+      if (!permissionLevel) {
         this.$buefy.dialog.alert({
           message: 'Veuillez selectionner un rôle',
           title: 'Changement de rôle',
         })
-      } else if (user.permissionLevel === role) {
-        // If already user role -> dialog saying so
+      } else if (user.permissionLevel === permissionLevel) {
+        // If already user permissionLevel -> dialog saying so
         this.$buefy.dialog.alert({
-          message: `"${this.roleTranslations[role]}" est déjà le rôle de cet·te utilisateur·rice.`,
+          message: `"${this.roleTranslations[permissionLevel]}" est déjà le rôle de cet·te utilisateur·rice.`,
           title: 'Changement de rôle',
         })
       } else {
         // Otherwise -> confirmation dialog
         this.$buefy.dialog.confirm({
-          message: `Êtes-vous sûr·e de vouloir donner à cet·te utilisateur·rice le rôle "${this.roleTranslations[role]}" .`,
+          message: `Êtes-vous sûr·e de vouloir donner à cet·te utilisateur·rice le rôle "${this.roleTranslations[permissionLevel]}" .`,
           title: 'Changement de rôle',
           confirmText: 'Oui',
-          onConfirm: this.roleChangeSender(user.id, role),
+          onConfirm: this.roleChangeSender(user.id, permissionLevel),
           cancelText: 'Annuler',
           type: 'is-danger',
         })
@@ -206,9 +206,6 @@ export default {
               rounded
               :disabled="isUpdatingRole"
             >
-              <option :disabled="isAdmin" :value="PERMISSION_LEVELS.ADMIN">{{
-                roleTranslations[PERMISSION_LEVELS.ADMIN]
-              }}</option>
               <option
                 :disabled="isDirector"
                 :value="PERMISSION_LEVELS.DIRECTOR"
