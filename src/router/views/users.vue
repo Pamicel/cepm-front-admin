@@ -30,11 +30,8 @@ export default {
       if (!showVisitors || !showStaff) {
         return userList.filter(
           (user) =>
-            (showVisitors || user.permissionLevel === PERMISSION_LEVELS.USER) &&
-            (showStaff ||
-              (user.permissionLevel === PERMISSION_LEVELS.STAFF &&
-                user.permissionLevel === PERMISSION_LEVELS.ADMIN &&
-                user.permissionLevel === PERMISSION_LEVELS.DIRECTOR))
+            (showVisitors && user.permissionLevel === PERMISSION_LEVELS.USER) ||
+            (showStaff && user.permissionLevel >= PERMISSION_LEVELS.STAFF)
         )
       }
       return userList
