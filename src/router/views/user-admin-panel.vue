@@ -197,7 +197,7 @@ export default {
 
         <br />
 
-        <div :class="$style.roleChange">
+        <div v-if="!isAdmin" :class="$style.roleChange">
           <h3>Changer de rôle</h3>
           <b-field>
             <b-select
@@ -238,6 +238,7 @@ export default {
       <hr />
       <div :class="$style.deleteUser">
         <b-button
+          v-if="!isAdmin"
           type="is-danger"
           rounded
           :disabled="deletingUser || isAdmin"
