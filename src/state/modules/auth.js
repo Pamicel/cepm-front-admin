@@ -144,8 +144,7 @@ export const actions = {
 
     try {
       commit('START_CHANGING_PASSWORD')
-      await axios.patch(`${apiUrl}/update-password`, {
-        userId,
+      await axios.patch(`${apiUrl}/users/${userId}/password`, {
         newPassword,
         oldPassword,
       })

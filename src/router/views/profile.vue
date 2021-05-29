@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     validatePwdForm() {
-      const passwordCorrectLen = this.newPwd.length > 8
+      const passwordCorrectLen = this.newPwd.length >= 8
       const passwordsMatch = this.newPwd === this.newPwdRepeat
       if (!passwordCorrectLen) {
         this.pwdFormLengthError = true
@@ -208,7 +208,7 @@ export default {
         <b-field
           label="Nouveau mot de passe"
           :type="pwdFormLengthError ? 'is-danger' : ''"
-          message="Minimum 9 caratères"
+          message="Minimum 8 caratères"
         >
           <b-input
             v-model="newPwd"
