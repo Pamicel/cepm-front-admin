@@ -126,7 +126,7 @@ export default {
             <span v-else> <BaseIcon name="eye-slash" /> Désactiver </span>
           </b-button>
           <!-- Modify -->
-          <b-button
+          <!-- <b-button
             v-if="!modify"
             type="is-dark is-small"
             :class="$style.menuButton"
@@ -159,7 +159,7 @@ export default {
           >
             <BaseIcon name="pencil-alt" />
             Annuler
-          </b-button>
+          </b-button> -->
           <!-- History -->
           <!-- <b-button
               type="is-dark"

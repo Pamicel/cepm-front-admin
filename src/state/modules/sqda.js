@@ -45,7 +45,7 @@ export const actions = {
   async fetchQuestions({ commit }) {
     commit('START_FETCHING_QUESTIONS')
     try {
-      const response = await axios.get(`${apiUrl}/sqda-questions`)
+      const response = await axios.get(`${apiUrl}/qa/question`)
       const { data: questions } = response
       commit('REPLACE_QUESTION_LIST', questions)
       commit('END_FETCHING_QUESTIONS')
@@ -67,7 +67,7 @@ export const actions = {
     try {
       commit('START_CREATING_QUESTION')
       // send question
-      const { data } = await axios.post(`${apiUrl}/sqda-questions`, {
+      const { data } = await axios.post(`${apiUrl}/qa/question`, {
         question,
       })
       commit('END_CREATING_QUESTION')
@@ -111,7 +111,7 @@ export const actions = {
     try {
       commit('START_MODIFYING_QUESTION', id)
       // send question
-      const { data } = await axios.patch(`${apiUrl}/sqda-questions/${id}`, {
+      const { data } = await axios.patch(`${apiUrl}/qa/question/${id}`, {
         hide,
       })
       commit('END_MODIFYING_QUESTION', id)
@@ -143,7 +143,7 @@ export const actions = {
     try {
       commit('START_MODIFYING_QUESTION', id)
       // send question
-      const { data } = await axios.patch(`${apiUrl}/sqda-questions/${id}`, {
+      const { data } = await axios.patch(`${apiUrl}/qa/question/${id}`, {
         question,
       })
       commit('END_MODIFYING_QUESTION', id)
