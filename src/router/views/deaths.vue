@@ -30,8 +30,6 @@ export default {
       fetchingCrossings: (state) => state.crossings.fetchingCrossings,
       modifyingCrossing: (state) => state.crossings.modifyingCrossing,
       deathList: (state) => state.deaths.deathList,
-      fetchingIdcWords: (state) => state.deaths.fetchingIdcWords,
-      idcWords: (state) => state.deaths.idcWords,
     }),
     crossing(state) {
       return (
@@ -49,7 +47,6 @@ export default {
     this.$store.dispatch('deaths/fetchDeaths', {
       crossingId,
     })
-    this.$store.dispatch('deaths/fetchIdcWords')
   },
   methods: {
     async createNewDeath() {
@@ -111,9 +108,7 @@ export default {
             </span>
           </b-table-column>
           <b-table-column label="Mot de passage">
-            <b-tag>{{
-              fetchingIdcWords ? '...' : idcWords[props.row.idc - 1]
-            }}</b-tag>
+            <b-tag>{{ props.row.idcWord }}</b-tag>
           </b-table-column>
         </template>
       </b-table>
