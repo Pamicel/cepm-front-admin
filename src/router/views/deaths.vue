@@ -19,30 +19,32 @@ export default {
       formOpen: false,
       isCreateFormOpen: false,
       isDeathUploadOpen: false,
+      crossingId: +this.$route.params.id,
     }
   },
   computed: {
     ...mapState({
       fetchingDeaths: (state) => state.deaths.fetchingDeaths,
       creatingDeath: (state) => state.deaths.creatingDeath,
-      fetchingCrossing: (state) => state.crossings.fetchingSingleCrossing,
-      crossing: (state) => state.crossings.selectedCrossing,
+      crossingList: (state) => state.crossings.crossingList,
+      fetchingCrossings: (state) => state.crossings.fetchingCrossings,
+      modifyingCrossing: (state) => state.crossings.modifyingCrossing,
       deathList: (state) => state.deaths.deathList,
       fetchingIdcWords: (state) => state.deaths.fetchingIdcWords,
       idcWords: (state) => state.deaths.idcWords,
     }),
+    crossing(state) {
+      return (
+        state.crossingList &&
+        state.crossingList.find((c) => c.id === state.crossingId)
+      )
+    },
   },
   async mounted() {
     const crossingId = this.$route.params.id
 
     if (!this.crossing || this.crossing.id !== crossingId) {
-      const crossing = await this.$store.dispatch(
-        'crossings/fetchSingleCrossing',
-        crossingId
-      )
-      if (crossing === null) {
-        return this.$router.replace({ name: 'crossings' })
-      }
+      await this.$store.dispatch('crossings/fetchCrossings')
     }
     this.$store.dispatch('deaths/fetchDeaths', {
       crossingId,
@@ -55,6 +57,14 @@ export default {
         crossingId: this.crossing.id,
       })
     },
+    archive() {
+      this.$store.dispatch('crossings/modifyCrossing', {
+        id: this.crossing.id,
+        changes: {
+          archived: !this.crossing.archived,
+        },
+      })
+    },
   },
 }
 </script>
@@ -63,8 +73,10 @@ export default {
   <Layout>
     <div :class="$style.container">
       <CrossingInfos
-        v-if="!fetchingCrossing && crossing"
+        v-if="crossing"
         :crossing="crossing"
+        :loading="fetchingCrossings || modifyingCrossing"
+        @archive="archive"
       />
       <BaseIcon v-else :class="$style.loadingIcon" name="fan" spin />
       <br />

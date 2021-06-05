@@ -108,6 +108,18 @@ export default {
       >
         {{ duration(props.row.duration) }}
       </b-table-column>
+
+      <b-table-column
+        :class="$style.col"
+        field="archived"
+        centered
+        label="État"
+      >
+        <span v-if="props.row.archived"
+          >Archivée <BaseIcon name="archive"
+        /></span>
+        <span v-else>Active</span>
+      </b-table-column>
     </template>
 
     <template slot="empty">

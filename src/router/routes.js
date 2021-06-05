@@ -59,20 +59,6 @@ export default [
     path: '/traversees/:id',
     redirect: { name: 'deaths' },
     name: 'crossing-details',
-    // component: () => lazyLoadView(import('@views/crossing-details.vue')),
-    // meta: {
-    //   authRequired: true,
-    //   requiredPermissions: [PERMISSION_LEVELS.DIRECTOR],
-    // },
-  },
-  {
-    path: '/traversees/:id/reservations',
-    name: 'bookings',
-    component: () => lazyLoadView(import('@views/bookings.vue')),
-    meta: {
-      authRequired: true,
-      requiredPermissions: [PERMISSION_LEVELS.DIRECTOR],
-    },
   },
   {
     path: '/traversees/:id/morts',
@@ -82,15 +68,6 @@ export default [
       authRequired: true,
       requiredPermissions: [PERMISSION_LEVELS.DIRECTOR],
     },
-  },
-  {
-    path: '/traversees/:id/upload',
-    name: 'bookings-upload',
-    meta: {
-      authRequired: true,
-      requiredPermissions: [PERMISSION_LEVELS.DIRECTOR],
-    },
-    component: () => lazyLoadView(import('@views/bookings-upload.vue')),
   },
   {
     path: '/users/:id',

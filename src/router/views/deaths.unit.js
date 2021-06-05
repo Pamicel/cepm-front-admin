@@ -1,7 +1,7 @@
-import CrossingDetails from './crossing-details'
+import Deaths from './deaths'
 
-describe('@views/crossing-details', () => {
+describe('@views/deaths', () => {
   it('is a valid view', () => {
-    expect(CrossingDetails).toBeAViewComponent()
+    expect(Deaths).toBeAViewComponent()
   })
 })

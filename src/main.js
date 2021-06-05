@@ -8,6 +8,8 @@ import AutocompleteVue from 'autocomplete-vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 // internal icons
 import {
+  faArchive,
+  faBoxOpen,
   faCheck,
   faTimes,
   faTrashAlt,
@@ -113,6 +115,8 @@ moment.locale('fr', {
 Vue.use(VueMoment, { moment })
 
 library.add(
+  faArchive,
+  faBoxOpen,
   faCheck,
   faCheckCircle,
   faInfoCircle,
