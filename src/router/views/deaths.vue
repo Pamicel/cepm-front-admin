@@ -76,12 +76,19 @@ export default {
         @archive="archive"
       />
       <BaseIcon v-else :class="$style.loadingIcon" name="fan" spin />
-      <br />
-      <b-button icon-right="plus" type="is-dark" rounded @click="createNewDeath"
-        >Ajouter une mort</b-button
-      >
-      <br />
-      <br />
+      <h2 :class="$style.subtitle">Morts</h2>
+      <div :class="$style.deathButtonContainer">
+        <b-button
+          icon-right="plus"
+          type="is-dark"
+          :disabled="
+            creatingDeath || fetchingDeaths || (crossing && crossing.archived)
+          "
+          rounded
+          @click="createNewDeath"
+          >Ajouter une mort</b-button
+        >
+      </div>
       <b-table
         :data="deathList"
         detail-key="id"
@@ -121,38 +128,18 @@ export default {
 
 .container {
   @extend %narrow-content;
-  .title {
-    margin: 0 auto 2rem;
-    text-align: center;
-  }
-  .upload {
-    text-align: center;
-    .uploadButton {
-      @include embossed_paper_shadow(2);
-      @extend %typography-xlarge;
+  .subtitle {
+    @extend %typography-large;
 
-      width: 5rem;
-      height: 5rem;
-      margin: 1rem auto;
-      cursor: pointer;
-      background: transparent;
-      border: 0;
-      border-radius: 50rem;
-      &:focus {
-        @include embossed_paper_shadow(1);
-      }
-    }
+    margin-top: $size-grid-padding;
+    font-weight: bold;
+    text-align: center;
   }
-  .uploadModal {
-    position: relative;
-    box-sizing: border-box;
-    width: 50rem;
-    max-width: 90%;
-    height: 100%;
-    margin: auto;
-    overflow: auto;
-    background: $color-body-bg;
-    border-radius: 8px;
+
+  .deathButtonContainer {
+    padding: $size-grid-padding;
+    margin-bottom: $size-grid-padding;
+    text-align: center;
   }
 }
 </style>
