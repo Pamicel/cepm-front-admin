@@ -49,7 +49,7 @@ export default {
           :disabled="loading"
           :loading="loading"
           :icon-right="crossing && crossing.archived ? 'box-open' : 'archive'"
-          :type="crossing.archived ? 'is-info' : 'is-warning'"
+          :type="crossing.archived ? 'is-warning' : 'is-info'"
           size="is-small"
           @click="$emit('archive')"
           >{{
