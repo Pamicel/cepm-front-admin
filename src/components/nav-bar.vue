@@ -1,19 +1,13 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
-import NavBarRoutes from './nav-bar-routes.vue'
+import NavBarRoute from '@components/nav-bar-route.vue'
 
 export default {
-  components: { NavBarRoutes },
+  components: { NavBarRoute },
   data() {
     return {
-      persistentRoutes: [],
+      navOpen: false,
       loggedInRoutes: {
-        adminsOnly: [
-          {
-            name: 'users',
-            title: 'Utilisateurs',
-          },
-        ],
         directorsOnly: [
           {
             name: 'crossings',
@@ -29,22 +23,8 @@ export default {
             name: 'profile',
             title: 'Mon compte',
           },
-          {
-            name: 'logout',
-            title: 'Se déconnecter',
-          },
         ],
       },
-      loggedOutRoutes: [
-        {
-          name: 'home',
-          title: 'Accueil',
-        },
-        {
-          name: 'login',
-          title: 'Se connecter',
-        },
-      ],
       scrollPosition: 0,
     }
   },
@@ -58,19 +38,66 @@ export default {
       currentUser: (state) => state.auth.currentUser,
     }),
   },
+  methods: {
+    logout() {
+      this.close()
+      this.$router.push({ name: 'logout' })
+    },
+    close() {
+      this.navOpen = false
+    },
+    open() {
+      this.navOpen = true
+    },
+  },
 }
 </script>
 
 <template>
-  <ul :class="$style.container">
-    <NavBarRoutes :routes="persistentRoutes" />
-    <span v-if="loggedIn">
-      <NavBarRoutes v-if="isAdmin" :routes="loggedInRoutes.adminsOnly" />
-      <NavBarRoutes v-if="isDirector" :routes="loggedInRoutes.directorsOnly" />
-      <NavBarRoutes :routes="loggedInRoutes.account" />
-    </span>
-    <NavBarRoutes v-else :routes="loggedOutRoutes" />
-  </ul>
+  <div :class="$style.container">
+    <div v-if="loggedIn"><b-button rounded @click="open">Menu</b-button></div>
+
+    <b-sidebar fullheight :open="navOpen" right @close="close">
+      <div :class="$style.sidebarContent">
+        <div :class="$style.menu">
+          <div :class="$style.closeButton">
+            <b-button rounded @click="close">Fermer</b-button>
+          </div>
+          <div :class="$style.routes">
+            <NavBarRoute
+              v-if="isAdmin"
+              :class="$style.navroute"
+              to="users"
+              @use="close"
+              >Utilisateurs</NavBarRoute
+            >
+            <NavBarRoute
+              v-if="isDirector"
+              :class="$style.navroute"
+              to="crossings"
+              @use="close"
+              >Traversées</NavBarRoute
+            >
+            <NavBarRoute
+              v-if="isDirector"
+              :class="$style.navroute"
+              to="sqda"
+              @use="close"
+              >S.Q.D.A.</NavBarRoute
+            >
+            <NavBarRoute :class="$style.navroute" to="profile" @use="close"
+              >Mon compte</NavBarRoute
+            >
+          </div>
+        </div>
+        <div :class="$style.logoutButton">
+          <b-button type="is-danger" rounded @click="logout"
+            >Déconnexion</b-button
+          >
+        </div>
+      </div>
+    </b-sidebar>
+  </div>
 </template>
 
 <style lang="scss" module>
@@ -85,7 +112,38 @@ export default {
   margin: 0;
   text-align: right;
   list-style-type: none;
-  // background-color: transparentize(white, 0.5);
   background: linear-gradient(white, transparentize(white, 1));
+}
+.sidebarContent {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: $size-grid-padding;
+  .logoutButton {
+    text-align: center;
+  }
+  .menu {
+    display: flex;
+    flex-direction: column;
+    .logoutButton,
+    .closeButton {
+      text-align: right;
+    }
+    .closeButton {
+      margin-bottom: 1rem;
+    }
+    .routes {
+      @extend %typography-medium;
+
+      text-align: right;
+      .navroute {
+        display: block;
+        width: 100%;
+        margin-top: 1em;
+      }
+    }
+  }
 }
 </style>

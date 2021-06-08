@@ -1,6 +1,7 @@
 <script>
 import appConfig from '@src/app.config'
 import Layout from '@layouts/local.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   page: {
@@ -8,6 +9,16 @@ export default {
     meta: [{ name: 'description', content: appConfig.description }],
   },
   components: { Layout },
+  computed: {
+    ...mapGetters({
+      loggedIn: 'auth/loggedIn',
+    }),
+  },
+  beforeMount() {
+    if (this.loggedIn) {
+      this.$router.replace({ name: 'crossings' })
+    }
+  },
 }
 </script>
 

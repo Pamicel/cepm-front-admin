@@ -20,6 +20,7 @@ export default {
 <template>
   <div :class="$style.container">
     <NavBar :id="$style.navBar" />
+    <!-- <b-button>Menu</b-button> -->
     <div :class="$style.logo">
       <BaseLink name="home">
         <img
