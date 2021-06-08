@@ -140,6 +140,14 @@ export default {
           v-if="!!deathList.find((d) => d.id === selectedDeathId)"
           :class="$style.formDisplay"
         >
+          <div :class="$style.firmDisplayHeader">
+            <h2 :class="$style.firmDisplaySubtitle"
+              >Traversée {{ crossing.crossingNumber }}</h2
+            >
+            <h1 :class="$style.firmDisplayTitle"
+              >DCD-{{ deathList.find((d) => d.id === selectedDeathId).idc }}</h1
+            >
+          </div>
           <LockedFirmDisplay
             :saved-responses="
               deathList.find((d) => d.id === selectedDeathId).deathForm
@@ -170,6 +178,19 @@ export default {
   }
 
   .formDisplay {
+    .firmDisplayHeader {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .firmDisplayTitle {
+      color: white;
+      @extend %typography-large;
+    }
+    .firmDisplaySubtitle {
+      color: white;
+      @extend %typography-medium;
+    }
+
     padding: $size-grid-padding;
     background-color: grey;
   }
