@@ -1,6 +1,7 @@
 <script>
 import Layout from '@layouts/local.vue'
 import CrossingInfos from '@components/crossing-infos.vue'
+import LockedFirmDisplay from '@components/locked-firm-display.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -13,6 +14,7 @@ export default {
   components: {
     Layout,
     CrossingInfos,
+    LockedFirmDisplay,
   },
   data() {
     return {
@@ -20,6 +22,7 @@ export default {
       isCreateFormOpen: false,
       isDeathUploadOpen: false,
       crossingId: +this.$route.params.id,
+      selectedDeathId: null,
     }
   },
   computed: {
@@ -112,6 +115,14 @@ export default {
                 >FIRM complet</span
               >
               <span v-else class="tag is-small is-info">Firm associé</span>
+              <span
+                v-if="props.row.deathForm"
+                class="tag is-small is-info is-rounded"
+                :class="$style.openFirmDisplayButton"
+                role="button"
+                @click="selectedDeathId = props.row.id"
+                >voir</span
+              >
             </span>
           </b-table-column>
           <b-table-column label="Mot de passage">
@@ -119,6 +130,23 @@ export default {
           </b-table-column>
         </template>
       </b-table>
+      <b-modal
+        :active="
+          !!selectedDeathId && !!deathList.find((d) => d.id === selectedDeathId)
+        "
+        @close="selectedDeathId = null"
+      >
+        <div
+          v-if="!!deathList.find((d) => d.id === selectedDeathId)"
+          :class="$style.formDisplay"
+        >
+          <LockedFirmDisplay
+            :saved-responses="
+              deathList.find((d) => d.id === selectedDeathId).deathForm
+            "
+          />
+        </div>
+      </b-modal>
     </div>
   </Layout>
 </template>
@@ -136,6 +164,15 @@ export default {
     text-align: center;
   }
 
+  .openFirmDisplayButton {
+    margin-left: 0.5em;
+    cursor: pointer;
+  }
+
+  .formDisplay {
+    padding: $size-grid-padding;
+    background-color: grey;
+  }
   .deathButtonContainer {
     padding: $size-grid-padding;
     margin-bottom: $size-grid-padding;
