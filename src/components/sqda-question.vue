@@ -13,10 +13,6 @@ export default {
       type: String,
       required: true,
     },
-    answers: {
-      type: Array,
-      default: () => [],
-    },
     versions: {
       type: Array,
       default: () => [],
@@ -28,7 +24,6 @@ export default {
   },
   data() {
     return {
-      showAnswers: false,
       showVersions: false,
       showMenu: false,
       modify: false,
@@ -52,9 +47,6 @@ export default {
     },
     formatRelative(date) {
       return formatRelative(new Date(date), new Date(), { locale: fr })
-    },
-    toggleAnswers() {
-      this.showAnswers = !this.showAnswers
     },
     toggleVersions() {
       this.showVersions = !this.showVersions
@@ -189,26 +181,11 @@ export default {
         <!-- </h2> -->
       </div>
       <div :class="$style.answersInfos">
-        {{ answers.length || 'Pas de' }} réponse{{
-          answers.length > 1 ? 's' : ''
-        }}
-        <br />
-        <button
-          v-if="answers.length > 0"
-          :class="$style.answersButton"
-          @click="toggleAnswers"
-        >
+        <button :class="$style.answersButton" @click="$emit('show-answers')">
           voir les réponses
         </button>
       </div>
     </div>
-    <Transition name="slide-fade" mode="out-in">
-      <div v-if="showAnswers" :class="$style.answers">
-        <hr />
-        <!-- Answers -->
-        {{ answers }}
-      </div>
-    </Transition>
   </div>
 </template>
 

@@ -7,6 +7,9 @@ const apiUrl = process.env.API_BASE_URL
 export const state = {
   questions: [],
   fetchingQuestions: false,
+  answers: [],
+  fetchingAnswers: false,
+
   creatingQuestion: false,
   questionsBeingModified: new Set(),
 }
@@ -39,9 +42,35 @@ export const mutations = {
   REPLACE_QUESTION_LIST(state, questions) {
     state.questions = questions
   },
+
+  START_FETCHING_ANSWERS(state) {
+    state.fetchingAnswers = true
+  },
+  END_FETCHING_ANSWERS(state) {
+    state.fetchingAnswers = false
+  },
+  REPLACE_ANSWER_LIST(state, answers) {
+    state.answers = answers
+  },
 }
 
 export const actions = {
+  async fetchQuestionAnswers({ commit }, { questionId }) {
+    commit('START_FETCHING_ANSWERS')
+    try {
+      const response = await axios.get(
+        `${apiUrl}/qa/question/${questionId}/answer`
+      )
+      const { data: answers } = response
+      commit('REPLACE_ANSWER_LIST', answers)
+      commit('END_FETCHING_ANSWERS')
+      return answers
+    } catch (error) {
+      commit('END_FETCHING_ANSWERS')
+      console.error(error)
+      return null
+    }
+  },
   async fetchQuestions({ commit }) {
     commit('START_FETCHING_QUESTIONS')
     try {
