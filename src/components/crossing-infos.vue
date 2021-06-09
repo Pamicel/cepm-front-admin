@@ -25,7 +25,6 @@ export default {
 
 <template>
   <div :class="$style.container">
-    <br />
     <h1
       >Traversée du
       {{ formatDate(new Date(crossing.startDate), "d MMM, H'h'mm") }}
@@ -66,9 +65,10 @@ export default {
 <style lang="scss" module>
 @import '@design';
 .container {
+  @extend %comic-box;
+
   position: relative;
-  padding-bottom: $size-grid-padding;
-  border-bottom: 1px solid black;
+  padding: $size-grid-padding;
   .archiveButton {
     position: absolute;
     right: $size-grid-padding;

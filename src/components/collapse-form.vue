@@ -44,12 +44,10 @@ export default {
   }
   &.creationOpen {
     @include box_shadow(1);
+    @extend %comic-box;
 
     padding: 1rem;
     margin: 0 0 1rem 0;
-    background-color: #fff;
-    border: 1px solid lightgrey;
-    border-radius: 4px;
   }
 
   .createButton {

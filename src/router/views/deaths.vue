@@ -79,7 +79,7 @@ export default {
         @archive="archive"
       />
       <BaseIcon v-else :class="$style.loadingIcon" name="fan" spin />
-      <h2 :class="$style.subtitle">Morts</h2>
+      <h2 :class="$style.subtitle">Liste des morts</h2>
       <div :class="$style.deathButtonContainer">
         <b-button
           icon-right="plus"
@@ -97,6 +97,7 @@ export default {
         detail-key="id"
         default-sort-direction="DESC"
         default-sort="idc"
+        :class="$style.deathTable"
       >
         <template slot-scope="props">
           <b-table-column field="idc" label="N° DCD" sortable numeric centered>
@@ -170,6 +171,9 @@ export default {
     margin-top: $size-grid-padding;
     font-weight: bold;
     text-align: center;
+  }
+  .deathTable {
+    margin-bottom: $size-grid-padding;
   }
 
   .openFirmDisplayButton {

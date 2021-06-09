@@ -10,6 +10,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faArchive,
   faBoxOpen,
+  faBars,
   faCheck,
   faTimes,
   faTrashAlt,
@@ -21,6 +22,7 @@ import {
   faMinus,
   faPlus,
   faArrowUp,
+  faArrowRight,
   faAngleRight,
   faAngleLeft,
   faAngleDown,
@@ -117,6 +119,7 @@ Vue.use(VueMoment, { moment })
 library.add(
   faArchive,
   faBoxOpen,
+  faBars,
   faCheck,
   faCheckCircle,
   faInfoCircle,
@@ -125,6 +128,7 @@ library.add(
   faMinus,
   faPlus,
   faArrowUp,
+  faArrowRight,
   faAngleRight,
   faAngleLeft,
   faAngleDown,

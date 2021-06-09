@@ -1,5 +1,5 @@
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import NavBarRoute from '@components/nav-bar-route.vue'
 
 export default {
@@ -7,25 +7,6 @@ export default {
   data() {
     return {
       navOpen: false,
-      loggedInRoutes: {
-        directorsOnly: [
-          {
-            name: 'crossings',
-            title: 'Traversées',
-          },
-          {
-            name: 'sqda',
-            title: 'SQDA',
-          },
-        ],
-        account: [
-          {
-            name: 'profile',
-            title: 'Mon compte',
-          },
-        ],
-      },
-      scrollPosition: 0,
     }
   },
   computed: {
@@ -33,9 +14,6 @@ export default {
       loggedIn: 'auth/loggedIn',
       isAdmin: 'auth/isAdmin',
       isDirector: 'auth/isDirector',
-    }),
-    ...mapState({
-      currentUser: (state) => state.auth.currentUser,
     }),
   },
   methods: {
@@ -55,13 +33,23 @@ export default {
 
 <template>
   <div :class="$style.container">
-    <div v-if="loggedIn"><b-button rounded @click="open">Menu</b-button></div>
+    <div v-if="loggedIn"
+      ><b-button type="is-dark" rounded icon-right="bars" @click="open"
+        >Menu</b-button
+      ></div
+    >
 
     <b-sidebar fullheight :open="navOpen" right @close="close">
       <div :class="$style.sidebarContent">
         <div :class="$style.menu">
           <div :class="$style.closeButton">
-            <b-button rounded @click="close">Fermer</b-button>
+            <b-button
+              type="is-dark"
+              rounded
+              icon-right="arrow-right"
+              @click="close"
+              >Fermer</b-button
+            >
           </div>
           <div :class="$style.routes">
             <NavBarRoute

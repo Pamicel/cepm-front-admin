@@ -78,6 +78,7 @@ export default {
   @extend %narrow-content;
 
   padding: $size-grid-padding;
+  padding-top: 0;
 
   .title {
     margin-bottom: 1rem;

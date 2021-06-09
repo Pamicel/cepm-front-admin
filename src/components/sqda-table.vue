@@ -93,10 +93,9 @@ export default {
 @import '@design';
 .container {
   .cell {
-    @include embossed_paper_shadow(2);
+    @extend %comic-box;
 
     margin: 2rem 0;
-    border-radius: 8px;
   }
   .modalContent {
     min-height: 80vh;
