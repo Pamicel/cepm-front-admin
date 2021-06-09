@@ -17,10 +17,6 @@ export default {
     }),
   },
   methods: {
-    logout() {
-      this.close()
-      this.$router.push({ name: 'logout' })
-    },
     close() {
       this.navOpen = false
     },
@@ -76,12 +72,16 @@ export default {
             <NavBarRoute :class="$style.navroute" to="profile" @use="close"
               >Mon compte</NavBarRoute
             >
+            <hr />
+            <NavBarRoute
+              :class="$style.navroute"
+              to="logout"
+              solid
+              type="is-danger"
+              @use="close"
+              >Déconnexion</NavBarRoute
+            >
           </div>
-        </div>
-        <div :class="$style.logoutButton">
-          <b-button type="is-danger" rounded @click="logout"
-            >Déconnexion</b-button
-          >
         </div>
       </div>
     </b-sidebar>

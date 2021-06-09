@@ -5,6 +5,14 @@ export default {
       type: String,
       required: true,
     },
+    solid: {
+      type: Boolean,
+      default: false,
+    },
+    type: {
+      type: String,
+      default: 'is-link',
+    },
   },
 }
 </script>
@@ -15,9 +23,9 @@ export default {
       <b-button
         rounded
         :class="$style.routeButton"
-        type="is-link"
+        :type="type"
         size="is-medium"
-        :outlined="$route.name !== to"
+        :outlined="$route.name !== to && !solid"
         @click="$emit('use')"
         ><slot
       /></b-button>
