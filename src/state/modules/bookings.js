@@ -1,8 +1,6 @@
 import axios from 'axios'
 import qs from 'qs'
-const apiUrl = process.env.API_BASE_URL
-  ? `${process.env.API_BASE_URL}/api`
-  : '/api'
+const apiUrl = process.env.API_BASE_URL ? `${process.env.API_BASE_URL}` : '/api'
 
 export const completeBooking = (booking) => ({
   ...booking,

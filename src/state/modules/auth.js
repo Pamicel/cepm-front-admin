@@ -1,8 +1,6 @@
-import decodeJWT from 'jwt-decode'
 import axios from 'axios'
-const apiUrl = process.env.API_BASE_URL
-  ? `${process.env.API_BASE_URL}/api`
-  : '/api'
+import decodeJWT from 'jwt-decode'
+const apiUrl = process.env.API_BASE_URL ? `${process.env.API_BASE_URL}` : '/api'
 
 export const state = {
   loggingIn: false,
