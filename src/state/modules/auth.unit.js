@@ -2,8 +2,6 @@ import axios from 'axios'
 import * as authModule from './auth'
 import * as userModule from './users'
 
-// const apiUrl = `${process.env.API_BASE_URL}`
-
 describe('@state/modules/auth', () => {
   it('exports a valid Vuex module', () => {
     expect(authModule).toBeAVuexModule()
@@ -138,7 +136,7 @@ describe('@state/modules/auth', () => {
     //   const { email } = validUserExample
 
     //   const response = await axios.get(
-    //     `${apiUrl}/dev/create-expired-token?email=${email}`
+    //     `/api/dev/create-expired-token?email=${email}`
     //   )
 
     //   store.commit('auth/SET_CURRENT_USER', {
@@ -154,7 +152,7 @@ describe('@state/modules/auth', () => {
     //   const { email } = validUserExample
 
     //   const response = await axios.get(
-    //     `${apiUrl}/dev/create-expired-token?email=${email}`
+    //     `/api/dev/create-expired-token?email=${email}`
     //   )
 
     //   store.commit('auth/SET_CURRENT_USER', {
@@ -183,7 +181,7 @@ describe('@state/modules/auth', () => {
     //   const { email } = validUserExample
 
     //   const response = await axios.get(
-    //     `${apiUrl}/dev/create-grace-token?email=${email}`
+    //     `/api/dev/create-grace-token?email=${email}`
     //   )
 
     //   const { token } = response.data
@@ -293,7 +291,7 @@ describe('@state/modules/auth', () => {
 
     //   // Important cleanup
     //   await store.dispatch('auth/logOut')
-    //   await axios.get(`${apiUrl}/reset`)
+    //   await axios.get(`/api/reset`)
     // })
 
     // Delete account

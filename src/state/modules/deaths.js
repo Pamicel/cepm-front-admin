@@ -1,5 +1,4 @@
 import axios from 'axios'
-const apiUrl = process.env.API_BASE_URL ? `${process.env.API_BASE_URL}` : '/api'
 
 export const state = {
   deathList: [],
@@ -34,7 +33,7 @@ export const actions = {
     }
     commit('START_FETCHING_DEATHS')
     try {
-      const response = await axios.get(`${apiUrl}/death?crossing=${crossingId}`)
+      const response = await axios.get(`/api/death?crossing=${crossingId}`)
       const { data: deaths } = response
       commit('REPLACE_DEATH_LIST', deaths)
       commit('END_FETCHING_DEATHS')
@@ -51,7 +50,7 @@ export const actions = {
     }
     commit('START_CREATING_DEATH')
     try {
-      const response = await axios.post(`${apiUrl}/death`, { crossingId })
+      const response = await axios.post(`/api/death`, { crossingId })
       const { data: death } = response
       commit('END_CREATING_DEATH')
       dispatch('fetchDeaths', { crossingId })

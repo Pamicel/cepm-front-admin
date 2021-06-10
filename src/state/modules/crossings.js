@@ -1,5 +1,4 @@
 import axios from 'axios'
-const apiUrl = process.env.API_BASE_URL ? `${process.env.API_BASE_URL}` : '/api'
 
 export const state = {
   crossingList: [],
@@ -55,7 +54,7 @@ export const actions = {
 
     try {
       commit('START_FETCHING_CROSSINGS')
-      const response = await axios.get(`${apiUrl}/crossings`)
+      const response = await axios.get(`/api/crossings`)
       const { data: crossings } = response
       commit('END_FETCHING_CROSSINGS')
       commit('REPLACE_CROSSING_LIST', crossings)
@@ -74,7 +73,7 @@ export const actions = {
 
     try {
       commit('START_CREATING_CROSSING')
-      const response = await axios.post(`${apiUrl}/crossings`, crossing)
+      const response = await axios.post(`/api/crossings`, crossing)
       commit('END_CREATING_CROSSING')
       return response.data
     } catch (error) {
@@ -91,7 +90,7 @@ export const actions = {
 
     try {
       commit('START_DELETING_CROSSING')
-      await axios.delete(`${apiUrl}/crossings/${crossingId}`)
+      await axios.delete(`/api/crossings/${crossingId}`)
       const crossings = state.crossingList.filter(
         (cross) => cross.id !== crossingId
       )
@@ -120,7 +119,7 @@ export const actions = {
 
     try {
       commit('START_MODIFYING_CROSSING')
-      await axios.patch(`${apiUrl}/crossings/${id}`, changes)
+      await axios.patch(`/api/crossings/${id}`, changes)
       await dispatch('fetchCrossings')
       commit('END_MODIFYING_CROSSING')
       return true

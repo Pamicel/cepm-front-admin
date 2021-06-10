@@ -1,6 +1,5 @@
 import axios from 'axios'
 import qs from 'qs'
-const apiUrl = process.env.API_BASE_URL ? `${process.env.API_BASE_URL}` : '/api'
 
 export const completeBooking = (booking) => ({
   ...booking,
@@ -136,7 +135,7 @@ export const actions = {
     commit('START_CREATING_BOOKINGS')
     try {
       const { data: bookingCreationResponse } = await axios.post(
-        `${apiUrl}/booking-imports`,
+        `/api/booking-imports`,
         {
           crossingId,
           data,
@@ -162,7 +161,7 @@ export const actions = {
     commit('START_CREATING_SINGLE_BOOKING')
     try {
       const { data: bookingCreationResponse } = await axios.post(
-        `${apiUrl}/booking-imports`,
+        `/api/booking-imports`,
         {
           crossingId,
           data: [
@@ -204,7 +203,7 @@ export const actions = {
           include,
         },
       })
-      const response = await axios.get(`${apiUrl}/bookings?${query}`)
+      const response = await axios.get(`/api/bookings?${query}`)
       const { data: bookings } = response
       const parsedBookings = bookings.map(completeBooking)
       commit('REPLACE_BOOKING_LIST', parsedBookings)
@@ -227,9 +226,7 @@ export const actions = {
           include: [{ relation: 'users' }, { relation: 'formFirm' }],
         },
       })
-      const response = await axios.get(
-        `${apiUrl}/bookings/${bookingId}?${query}`
-      )
+      const response = await axios.get(`/api/bookings/${bookingId}?${query}`)
       const { data: booking } = response
       const completedBooking = completeBooking(booking)
 
@@ -251,7 +248,7 @@ export const actions = {
     }
     commit('START_MODIFYING_BOOKING')
     try {
-      await axios.patch(`${apiUrl}/bookings/${bookingId}`, modifs)
+      await axios.patch(`/api/bookings/${bookingId}`, modifs)
 
       commit('END_MODIFYING_BOOKING')
       return dispatch('fetchBookings', { crossingId: crossingId })
@@ -270,7 +267,7 @@ export const actions = {
     }
     commit('START_SENDING_EMAIL_TO_BOOKER', bookerEmail)
     try {
-      await axios.post(`${apiUrl}/email/firm-cta`, {
+      await axios.post(`/api/email/firm-cta`, {
         bookerEmail,
         crossingId,
       })
@@ -294,7 +291,7 @@ export const actions = {
     }
     commit('START_DELETING_BOOKING', bookingId)
     try {
-      await axios.delete(`${apiUrl}/bookings/${bookingId}`, {
+      await axios.delete(`/api/bookings/${bookingId}`, {
         bookingId,
       })
       await dispatch('fetchBookings', {

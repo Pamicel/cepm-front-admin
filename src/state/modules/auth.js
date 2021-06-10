@@ -1,6 +1,5 @@
 import axios from 'axios'
 import decodeJWT from 'jwt-decode'
-const apiUrl = process.env.API_BASE_URL ? `${process.env.API_BASE_URL}` : '/api'
 
 export const state = {
   loggingIn: false,
@@ -79,7 +78,7 @@ export const actions = {
   async logIn({ commit }, { email, password } = {}) {
     commit('START_LOGGING_IN')
     try {
-      const response = await axios.post(`${apiUrl}/auth/login`, {
+      const response = await axios.post(`/api/auth/login`, {
         email,
         password,
       })
@@ -112,7 +111,7 @@ export const actions = {
     }
 
     try {
-      const response = await axios.get(`${apiUrl}/auth/verify`) // Auth header is implicit
+      const response = await axios.get(`/api/auth/verify`) // Auth header is implicit
 
       const token = response.data.token
 
@@ -142,7 +141,7 @@ export const actions = {
 
     try {
       commit('START_CHANGING_PASSWORD')
-      await axios.patch(`${apiUrl}/users/${userId}/password`, {
+      await axios.patch(`/api/users/${userId}/password`, {
         newPassword,
         oldPassword,
       })
@@ -162,7 +161,7 @@ export const actions = {
 
     try {
       commit('START_DELETING_ACCOUNT')
-      await axios.post(`${apiUrl}/delete-account`, {
+      await axios.post(`/api/delete-account`, {
         password,
       })
       commit('END_DELETING_ACCOUNT')

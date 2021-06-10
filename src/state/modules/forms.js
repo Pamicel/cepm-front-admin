@@ -1,6 +1,5 @@
 import axios from 'axios'
 import qs from 'qs'
-const apiUrl = process.env.API_BASE_URL ? `${process.env.API_BASE_URL}` : '/api'
 
 export const state = {
   firms: [],
@@ -150,7 +149,7 @@ export const actions = {
     try {
       const source = axios.CancelToken.source()
       commit('START_FETCHING_FIRMS', { cancelTokenSource: source })
-      const { data } = await axios.get(`${apiUrl}/form-firms?${querystring}`, {
+      const { data } = await axios.get(`/api/form-firms?${querystring}`, {
         cancelToken: source.token,
       })
       commit('SAVE_FIRMS', data)
@@ -173,7 +172,7 @@ export const actions = {
     }
     try {
       commit('START_FETCHING_FIRM_DETAILS', id)
-      const { data } = await axios.get(`${apiUrl}/form-firms/${id}`)
+      const { data } = await axios.get(`/api/form-firms/${id}`)
       commit('SAVE_FIRM_DETAILS', data)
       commit('END_FETCHING_FIRM_DETAILS', id)
       return data
@@ -191,7 +190,7 @@ export const actions = {
       commit('START_BACKING_FIRM_UP', { firmId, bookingId })
       const query = qs.stringify({ bookingId })
       const { data } = await axios.post(
-        `${apiUrl}/form-firms/${firmId}/backup?${query}`
+        `/api/form-firms/${firmId}/backup?${query}`
       )
       await dispatch('bookings/refreshBooking', { bookingId }, { root: true })
       commit('END_BACKING_FIRM_UP', { firmId, bookingId })
@@ -208,7 +207,7 @@ export const actions = {
     }
     try {
       commit('START_DELETING_FIRM', { firmId })
-      await axios.delete(`${apiUrl}/form-firms/${firmId}`)
+      await axios.delete(`/api/form-firms/${firmId}`)
       dispatch('bookings/removeFirmFromBookings', { firmId }, { root: true })
       commit('END_DELETING_FIRM', { firmId })
       return true

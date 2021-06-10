@@ -1,6 +1,5 @@
 import axios from 'axios'
 // import qs from 'qs'
-const apiUrl = process.env.API_BASE_URL ? `${process.env.API_BASE_URL}` : '/api'
 
 export const state = {
   questions: [],
@@ -56,9 +55,7 @@ export const actions = {
   async fetchQuestionAnswers({ commit }, { questionId }) {
     commit('START_FETCHING_ANSWERS')
     try {
-      const response = await axios.get(
-        `${apiUrl}/qa/question/${questionId}/answer`
-      )
+      const response = await axios.get(`/api/qa/question/${questionId}/answer`)
       const { data: answers } = response
       commit('REPLACE_ANSWER_LIST', answers)
       commit('END_FETCHING_ANSWERS')
@@ -72,7 +69,7 @@ export const actions = {
   async fetchQuestions({ commit }) {
     commit('START_FETCHING_QUESTIONS')
     try {
-      const response = await axios.get(`${apiUrl}/qa/question`)
+      const response = await axios.get(`/api/qa/question`)
       const { data: questions } = response
       commit('REPLACE_QUESTION_LIST', questions)
       commit('END_FETCHING_QUESTIONS')
@@ -94,7 +91,7 @@ export const actions = {
     try {
       commit('START_CREATING_QUESTION')
       // send question
-      const { data } = await axios.post(`${apiUrl}/qa/question`, {
+      const { data } = await axios.post(`/api/qa/question`, {
         question,
       })
       commit('END_CREATING_QUESTION')
@@ -138,7 +135,7 @@ export const actions = {
     try {
       commit('START_MODIFYING_QUESTION', id)
       // send question
-      const { data } = await axios.patch(`${apiUrl}/qa/question/${id}`, {
+      const { data } = await axios.patch(`/api/qa/question/${id}`, {
         hide,
       })
       commit('END_MODIFYING_QUESTION', id)
@@ -170,7 +167,7 @@ export const actions = {
     try {
       commit('START_MODIFYING_QUESTION', id)
       // send question
-      const { data } = await axios.patch(`${apiUrl}/qa/question/${id}`, {
+      const { data } = await axios.patch(`/api/qa/question/${id}`, {
         question,
       })
       commit('END_MODIFYING_QUESTION', id)

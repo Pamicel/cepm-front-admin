@@ -1,8 +1,6 @@
 import axios from 'axios'
 import qs from 'qs'
 
-const apiUrl = process.env.API_BASE_URL ? `${process.env.API_BASE_URL}` : '/api'
-
 const PAGE_SIZE = 100
 
 export const state = {
@@ -126,7 +124,7 @@ export const actions = {
 
     try {
       commit('START_FETCHING_SINGLE_USER')
-      const { data: user } = await axios.get(`${apiUrl}/users/${userId}`)
+      const { data: user } = await axios.get(`/api/users/${userId}`)
       commit('END_FETCHING_SINGLE_USER')
       commit('UPDATE_USER', user)
       commit('CACHE_USER', user)
@@ -150,7 +148,7 @@ export const actions = {
     }
     commit('START_FETCHING_USERS')
     const { data: users } = await axios.get(
-      `${apiUrl}/users?${qs.stringify(filters)}`
+      `/api/users?${qs.stringify(filters)}`
     )
     commit('END_FETCHING_USERS')
     commit('SAVE_USERS', users)
@@ -164,7 +162,7 @@ export const actions = {
 
     try {
       commit('START_CREATING_USER')
-      const response = await axios.post(`${apiUrl}/users`, user)
+      const response = await axios.post(`/api/users`, user)
       commit('END_CREATING_USER')
       return response.data
     } catch (error) {
@@ -181,7 +179,7 @@ export const actions = {
 
     try {
       commit('START_DELETING_USER')
-      await axios.delete(`${apiUrl}/users/${userId}`)
+      await axios.delete(`/api/users/${userId}`)
       const users = state.userList.filter((user) => user.id !== userId)
       commit('SAVE_USERS', users)
       commit('UNCACHE_USER', userId)
@@ -204,7 +202,7 @@ export const actions = {
 
     try {
       commit('START_UPDATING_USER_ROLE', userId)
-      await axios.patch(`${apiUrl}/users/${userId}/permission`, {
+      await axios.patch(`/api/users/${userId}/permission`, {
         permissionLevel,
       })
       commit('END_UPDATING_USER_ROLE', userId)
