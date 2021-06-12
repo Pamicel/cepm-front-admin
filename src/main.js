@@ -3,6 +3,9 @@ import VueMoment from 'vue-moment'
 import moment from 'moment/moment'
 import router from '@router'
 import store from '@state/store'
+import socketio from 'socket.io'
+import VueSocketIO from 'vue-socket.io'
+
 import Buefy from 'buefy'
 import AutocompleteVue from 'autocomplete-vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -49,6 +52,18 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import App from './app.vue'
 // Globally register all `_base`-prefixed components
 import '@components/_globals'
+
+export const SocketInstance = socketio('/api')
+Vue.use(
+  new VueSocketIO({
+    connection: SocketInstance,
+    vuex: {
+      store,
+      actionPrefix: 'ws/',
+      mutationPrefix: 'ws/',
+    },
+  })
+)
 
 moment.locale('fr', {
   months: 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split(
