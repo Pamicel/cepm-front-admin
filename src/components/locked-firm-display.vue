@@ -1,6 +1,8 @@
 <script>
 import FormField from '@components/form-field.vue'
 import { mapState } from 'vuex'
+import { fr } from 'date-fns/locale'
+import { format } from 'date-fns'
 
 export default {
   components: { FormField },
@@ -88,7 +90,7 @@ export default {
     }),
     prettyBirthDate(state) {
       return state.savedResponses.birthDate
-        ? new Date(state.savedResponses.birthDate).toLocaleDateString()
+        ? this.formatDate(new Date(state.savedResponses.birthDate), 'MMM yyyy')
         : ''
     },
     importantPeople(state) {
@@ -233,6 +235,9 @@ export default {
         return 'Non'
       }
     },
+    formatDate(date, formatString) {
+      return format(new Date(date), formatString, { locale: fr })
+    },
   },
 }
 </script>
@@ -265,7 +270,7 @@ export default {
 
       <FormField
         :class="$style.field"
-        field-name="Né·e le"
+        field-name="Né·e en"
         :response="prettyBirthDate"
         required
       />
