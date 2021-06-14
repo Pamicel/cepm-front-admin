@@ -1,7 +1,7 @@
 <script>
 import Layout from '@layouts/local.vue'
 import CrossingInfos from '@components/crossing-infos.vue'
-import LockedFirmDisplay from '@components/locked-firm-display.vue'
+import FormDisplay from '@components/form-display.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -14,7 +14,7 @@ export default {
   components: {
     Layout,
     CrossingInfos,
-    LockedFirmDisplay,
+    FormDisplay,
   },
   data() {
     return {
@@ -39,6 +39,9 @@ export default {
         state.crossingList &&
         state.crossingList.find((c) => c.id === state.crossingId)
       )
+    },
+    selectedDeath(state) {
+      return state.deathList.find((d) => d.id === state.selectedDeathId)
     },
   },
   async mounted() {
@@ -132,29 +135,10 @@ export default {
         </template>
       </b-table>
       <b-modal
-        :active="
-          !!selectedDeathId && !!deathList.find((d) => d.id === selectedDeathId)
-        "
+        :active="!!selectedDeathId && !!selectedDeath"
         @close="selectedDeathId = null"
       >
-        <div
-          v-if="!!deathList.find((d) => d.id === selectedDeathId)"
-          :class="$style.formDisplay"
-        >
-          <div :class="$style.firmDisplayHeader">
-            <h2 :class="$style.firmDisplaySubtitle"
-              >Traversée {{ crossing.crossingNumber }}</h2
-            >
-            <h1 :class="$style.firmDisplayTitle"
-              >DCD-{{ deathList.find((d) => d.id === selectedDeathId).idc }}</h1
-            >
-          </div>
-          <LockedFirmDisplay
-            :saved-responses="
-              deathList.find((d) => d.id === selectedDeathId).deathForm
-            "
-          />
-        </div>
+        <FormDisplay v-if="!!selectedDeath" :death="selectedDeath" />
       </b-modal>
     </div>
   </Layout>
@@ -181,23 +165,23 @@ export default {
     cursor: pointer;
   }
 
-  .formDisplay {
-    .firmDisplayHeader {
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-    .firmDisplayTitle {
-      color: white;
-      @extend %typography-large;
-    }
-    .firmDisplaySubtitle {
-      color: white;
-      @extend %typography-medium;
-    }
+  // .formDisplay {
+  //   .firmDisplayHeader {
+  //     margin-bottom: 2rem;
+  //     text-align: center;
+  //   }
+  //   .firmDisplayTitle {
+  //     color: white;
+  //     @extend %typography-large;
+  //   }
+  //   .firmDisplaySubtitle {
+  //     color: white;
+  //     @extend %typography-medium;
+  //   }
 
-    padding: $size-grid-padding;
-    background-color: grey;
-  }
+  //   padding: $size-grid-padding;
+  //   background-color: grey;
+  // }
   .deathButtonContainer {
     padding: $size-grid-padding;
     margin-bottom: $size-grid-padding;

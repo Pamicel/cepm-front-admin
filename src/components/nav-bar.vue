@@ -58,6 +58,13 @@ export default {
             <NavBarRoute
               v-if="isDirector"
               :class="$style.navroute"
+              to="director-users"
+              @use="close"
+              >Utilisateurs</NavBarRoute
+            >
+            <NavBarRoute
+              v-if="isDirector"
+              :class="$style.navroute"
               to="crossings"
               @use="close"
               >Traversées</NavBarRoute

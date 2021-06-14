@@ -119,6 +119,15 @@ export default [
     },
   },
   {
+    path: '/director-users',
+    name: 'director-users',
+    component: () => lazyLoadView(import('@views/director-users.vue')),
+    meta: {
+      authRequired: true,
+      requiredPermissions: [PERMISSION_LEVELS.DIRECTOR],
+    },
+  },
+  {
     path: '/logout',
     name: 'logout',
     meta: {
