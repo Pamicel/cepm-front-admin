@@ -4,6 +4,7 @@ import CrossingInfos from '@components/crossing-infos.vue'
 import FormDisplay from '@components/form-display.vue'
 import DeathSimulationTable from '@components/death-simulation-table.vue'
 import { mapState } from 'vuex'
+import CrossingStatistics from '@/src/components/crossing-statistics.vue'
 
 export default {
   page: {
@@ -17,6 +18,7 @@ export default {
     CrossingInfos,
     FormDisplay,
     DeathSimulationTable,
+    CrossingStatistics,
   },
   data() {
     return {
@@ -26,6 +28,7 @@ export default {
       crossingId: +this.$route.params.id,
       selectedDeathId: null,
       firmPanelDeath: null,
+      statisticsOpen: false,
     }
   },
   computed: {
@@ -51,7 +54,6 @@ export default {
   async mounted() {
     const crossingId = this.$route.params.id
 
-    this.$store.dispatch('deaths/fetchDeathSimulations')
     if (!this.crossing || this.crossing.id !== crossingId) {
       await this.$store.dispatch('crossings/fetchCrossings')
     }
@@ -117,6 +119,16 @@ export default {
 <template>
   <Layout>
     <div :class="$style.container">
+      <b-button
+        type="is-link"
+        rounded
+        size="is-small"
+        icon-left="arrow-left"
+        @click="$router.push({ name: 'crossings' })"
+        >Traversées</b-button
+      >
+      <br />
+      <br />
       <CrossingInfos
         v-if="crossing"
         :crossing="crossing"
@@ -135,6 +147,17 @@ export default {
           rounded
           @click="createNewDeath"
           >Ajouter une mort</b-button
+        >
+      </div>
+      <div :class="$style.statisticsButtonContainer">
+        <b-button
+          icon-left="chart-bar"
+          type="is-info"
+          :disabled="fetchingDeaths"
+          :loading="fetchingDeaths"
+          rounded
+          @click="statisticsOpen = true"
+          >Statistiques</b-button
         >
       </div>
       <b-table
@@ -195,6 +218,9 @@ export default {
           @choose="linkFirmPrompt"
         />
       </b-modal>
+      <b-modal :active="statisticsOpen" @close="statisticsOpen = false">
+        <CrossingStatistics v-if="statisticsOpen" :crossing-id="crossingId" />
+      </b-modal>
     </div>
   </Layout>
 </template>
@@ -237,9 +263,9 @@ export default {
   //   padding: $size-grid-padding;
   //   background-color: grey;
   // }
-  .deathButtonContainer {
-    padding: $size-grid-padding;
-    margin-bottom: $size-grid-padding;
+  .deathButtonContainer,
+  .statisticsButtonContainer {
+    margin: $size-grid-padding;
     text-align: center;
   }
 }

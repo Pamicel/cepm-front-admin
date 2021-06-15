@@ -27,7 +27,7 @@ module.exports = {
     'vue/block-spacing': 'error',
     'vue/brace-style': 'error',
     'vue/camelcase': 'error',
-    'vue/comma-dangle': ['error', 'always-multiline'],
+    // 'vue/comma-dangle': ['error', 'always-multiline'],
     'vue/component-name-in-template-casing': 'error',
     'vue/dot-location': ['error', 'property'],
     'vue/eqeqeq': 'error',

@@ -9,9 +9,11 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 // internal icons
 import {
   faArchive,
+  faArrowLeft,
   faBoxOpen,
   faBars,
   faCheck,
+  faChartBar,
   faTimes,
   faTrashAlt,
   faHandsHelping,
@@ -118,9 +120,11 @@ Vue.use(VueMoment, { moment })
 
 library.add(
   faArchive,
+  faArrowLeft,
   faBoxOpen,
   faBars,
   faCheck,
+  faChartBar,
   faCheckCircle,
   faInfoCircle,
   faExclamationTriangle,
