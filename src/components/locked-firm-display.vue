@@ -146,6 +146,7 @@ export default {
           latitude: null,
           longitude: null,
         },
+        crossingDate: null,
         afterLife: '', // multiple choices
         afterLifeMore: '',
         job: '',
@@ -177,6 +178,7 @@ export default {
         'gender',
         'birthDate',
         'birthPlace',
+        'crossingDate',
         'afterLife',
         'afterLifeMore',
         'job',
@@ -282,6 +284,18 @@ export default {
         field-name="Sexe"
         :response="constants.GENDERS[responses.gender]"
         required
+      />
+
+      <!-- CROSSING DATE -->
+
+      <FormField
+        :class="$style.field"
+        field-name="Date de traversée (indication)"
+        :response="
+          responses.crossingDate
+            ? formatDate(responses.crossingDate, 'd MMM yyyy, H\'h\'mm')
+            : '(Non selectionné)'
+        "
       />
     </section>
 
