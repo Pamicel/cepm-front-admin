@@ -2,6 +2,8 @@
 import { PERMISSION_LEVELS } from '@state/modules/auth'
 import FormDisplay from '@components/form-display.vue'
 import { getCrossingNumber } from '@utils/crossingNumber.js'
+import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 export default {
   components: { FormDisplay },
@@ -60,6 +62,13 @@ export default {
     },
     getCrossingNumber(crossingId) {
       return getCrossingNumber(crossingId)
+    },
+    formatDate(date) {
+      try {
+        return format(new Date(date), "d MMM yyyy, H'h'mm", { locale: fr })
+      } catch (error) {
+        return '(Non renseignée)'
+      }
     },
   },
 }
@@ -144,7 +153,32 @@ export default {
                     DCD-${death.idc.toString().padStart(2, '0')}`
               }}
             </h1>
-            <b-button rounded type="is-info" @click="selectedDeath = death"
+            <div
+              v-if="
+                death.isSimulation &&
+                  death.deathForm &&
+                  death.deathForm.crossingDate
+              "
+              >Date de traversée (indication)
+              {{
+                death.deathForm && death.deathForm.crossingDate
+                  ? formatDate(death.deathForm.crossingDate)
+                  : '(Non renseignée)'
+              }}</div
+            >
+            <div v-if="death.deathForm && death.deathForm.dreamDetails"
+              >Rêve
+              {{
+                death.deathForm && death.deathForm.dreamDetails
+                  ? formatDate(death.deathForm.dreamDetails)
+                  : '(Non renseigné)'
+              }}</div
+            >
+            <b-button
+              :class="$style.displayFormButton"
+              rounded
+              type="is-info"
+              @click="selectedDeath = death"
               >Voir forumulaire</b-button
             >
           </div>
@@ -184,5 +218,9 @@ export default {
 }
 .deathDetailTitle {
   @extend %typography-medium;
+}
+
+.displayFormButton {
+  margin: 0.5rem 0;
 }
 </style>
