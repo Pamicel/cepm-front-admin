@@ -128,6 +128,15 @@ export default [
     },
   },
   {
+    path: '/tickets',
+    name: 'tickets',
+    component: () => lazyLoadView(import('@views/tickets.vue')),
+    meta: {
+      authRequired: true,
+      requiredPermissions: [PERMISSION_LEVELS.DIRECTOR],
+    },
+  },
+  {
     path: '/logout',
     name: 'logout',
     meta: {
