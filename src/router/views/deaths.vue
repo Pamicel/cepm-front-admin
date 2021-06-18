@@ -95,7 +95,7 @@ export default {
       if (!success) {
         this.$buefy.dialog.alert({
           title: 'Error',
-          message: `Impossible d'associer le firm de ${userEmail} à DCD-${deathIdc}. Vérifiez que l'email ${userEmail} n'est pas déjà utilisé sur cette traversée.`,
+          message: `Impossible d'associer le firm de ${userEmail} à DCD-${deathIdc}. Vérifiez que vous êtes bien connecté·e à internet et que l'email ${userEmail} n'est pas déjà utilisé sur cette traversée.`,
           type: 'is-danger',
           ariaRole: 'alertdialog',
           ariaModal: true,
@@ -216,6 +216,7 @@ export default {
         <DeathSimulationTable
           v-if="!!firmPanelDeath"
           @choose="linkFirmPrompt"
+          @close="closeUserPanel"
         />
       </b-modal>
       <b-modal :active="statisticsOpen" @close="statisticsOpen = false">

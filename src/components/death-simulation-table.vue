@@ -4,6 +4,11 @@ import FormDisplay from '@components/form-display.vue'
 
 export default {
   components: { FormDisplay },
+  data() {
+    return {
+      searchField: '',
+    }
+  },
   computed: {
     ...mapState({
       fetchingDeathSimulations: (state) =>
@@ -11,9 +16,17 @@ export default {
       deathSimulationList: (state) => state.deaths.deathSimulationList,
     }),
     displayedDeaths(state) {
-      return state.deathSimulationList
+      const onlyWidthDeathForm = state.deathSimulationList
         ? state.deathSimulationList.filter((d) => d.deathForm)
         : []
+
+      const onlyInSeath = state.searchField
+        ? onlyWidthDeathForm.filter((d) =>
+            d.user.email.includes(state.searchField)
+          )
+        : onlyWidthDeathForm
+
+      return onlyInSeath
     },
   },
   mounted() {
@@ -23,7 +36,23 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div :class="$style.container">
+    <div :class="$style.closeButton">
+      <b-button
+        type="is-danger"
+        rounded
+        icon-right="times"
+        @click="$emit('close')"
+        >Fermer</b-button
+      >
+    </div>
+    <div :class="$style.search">
+      <b-input
+        v-model="searchField"
+        size="is-large"
+        placeholder="Chercher email"
+      />
+    </div>
     <b-table
       :data="displayedDeaths"
       detail-key="id"
@@ -68,4 +97,16 @@ export default {
 
 <style lang="scss" module>
 @import '@design';
+.container {
+  position: relative;
+  .closeButton {
+    position: fixed;
+    top: $size-grid-padding;
+    right: $size-grid-padding;
+    z-index: $layer-tooltip-z-index;
+  }
+  .search {
+    padding: 0.5rem;
+  }
+}
 </style>
