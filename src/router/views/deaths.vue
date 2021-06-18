@@ -29,6 +29,7 @@ export default {
       selectedDeathId: null,
       firmPanelDeath: null,
       statisticsOpen: false,
+      firmListOpen: false,
     }
   },
   computed: {
@@ -112,6 +113,12 @@ export default {
         type: 'is-danger',
       })
     },
+    openFirmList() {
+      this.firmListOpen = true
+    },
+    closeFirmList() {
+      this.firmListOpen = false
+    },
   },
 }
 </script>
@@ -158,6 +165,15 @@ export default {
           rounded
           @click="statisticsOpen = true"
           >Statistiques</b-button
+        >
+      </div>
+      <div :class="$style.firmListButtonContainer">
+        <b-button
+          type="is-link"
+          :disabled="fetchingDeaths"
+          :loading="fetchingDeaths"
+          @click="firmListOpen = true"
+          >Liste des FIRMs</b-button
         >
       </div>
       <b-table
@@ -219,6 +235,13 @@ export default {
           @close="closeUserPanel"
         />
       </b-modal>
+      <b-modal :active="firmListOpen" @close="closeFirmList">
+        <DeathSimulationTable
+          v-if="firmListOpen"
+          no-op
+          @close="closeFirmList"
+        />
+      </b-modal>
       <b-modal :active="statisticsOpen" @close="statisticsOpen = false">
         <CrossingStatistics v-if="statisticsOpen" :crossing-id="crossingId" />
       </b-modal>
@@ -265,7 +288,8 @@ export default {
   //   background-color: grey;
   // }
   .deathButtonContainer,
-  .statisticsButtonContainer {
+  .statisticsButtonContainer,
+  .firmListButtonContainer {
     margin: $size-grid-padding;
     text-align: center;
   }

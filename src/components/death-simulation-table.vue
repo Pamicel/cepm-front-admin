@@ -4,6 +4,12 @@ import FormDisplay from '@components/form-display.vue'
 
 export default {
   components: { FormDisplay },
+  props: {
+    noOp: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       searchField: '',
@@ -71,10 +77,10 @@ export default {
             {{ props.row.user.email }}
           </span>
         </b-table-column>
-        <b-table-column field="deathForm" label="FIRM">
+        <b-table-column v-if="!noOp" field="deathForm" label="FIRM">
           <span>
             <b-button
-              v-if="props.row.deathForm"
+              v-if="props.row.deathForm && !noOp"
               type="is-link"
               size="is-small"
               @click="$emit('choose', props.row.user)"
