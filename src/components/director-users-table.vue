@@ -170,7 +170,7 @@ export default {
               >Rêve
               {{
                 death.deathForm && death.deathForm.dreamDetails
-                  ? formatDate(death.deathForm.dreamDetails)
+                  ? death.deathForm.dreamDetails
                   : '(Non renseigné)'
               }}</div
             >
