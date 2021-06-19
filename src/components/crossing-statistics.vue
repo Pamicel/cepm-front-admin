@@ -84,7 +84,7 @@ export default {
     },
     stats(state) {
       const genders = {}
-      const commonYOB = {}
+      const commonDecades = {}
       const allYearsOfBirth = []
       const crossingTypes = {}
       const afterLives = {}
@@ -99,9 +99,9 @@ export default {
         if (df.birthDate) {
           const dateOfBirth = new Date(df.birthDate)
           const yearOfBirth = dateOfBirth.getFullYear()
-          const halfDecade = Math.floor(yearOfBirth / 10) * 10
-          commonYOB[halfDecade] = commonYOB[halfDecade]
-            ? commonYOB[halfDecade] + 1
+          const decade = Math.floor(yearOfBirth / 10) * 10
+          commonDecades[decade] = commonDecades[decade]
+            ? commonDecades[decade] + 1
             : 1
           allYearsOfBirth.push(yearOfBirth)
         }
@@ -126,13 +126,22 @@ export default {
         }
       }
 
+      const totalFromDistribution = (distr) =>
+        Object.values(distr).reduce((acc, num) => acc + num, 0)
+
+      const totalGenderAnswers = totalFromDistribution(genders)
+      const totalCrossingTypeAnswers = totalFromDistribution(crossingTypes)
+      const totalDecadeAnswers = totalFromDistribution(commonDecades)
+      const totalAfterLifeAnswers = totalFromDistribution(afterLives)
+      const totalCaptchaAnswers = totalFromDistribution(captchas)
+
       return {
         genders,
         avgYOB: Math.round(
           allYearsOfBirth.reduce((acc, val) => acc + val, 0) /
             allYearsOfBirth.length
         ),
-        sortedYOB: Object.entries(commonYOB)
+        sortedYOB: Object.entries(commonDecades)
           .sort((a, b) => (parseInt(a[0]) <= parseInt(b[0]) ? 1 : -1))
           .map((e) => ({ year: e[0], number: e[1] })),
         afterLives,
@@ -140,6 +149,11 @@ export default {
         grievances: this.percent(grievances, this.deathForms.length),
         captchas,
         jobs: jobs.sort(),
+        totalGenderAnswers,
+        totalCrossingTypeAnswers,
+        totalDecadeAnswers,
+        totalAfterLifeAnswers,
+        totalCaptchaAnswers,
       }
     },
   },
@@ -168,10 +182,10 @@ export default {
       <h2 :class="$style.sectionTitle">Sexes</h2>
       <div v-for="g of Object.keys(stats.genders)" :key="g">
         {{ constants.GENDERS[g] }}:
-        {{ percent(stats.genders[g], deathForms.length) }}%
+        {{ percent(stats.genders[g], stats.totalGenderAnswers) }}%
         <b-progress
           size="is-small"
-          :value="percent(stats.genders[g], deathForms.length)"
+          :value="percent(stats.genders[g], stats.totalGenderAnswers)"
         ></b-progress>
       </div>
     </section>
@@ -183,10 +197,10 @@ export default {
       <div v-for="entry of stats.sortedYOB" :key="entry.year"
         >{{ entry.year }} →
         {{ Math.min(parseInt(entry.year) + 10, currentYear) }}:
-        {{ percent(entry.number, deathForms.length) }}%
+        {{ percent(entry.number, stats.totalDecadeAnswers) }}%
         <b-progress
           size="is-small"
-          :value="percent(entry.number, deathForms.length)"
+          :value="percent(entry.number, stats.totalDecadeAnswers)"
         ></b-progress>
       </div>
       <p :class="$style.avgAge"
@@ -200,10 +214,10 @@ export default {
       <h2 :class="$style.sectionTitle">Croient à</h2>
       <div v-for="al of Object.keys(stats.afterLives)" :key="al">
         {{ constants.AFTER_LIVES[al] }}:
-        {{ percent(stats.afterLives[al], deathForms.length) }}%
+        {{ percent(stats.afterLives[al], stats.totalAfterLifeAnswers) }}%
         <b-progress
           size="is-small"
-          :value="percent(stats.afterLives[al], deathForms.length)"
+          :value="percent(stats.afterLives[al], stats.totalAfterLifeAnswers)"
         ></b-progress>
       </div>
     </section>
@@ -230,10 +244,12 @@ export default {
       <h2 :class="$style.sectionTitle">Types de traversées</h2>
       <div v-for="ct of Object.keys(stats.crossingTypes)" :key="ct">
         {{ constants.CROSSING_TYPES[ct] }}:
-        {{ percent(stats.crossingTypes[ct], deathForms.length) }}%
+        {{ percent(stats.crossingTypes[ct], stats.totalCrossingTypeAnswers) }}%
         <b-progress
           size="is-small"
-          :value="percent(stats.crossingTypes[ct], deathForms.length)"
+          :value="
+            percent(stats.crossingTypes[ct], stats.totalCrossingTypeAnswers)
+          "
         ></b-progress>
       </div>
     </section>
@@ -259,7 +275,7 @@ export default {
         {{ choice }}: {{ stats.captchas[choice] }}
         <b-progress
           size="is-small"
-          :value="percent(stats.captchas[choice], deathForms.length)"
+          :value="percent(stats.captchas[choice], stats.totalCaptchaAnswers)"
         ></b-progress>
       </div>
     </section>

@@ -104,9 +104,11 @@ export default {
       const content = {
         gender: responses.gender,
         birthDate:
-          responses.birthYear !== undefined &&
-          responses.birthMonth !== undefined
-            ? new Date(responses.birthYear, responses.birthMonth)
+          responses.birthYear !== undefined
+            ? new Date(
+                responses.birthYear,
+                responses.birthMonth === undefined ? 5 : responses.birthMonth
+              )
             : undefined,
 
         afterLife: responses.afterLife,
