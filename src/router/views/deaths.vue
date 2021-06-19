@@ -5,6 +5,7 @@ import FormDisplay from '@components/form-display.vue'
 import DeathSimulationTable from '@components/death-simulation-table.vue'
 import { mapState } from 'vuex'
 import CrossingStatistics from '@/src/components/crossing-statistics.vue'
+import MicroFirm from '@/src/components/micro-firm.vue'
 
 export default {
   page: {
@@ -19,6 +20,7 @@ export default {
     FormDisplay,
     DeathSimulationTable,
     CrossingStatistics,
+    MicroFirm,
   },
   data() {
     return {
@@ -30,6 +32,7 @@ export default {
       firmPanelDeath: null,
       statisticsOpen: false,
       firmListOpen: false,
+      microFirmPanelOpen: null,
     }
   },
   computed: {
@@ -50,6 +53,9 @@ export default {
     },
     selectedDeath(state) {
       return state.deathList.find((d) => d.id === state.selectedDeathId)
+    },
+    deathSimTableOpen(state) {
+      return !!state.firmPanelDeath || state.firmListOpen
     },
   },
   async mounted() {
@@ -76,11 +82,31 @@ export default {
         },
       })
     },
+    closeDeathSimTable() {
+      if (this.firmPanelDeath !== null) {
+        this.firmPanelDeath = null
+      }
+      if (this.firmListOpen) {
+        this.firmListOpen = false
+      }
+    },
     openUserPanel(death) {
       this.firmPanelDeath = death
     },
     closeUserPanel() {
       this.firmPanelDeath = null
+    },
+    openMicroFirm(deathId) {
+      this.microFirmPanelOpen = deathId
+    },
+    refreshAndCloseMicroFirm() {
+      this.$store.dispatch('deaths/fetchDeaths', {
+        crossingId: this.crossing.id,
+      })
+      this.closeMicroFirm()
+    },
+    closeMicroFirm() {
+      this.microFirmPanelOpen = null
     },
     async linkFirm(user, death) {
       const userId = user.id
@@ -189,18 +215,32 @@ export default {
               >DCD-{{ props.row.idc.toString().padStart(2, '0') }}</b-tag
             >
           </b-table-column>
+          <b-table-column label="Mot de passage">
+            <b-tag>{{ props.row.idcWord }}</b-tag>
+          </b-table-column>
           <b-table-column field="deathForm" label="FIRM">
             <span>
-              <b-button
-                v-if="!props.row.deathForm"
-                type="is-link"
-                size="is-small"
-                icon-right="plus"
-                :loading="changingDeathOwner.includes(props.row.id)"
-                :disabled="changingDeathOwner.includes(props.row.id)"
-                @click="() => openUserPanel(props.row)"
-                >Associer un FIRM</b-button
-              >
+              <span v-if="!props.row.deathForm">
+                <b-button
+                  type="is-link"
+                  size="is-small"
+                  icon-right="paperclip"
+                  :loading="changingDeathOwner.includes(props.row.id)"
+                  :disabled="changingDeathOwner.includes(props.row.id)"
+                  @click="() => openUserPanel(props.row)"
+                  >Associer</b-button
+                >
+                <b-button
+                  type="is-warning"
+                  size="is-small"
+                  icon-right="plus"
+                  :class="$style.firmExpressButton"
+                  :loading="changingDeathOwner.includes(props.row.id)"
+                  :disabled="changingDeathOwner.includes(props.row.id)"
+                  @click="() => openMicroFirm(props.row.id)"
+                  >Express</b-button
+                >
+              </span>
               <span
                 v-else-if="props.row.deathForm && props.row.deathForm.filled"
                 class="tag is-small is-success"
@@ -217,9 +257,6 @@ export default {
               >
             </span>
           </b-table-column>
-          <b-table-column label="Mot de passage">
-            <b-tag>{{ props.row.idcWord }}</b-tag>
-          </b-table-column>
         </template>
       </b-table>
       <b-modal
@@ -228,22 +265,61 @@ export default {
       >
         <FormDisplay v-if="!!selectedDeath" :death="selectedDeath" />
       </b-modal>
-      <b-modal :active="!!firmPanelDeath" @close="closeUserPanel">
-        <DeathSimulationTable
-          v-if="!!firmPanelDeath"
-          @choose="linkFirmPrompt"
-          @close="closeUserPanel"
-        />
+      <b-modal :active="deathSimTableOpen" @close="closeDeathSimTable">
+        <div :class="$style.deathSimTableContainer">
+          <div :class="$style.closeButton">
+            <b-button
+              type="is-danger"
+              rounded
+              icon-right="times"
+              @click="closeDeathSimTable"
+              >Fermer</b-button
+            >
+          </div>
+          <DeathSimulationTable
+            v-if="deathSimTableOpen"
+            :no-op="firmListOpen"
+            @choose="linkFirmPrompt"
+            @close="closeDeathSimTable"
+          />
+        </div>
       </b-modal>
-      <b-modal :active="firmListOpen" @close="closeFirmList">
+      <!-- <b-modal :active="firmListOpen">
+        <div :class="$style.closeButton">
+          <b-button
+            type="is-danger"
+            rounded
+            icon-right="times"
+            @click="closeFirmList"
+            >Fermer</b-button
+          >
+        </div>
         <DeathSimulationTable
           v-if="firmListOpen"
           no-op
           @close="closeFirmList"
         />
-      </b-modal>
+      </b-modal> -->
       <b-modal :active="statisticsOpen" @close="statisticsOpen = false">
         <CrossingStatistics v-if="statisticsOpen" :crossing-id="crossingId" />
+      </b-modal>
+      <b-modal :active="!!microFirmPanelOpen" @close="closeMicroFirm">
+        <div :class="$style.microFirmContainer">
+          <div :class="$style.closeButton">
+            <b-button
+              type="is-danger"
+              rounded
+              icon-right="times"
+              @click="closeMicroFirm"
+              >Fermer</b-button
+            >
+          </div>
+          <MicroFirm
+            v-if="microFirmPanelOpen"
+            :death-id="microFirmPanelOpen"
+            @done="refreshAndCloseMicroFirm"
+          />
+        </div>
       </b-modal>
     </div>
   </Layout>
@@ -268,6 +344,21 @@ export default {
   .openFirmDisplayButton {
     margin-left: 0.5em;
     cursor: pointer;
+  }
+
+  .firmExpressButton {
+    margin-left: 0.5em;
+  }
+
+  .deathSimTableContainer,
+  .microFirmContainer {
+    position: relative;
+    .closeButton {
+      position: fixed;
+      top: $size-grid-padding;
+      right: $size-grid-padding;
+      z-index: $layer-tooltip-z-index;
+    }
   }
 
   // .formDisplay {

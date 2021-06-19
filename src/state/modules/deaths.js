@@ -10,6 +10,8 @@ export const state = {
   changingDeathOwner: [],
 
   creatingDeath: false,
+
+  sendingDeathForm: [],
 }
 
 export const getters = {}
@@ -61,6 +63,15 @@ export const mutations = {
   },
   END_CREATING_DEATH(state) {
     state.creatingDeath = false
+  },
+
+  START_SENDING_DFORM(state, deathId) {
+    state.sendingDeathForm = [...state.sendingDeathForm, deathId]
+  },
+  END_SENDING_DFORM(state, deathId) {
+    state.sendingDeathForm = [
+      ...state.sendingDeathForm.filter((id) => id !== deathId),
+    ]
   },
 }
 
@@ -132,6 +143,25 @@ export const actions = {
     } catch (error) {
       console.error(error)
       commit('END_CREATING_DEATH')
+      return null
+    }
+  },
+
+  async sendDeathForm({ rootGetters, commit }, { form, deathId }) {
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    commit('START_SENDING_DFORM', deathId)
+    try {
+      // Send new form for active death
+      await axios.post(`/api/death/${deathId}/form`, {
+        ...form,
+      })
+      commit('END_SENDING_DFORM', deathId)
+      return true
+    } catch (error) {
+      console.error(error)
+      commit('END_SENDING_DFORM')
       return null
     }
   },

@@ -43,15 +43,6 @@ export default {
 
 <template>
   <div :class="$style.container">
-    <div :class="$style.closeButton">
-      <b-button
-        type="is-danger"
-        rounded
-        icon-right="times"
-        @click="$emit('close')"
-        >Fermer</b-button
-      >
-    </div>
     <div :class="$style.search">
       <b-input
         v-model="searchField"
@@ -104,13 +95,6 @@ export default {
 <style lang="scss" module>
 @import '@design';
 .container {
-  position: relative;
-  .closeButton {
-    position: fixed;
-    top: $size-grid-padding;
-    right: $size-grid-padding;
-    z-index: $layer-tooltip-z-index;
-  }
   .search {
     padding: 0.5rem;
   }

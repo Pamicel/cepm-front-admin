@@ -10,6 +10,10 @@ export default {
       type: String,
       required: true,
     },
+    edit: {
+      type: Boolean,
+      default: false,
+    },
     required: {
       type: Boolean,
       default: false,
@@ -34,11 +38,11 @@ export default {
     <div :class="$style.field">
       <label :class="$style.fieldName"
         >{{ fieldName }}
-        <span v-if="required" :class="$style.required"
+        <span v-if="required && edit" :class="$style.required"
           >(obligatoire)</span
         ></label
       >
-      <div :class="$style.response">
+      <div v-if="!edit" :class="$style.response">
         <p v-if="!isList">{{ displayedResponse }}</p>
         <ul v-else>
           <li
@@ -48,6 +52,9 @@ export default {
             >{{ displayedResponse[index] }}</li
           >
         </ul>
+      </div>
+      <div v-else :class="$style.response">
+        <slot />
       </div>
     </div>
   </div>
@@ -86,10 +93,10 @@ export default {
   @media screen and (max-width: $size-breakpoint-small) {
     flex-direction: column;
     .fieldName {
-      @extend %typography-small;
-
-      width: 40%;
+      width: 100%;
       margin-right: 0;
+      margin-bottom: 0.5rem;
+      font-size: 1.1em;
       text-align: left;
     }
   }
