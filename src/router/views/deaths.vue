@@ -193,7 +193,7 @@ export default {
           >Statistiques</b-button
         >
       </div>
-      <div :class="$style.firmListButtonContainer">
+      <!-- <div :class="$style.firmListButtonContainer">
         <b-button
           type="is-link"
           :disabled="fetchingDeaths"
@@ -201,7 +201,7 @@ export default {
           @click="firmListOpen = true"
           >Liste des FIRMs</b-button
         >
-      </div>
+      </div> -->
       <b-table
         :data="deathList"
         detail-key="id"

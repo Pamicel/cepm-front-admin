@@ -76,13 +76,6 @@ export default {
               @use="close"
               >S.Q.D.A.</NavBarRoute
             >
-            <NavBarRoute
-              v-if="isDirector"
-              :class="$style.navroute"
-              to="tickets"
-              @use="close"
-              >Tickets</NavBarRoute
-            >
             <NavBarRoute :class="$style.navroute" to="profile" @use="close"
               >Mon compte</NavBarRoute
             >

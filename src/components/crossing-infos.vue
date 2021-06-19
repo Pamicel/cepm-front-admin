@@ -43,7 +43,21 @@ export default {
       <p>Départ: {{ formatDate(new Date(crossing.startDate), "H'h'mm") }}</p>
       <p>Durée: {{ formatDuration(crossing.duration) }}</p>
       <p>Jauge: {{ crossing.audienceSize }} personnes</p>
-      <p :class="$style.archiveButton">
+      <p :class="$style.actionButtons">
+        <b-button
+          icon-right="ticket-alt"
+          size="is-small"
+          :class="$style.ticketButton"
+          @click="
+            $router.push({
+              name: 'tickets',
+              query: { n: crossing.audienceSize, t: crossing.id },
+            })
+          "
+        >
+          Tickets
+        </b-button>
+        <br />
         <b-button
           :disabled="loading"
           :loading="loading"
@@ -69,10 +83,14 @@ export default {
 
   position: relative;
   padding: $size-grid-padding;
-  .archiveButton {
+  .actionButtons {
     position: absolute;
     right: $size-grid-padding;
     bottom: $size-grid-padding;
+    text-align: right;
+    .ticketButton {
+      margin-bottom: 0.5em;
+    }
   }
   .infos {
     padding-left: 0.5rem;

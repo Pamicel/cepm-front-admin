@@ -72,9 +72,14 @@ export default {
   },
   components: { Layout },
   data() {
+    const crossingId =
+      this.$route.query && this.$route.query.t ? +this.$route.query.t - 1 : 0
+    const number =
+      this.$route.query && this.$route.query.n ? +this.$route.query.n : 30
+
     return {
-      number: 30,
-      crossingWord: crossingIdWords[0],
+      number,
+      crossingWord: crossingIdWords[crossingId % crossingIdWords.length],
       deathIdcWords,
       crossingIdWords,
     }
@@ -99,7 +104,10 @@ export default {
   <Layout>
     <div :class="$style.container">
       <div :class="$style.controls">
+        Jauge:
         <b-input v-model="number" type="number" />
+        <br />
+        Mot de traversée:
         <b-select v-model="crossingWord" placeholder="Mot de traversée" rounded>
           <option v-for="word of crossingIdWords" :key="word">{{
             word
@@ -141,12 +149,13 @@ export default {
     margin: auto;
   }
 
+  padding: $size-grid-padding;
   background-color: white;
   .ticketList {
     display: flex;
     flex-wrap: wrap;
     max-width: 29.7cm;
-    margin: 1rem;
+    margin: 1rem auto;
     border: 1px solid black;
     .ticket {
       display: flex;
