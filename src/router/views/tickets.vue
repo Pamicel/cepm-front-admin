@@ -145,6 +145,7 @@ export default {
   .ticketList {
     display: flex;
     flex-wrap: wrap;
+    max-width: 29.7cm;
     margin: 1rem;
     border: 1px solid black;
     .ticket {
