@@ -6,6 +6,7 @@ import DeathSimulationTable from '@components/death-simulation-table.vue'
 import { mapState } from 'vuex'
 import CrossingStatistics from '@/src/components/crossing-statistics.vue'
 import MicroFirm from '@/src/components/micro-firm.vue'
+import DeathSummary from '@/src/components/death-summary.vue'
 
 export default {
   page: {
@@ -21,6 +22,7 @@ export default {
     DeathSimulationTable,
     CrossingStatistics,
     MicroFirm,
+    DeathSummary,
   },
   data() {
     return {
@@ -33,6 +35,7 @@ export default {
       statisticsOpen: false,
       firmListOpen: false,
       microFirmPanelOpen: null,
+      deathAscIdc: true,
     }
   },
   computed: {
@@ -145,6 +148,9 @@ export default {
     closeFirmList() {
       this.firmListOpen = false
     },
+    changeDeathOrder() {
+      this.deathAscIdc = !this.deathAscIdc
+    },
   },
 }
 </script>
@@ -169,30 +175,7 @@ export default {
         @archive="archive"
       />
       <BaseIcon v-else :class="$style.loadingIcon" name="fan" spin />
-      <h2 :class="$style.subtitle">Liste des morts</h2>
-      <div :class="$style.deathButtonContainer">
-        <b-button
-          icon-right="plus"
-          type="is-dark"
-          :disabled="
-            creatingDeath || fetchingDeaths || (crossing && crossing.archived)
-          "
-          rounded
-          @click="createNewDeath"
-          >Ajouter une mort</b-button
-        >
-      </div>
-      <div :class="$style.statisticsButtonContainer">
-        <b-button
-          icon-left="chart-bar"
-          type="is-info"
-          :disabled="fetchingDeaths"
-          :loading="fetchingDeaths"
-          rounded
-          @click="statisticsOpen = true"
-          >Statistiques</b-button
-        >
-      </div>
+      <h2 :class="$style.subtitle">Liste des morts :</h2>
       <!-- <div :class="$style.firmListButtonContainer">
         <b-button
           type="is-link"
@@ -202,63 +185,56 @@ export default {
           >Liste des FIRMs</b-button
         >
       </div> -->
-      <b-table
-        :data="deathList"
-        detail-key="id"
-        default-sort-direction="DESC"
-        default-sort="idc"
-        :class="$style.deathTable"
-      >
-        <template slot-scope="props">
-          <b-table-column field="idc" label="N° DCD" sortable numeric centered>
-            <b-tag type="is-dark"
-              >DCD-{{ props.row.idc.toString().padStart(2, '0') }}</b-tag
+
+      <div :class="$style.deathListContainer">
+        <div :class="$style.actionButtons">
+          <div :class="$style.idcOrderButton">
+            <b-button type="is-dark" @click="changeDeathOrder">
+              DCD
+              <span
+                :data-state="deathAscIdc ? 'ASC' : 'DESC'"
+                :class="$style.idcOrderArrow"
+                >↓</span
+              >
+            </b-button>
+          </div>
+          <div :class="$style.statisticsButton">
+            <b-button
+              icon-left="chart-bar"
+              type="is-info"
+              :disabled="fetchingDeaths"
+              :loading="fetchingDeaths"
+              @click="statisticsOpen = true"
+              >Statistiques</b-button
             >
-          </b-table-column>
-          <b-table-column label="Mot de passage">
-            <b-tag>{{ props.row.idcWord }}</b-tag>
-          </b-table-column>
-          <b-table-column field="deathForm" label="FIRM">
-            <span>
-              <span v-if="!props.row.deathForm">
-                <b-button
-                  type="is-link"
-                  size="is-small"
-                  icon-right="paperclip"
-                  :loading="changingDeathOwner.includes(props.row.id)"
-                  :disabled="changingDeathOwner.includes(props.row.id)"
-                  @click="() => openUserPanel(props.row)"
-                  >Associer</b-button
-                >
-                <b-button
-                  type="is-warning"
-                  size="is-small"
-                  icon-right="plus"
-                  :class="$style.firmExpressButton"
-                  :loading="changingDeathOwner.includes(props.row.id)"
-                  :disabled="changingDeathOwner.includes(props.row.id)"
-                  @click="() => openMicroFirm(props.row.id)"
-                  >Express</b-button
-                >
-              </span>
-              <span
-                v-else-if="props.row.deathForm && props.row.deathForm.filled"
-                class="tag is-small is-success"
-                >FIRM complet</span
-              >
-              <span v-else class="tag is-small is-info">Firm associé</span>
-              <span
-                v-if="props.row.deathForm"
-                class="tag is-small is-info is-rounded"
-                :class="$style.openFirmDisplayButton"
-                role="button"
-                @click="selectedDeathId = props.row.id"
-                >voir</span
-              >
-            </span>
-          </b-table-column>
-        </template>
-      </b-table>
+          </div>
+          <div :class="$style.addDeathButton">
+            <b-button
+              icon-right="plus"
+              type="is-warning"
+              :disabled="
+                creatingDeath ||
+                  fetchingDeaths ||
+                  (crossing && crossing.archived)
+              "
+              @click="createNewDeath"
+              >Ajouter une mort</b-button
+            >
+          </div>
+        </div>
+        <DeathSummary
+          v-for="death in [...deathList].sort((da, db) => {
+            if (deathAscIdc) return da.idc > db.idc ? -1 : 1
+            else return da.idc > db.idc ? 1 : -1
+          })"
+          :key="death.idc"
+          :death="death"
+          :loading="changingDeathOwner.includes(death.id)"
+          @openUserPanel="() => openUserPanel(death)"
+          @openMicroFirm="() => openMicroFirm(death.id)"
+          @select="selectedDeathId = death.id"
+        />
+      </div>
       <b-modal
         :active="!!selectedDeathId && !!selectedDeath"
         @close="selectedDeathId = null"
@@ -333,9 +309,8 @@ export default {
   .subtitle {
     @extend %typography-large;
 
-    margin-top: $size-grid-padding;
+    margin: (2 * $size-grid-padding) 0 $size-grid-padding;
     font-weight: bold;
-    text-align: center;
   }
   .deathTable {
     margin-bottom: $size-grid-padding;
@@ -361,6 +336,25 @@ export default {
     }
   }
 
+  .actionButtons {
+    display: flex;
+    flex-direction: row;
+    > * {
+      margin-right: 0.5rem;
+    }
+    .idcOrderButton {
+      margin-bottom: $size-grid-padding;
+      .idcOrderArrow {
+        display: inline-block;
+        font-weight: bold;
+        transition: all 200ms;
+        &[data-state='ASC'] {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+
   // .formDisplay {
   //   .firmDisplayHeader {
   //     margin-bottom: 2rem;
@@ -378,11 +372,5 @@ export default {
   //   padding: $size-grid-padding;
   //   background-color: grey;
   // }
-  .deathButtonContainer,
-  .statisticsButtonContainer,
-  .firmListButtonContainer {
-    margin: $size-grid-padding;
-    text-align: center;
-  }
 }
 </style>
