@@ -239,7 +239,18 @@ export default {
         :active="!!selectedDeathId && !!selectedDeath"
         @close="selectedDeathId = null"
       >
-        <FormDisplay v-if="!!selectedDeath" :death="selectedDeath" />
+        <div :class="$style.formDisplayContainer">
+          <div :class="$style.closeButton">
+            <b-button
+              type="is-danger"
+              rounded
+              icon-right="times"
+              @click="selectedDeathId = null"
+              >Fermer</b-button
+            >
+          </div>
+          <FormDisplay v-if="!!selectedDeath" :death="selectedDeath" />
+        </div>
       </b-modal>
       <b-modal :active="deathSimTableOpen" @close="closeDeathSimTable">
         <div :class="$style.deathSimTableContainer">
@@ -326,8 +337,11 @@ export default {
   }
 
   .deathSimTableContainer,
-  .microFirmContainer {
+  .microFirmContainer,
+  .formDisplayContainer {
     position: relative;
+    padding: 1rem;
+    background-color: grey;
     .closeButton {
       position: fixed;
       top: $size-grid-padding;
