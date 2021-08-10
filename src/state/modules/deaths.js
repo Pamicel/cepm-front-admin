@@ -12,6 +12,7 @@ export const state = {
   creatingDeath: false,
 
   sendingDeathForm: [],
+  selectingDeathActivity: [],
 }
 
 export const getters = {}
@@ -71,6 +72,15 @@ export const mutations = {
   END_SENDING_DFORM(state, deathId) {
     state.sendingDeathForm = [
       ...state.sendingDeathForm.filter((id) => id !== deathId),
+    ]
+  },
+
+  START_SELECTING_ACTIVITY(state, deathId) {
+    state.selectingDeathActivity = [...state.selectingDeathActivity, deathId]
+  },
+  END_SELECTING_ACTIVITY(state, deathId) {
+    state.selectingDeathActivity = [
+      ...state.selectingDeathActivity.filter((id) => id !== deathId),
     ]
   },
 }
@@ -162,6 +172,31 @@ export const actions = {
     } catch (error) {
       console.error(error)
       commit('END_SENDING_DFORM')
+      return null
+    }
+  },
+
+  async selectActivity(
+    { rootGetters, commit },
+    { deathId, selection = [], deselect = false }
+  ) {
+    if (!rootGetters['auth/loggedIn']) {
+      return null
+    }
+    commit('START_SELECTING_ACTIVITY', deathId)
+    try {
+      const url = `/api/death/${deathId}/select-for${
+        deselect ? '?deselect=true' : ''
+      }`
+      const payload = { selectedFor: selection }
+      const response = await axios.patch(url, payload)
+      const { data: death } = response
+      commit('UPDATE_DEATH_IN_LIST', death)
+      commit('END_SELECTING_ACTIVITY', deathId)
+      return true
+    } catch (error) {
+      console.error(error)
+      commit('END_SELECTING_ACTIVITY', deathId)
       return null
     }
   },

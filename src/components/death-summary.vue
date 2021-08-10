@@ -17,8 +17,14 @@ export default {
     openMicroFirm() {
       this.$emit('openMicroFirm')
     },
-    select() {
-      this.$emit('select')
+    displayDeath() {
+      this.$emit('display')
+    },
+    deselectActivity(activity) {
+      this.$emit('deselectActivity', activity)
+    },
+    selectActivity(activity) {
+      this.$emit('selectActivity', activity)
     },
   },
 }
@@ -60,12 +66,12 @@ export default {
           v-if="death.deathForm && death.deathForm.filled"
           :class="$style.newFirm"
         >
-          <b-button size="is-small" type="is-success" @click="select"
+          <b-button size="is-small" type="is-success" @click="displayDeath"
             >FIRM complet (ouvrir)</b-button
           >
         </div>
         <div v-if="death.deathForm && !death.deathForm.filled">
-          <b-button size="is-small" type="is-info" @click="select"
+          <b-button size="is-small" type="is-info" @click="displayDeath"
             >Firm associé (ouvrir)</b-button
           >
         </div>
@@ -91,10 +97,57 @@ export default {
             :class="$style.readButton"
             type="is-dark"
             size="is-small"
-            @click="select"
+            @click="displayDeath"
             >lire en entier dans le firm</b-button
           >
         </span>
+      </div>
+      <div :class="$style.activities">
+        <b-button
+          :type="death.selectedFor.includes('rebirth') ? 'is-success' : ''"
+          :disabled="loading"
+          :loading="loading"
+          :icon-right="death.selectedFor.includes('rebirth') ? 'check' : ''"
+          rounded
+          :class="$style.activityButton"
+          @click="
+            () =>
+              death.selectedFor.includes('rebirth')
+                ? deselectActivity('rebirth')
+                : selectActivity('rebirth')
+          "
+          >P</b-button
+        >
+        <b-button
+          :type="death.selectedFor.includes('message') ? 'is-success' : ''"
+          :disabled="loading"
+          :loading="loading"
+          :icon-right="death.selectedFor.includes('message') ? 'check' : ''"
+          rounded
+          :class="$style.activityButton"
+          @click="
+            () =>
+              death.selectedFor.includes('message')
+                ? deselectActivity('message')
+                : selectActivity('message')
+          "
+          >UM</b-button
+        >
+        <b-button
+          :type="death.selectedFor.includes('dream') ? 'is-success' : ''"
+          :disabled="loading"
+          :loading="loading"
+          :icon-right="death.selectedFor.includes('dream') ? 'check' : ''"
+          rounded
+          :class="$style.activityButton"
+          @click="
+            () =>
+              death.selectedFor.includes('dream')
+                ? deselectActivity('dream')
+                : selectActivity('dream')
+          "
+          >R</b-button
+        >
       </div>
     </div>
   </div>
@@ -108,6 +161,15 @@ export default {
   min-height: 7.5rem;
   padding: $size-grid-padding;
   margin-bottom: $size-grid-padding;
+
+  .activities {
+    margin-top: 0.5rem;
+    .activityButton {
+      margin-right: 0.5rem;
+      font-weight: bold;
+    }
+  }
+
   .mainInfos {
     display: flex;
     flex-wrap: wrap;

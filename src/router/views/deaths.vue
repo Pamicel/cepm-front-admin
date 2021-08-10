@@ -30,7 +30,7 @@ export default {
       isCreateFormOpen: false,
       isDeathUploadOpen: false,
       crossingId: +this.$route.params.id,
-      selectedDeathId: null,
+      displayedDeathId: null,
       firmPanelDeath: null,
       statisticsOpen: false,
       firmListOpen: false,
@@ -47,6 +47,7 @@ export default {
       modifyingCrossing: (state) => state.crossings.modifyingCrossing,
       deathList: (state) => state.deaths.deathList,
       changingDeathOwner: (state) => state.deaths.changingDeathOwner,
+      selectingDeathActivity: (state) => state.deaths.selectingDeathActivity,
     }),
     crossing(state) {
       return (
@@ -54,8 +55,8 @@ export default {
         state.crossingList.find((c) => c.id === state.crossingId)
       )
     },
-    selectedDeath(state) {
-      return state.deathList.find((d) => d.id === state.selectedDeathId)
+    displayedDeath(state) {
+      return state.deathList.find((d) => d.id === state.displayedDeathId)
     },
     deathSimTableOpen(state) {
       return !!state.firmPanelDeath || state.firmListOpen
@@ -151,6 +152,19 @@ export default {
     changeDeathOrder() {
       this.deathAscIdc = !this.deathAscIdc
     },
+    selectActivity(deathId, selection) {
+      this.$store.dispatch('deaths/selectActivity', {
+        deathId,
+        selection,
+      })
+    },
+    deselectActivity(deathId, selection) {
+      this.$store.dispatch('deaths/selectActivity', {
+        deathId,
+        selection,
+        deselect: true,
+      })
+    },
   },
 }
 </script>
@@ -229,15 +243,20 @@ export default {
           })"
           :key="death.idc"
           :death="death"
-          :loading="changingDeathOwner.includes(death.id)"
+          :loading="
+            changingDeathOwner.includes(death.id) ||
+              selectingDeathActivity.includes(death.id)
+          "
           @openUserPanel="() => openUserPanel(death)"
           @openMicroFirm="() => openMicroFirm(death.id)"
-          @select="selectedDeathId = death.id"
+          @display="displayedDeathId = death.id"
+          @selectActivity="(activity) => selectActivity(death.id, activity)"
+          @deselectActivity="(activity) => deselectActivity(death.id, activity)"
         />
       </div>
       <b-modal
-        :active="!!selectedDeathId && !!selectedDeath"
-        @close="selectedDeathId = null"
+        :active="!!displayedDeathId && !!displayedDeath"
+        @close="displayedDeathId = null"
       >
         <div :class="$style.formDisplayContainer">
           <div :class="$style.closeButton">
@@ -245,11 +264,11 @@ export default {
               type="is-danger"
               rounded
               icon-right="times"
-              @click="selectedDeathId = null"
+              @click="displayedDeathId = null"
               >Fermer</b-button
             >
           </div>
-          <FormDisplay v-if="!!selectedDeath" :death="selectedDeath" />
+          <FormDisplay v-if="!!displayedDeath" :death="displayedDeath" />
         </div>
       </b-modal>
       <b-modal :active="deathSimTableOpen" @close="closeDeathSimTable">
