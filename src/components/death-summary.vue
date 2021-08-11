@@ -34,15 +34,17 @@ export default {
   <div :class="$style.container">
     <div :class="$style.mainInfos">
       <div :class="$style.idc">
-        <b-tag type="is-dark" size="is-large"
+        <!-- <b-tag type="is-dark" size="is-large"
           >DCD-{{ death.idc.toString().padStart(2, '0') }}</b-tag
-        >
+        > -->
+        <span :class="$style.idcNum">
+          DCD-{{ death.idc.toString().padStart(2, '0') }}
+        </span>
       </div>
       <div :class="$style.actions">
         <div v-if="!death.deathForm" :class="$style.newFirm">
           <b-button
             type="is-link"
-            size="is-small"
             icon-right="paperclip"
             :loading="loading"
             :disabled="loading"
@@ -53,7 +55,6 @@ export default {
         <div v-if="!death.deathForm" :class="$style.newFirm">
           <b-button
             type="is-warning"
-            size="is-small"
             icon-right="plus"
             :class="$style.firmExpressButton"
             :loading="loading"
@@ -66,12 +67,12 @@ export default {
           v-if="death.deathForm && death.deathForm.filled"
           :class="$style.newFirm"
         >
-          <b-button size="is-small" type="is-success" @click="displayDeath"
+          <b-button type="is-success" @click="displayDeath"
             >FIRM complet (ouvrir)</b-button
           >
         </div>
         <div v-if="death.deathForm && !death.deathForm.filled">
-          <b-button size="is-small" type="is-info" @click="displayDeath"
+          <b-button type="is-info" @click="displayDeath"
             >Firm associé (ouvrir)</b-button
           >
         </div>
@@ -161,7 +162,7 @@ export default {
   min-height: 7.5rem;
   padding: $size-grid-padding;
   margin-bottom: $size-grid-padding;
-
+  overflow: hidden;
   .activities {
     margin-top: 0.5rem;
     .activityButton {
@@ -177,11 +178,25 @@ export default {
     justify-content: space-between;
 
     .idc {
+      position: relative;
+      top: -($size-grid-padding);
+      left: -($size-grid-padding);
       min-width: 10rem;
+      .idcNum {
+        // top: -($size-grid-padding * 1.2);
+        // left: -($size-grid-padding * 1.2);
+        display: inline-block;
+        padding: $size-grid-padding * 0.7;
+        font-size: 1.4em;
+        // font-weight: bold;
+        color: white;
+        background-color: #363636;
+        border-bottom-right-radius: 0.5rem;
+      }
     }
     .actions {
       text-align: right;
-      > * {
+      > *:not(:first-child) {
         margin-top: 0.5rem;
       }
     }

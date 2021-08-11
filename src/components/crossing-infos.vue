@@ -13,6 +13,14 @@ export default {
       type: Boolean,
       defualt: false,
     },
+    small: {
+      type: Boolean,
+      defualt: false,
+    },
+    selectable: {
+      type: Boolean,
+      defualt: false,
+    },
   },
   methods: {
     formatDate(date, formatString) {
@@ -24,8 +32,11 @@ export default {
 </script>
 
 <template>
-  <div :class="$style.container">
-    <h1
+  <div
+    :class="{ [$style.container]: true, [$style.selectable]: selectable }"
+    @click="() => selectable && $emit('select')"
+  >
+    <h1 :class="{ [$style.titleSmall]: small }"
       >Traversée du
       {{ formatDate(new Date(crossing.startDate), "d MMM, H'h'mm") }}
       <span v-if="crossing.archived">
@@ -48,7 +59,7 @@ export default {
           icon-right="ticket-alt"
           size="is-small"
           :class="$style.ticketButton"
-          @click="
+          @click.stop="
             $router.push({
               name: 'tickets',
               query: { n: crossing.audienceSize, t: crossing.id },
@@ -64,7 +75,7 @@ export default {
           :icon-right="crossing && crossing.archived ? 'box-open' : 'archive'"
           :type="crossing.archived ? 'is-warning' : 'is-link'"
           size="is-small"
-          @click="$emit('archive')"
+          @click.stop="$emit('archive')"
           >{{
             crossing.archived
               ? 'Réactiver la traversée'
@@ -80,6 +91,12 @@ export default {
 @import '@design';
 .container {
   @extend %comic-box;
+  &.selectable {
+    cursor: pointer;
+    .titleSmall {
+      @extend %typography-large;
+    }
+  }
 
   position: relative;
   padding: $size-grid-padding;

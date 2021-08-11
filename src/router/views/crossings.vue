@@ -83,11 +83,5 @@ export default {
   .title {
     margin-bottom: 1rem;
   }
-
-  .crossingsTable {
-    border-right: 5px solid black;
-    border-left: 5px solid black;
-    border-radius: 4px;
-  }
 }
 </style>
