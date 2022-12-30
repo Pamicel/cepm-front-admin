@@ -7,6 +7,7 @@ import { mapState } from 'vuex'
 import CrossingStatistics from '@/src/components/crossing-statistics.vue'
 import MicroFirm from '@/src/components/micro-firm.vue'
 import DeathSummary from '@/src/components/death-summary.vue'
+// import GroupMaker from '@/src/components/group-maker.vue'
 
 export default {
   page: {
@@ -23,6 +24,7 @@ export default {
     CrossingStatistics,
     MicroFirm,
     DeathSummary,
+    // GroupMaker,
   },
   data() {
     return {
@@ -36,6 +38,7 @@ export default {
       firmListOpen: false,
       microFirmPanelOpen: null,
       deathAscIdc: true,
+      groupsOpen: false,
     }
   },
   computed: {
@@ -199,6 +202,11 @@ export default {
           >Liste des FIRMs</b-button
         >
       </div> -->
+
+      <!-- <button @click="groupsOpen = true">show groups</button>
+      <b-modal :active="groupsOpen" @close="groupsOpen = false">
+        <GroupMaker v-if="crossing" :crossing-id="crossing.id" />
+      </b-modal> -->
 
       <div :class="$style.deathListContainer">
         <div :class="$style.actionButtons">
